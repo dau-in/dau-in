@@ -3,7 +3,7 @@
 
 ```
 dau-in@github
--------------------------
+──────────────────────────────
 ▹ Computer Engineer
 ⌁ Into agentic programming — building with AI, not just using it
 ▪ Full-stack + IT support + networking, all in one
@@ -21,22 +21,27 @@ dau-in@github
 
 <p align="center">
 <a href="https://passportdex.com/dauin"><b>→ full passport here</b></a>
+<br/>
+<sub>◇ art by <a href="https://twitter.com/inoitoh">@inoitoh</a> on twt</sub>
 </p>
 
 <br/>
 
-## $ ls ~/projects
-
 ```
+dau-in@github:~$ ls ./projects
+──────────────────────────────
 channel-3/   NES emulator running in the browser — WebGL CRT shader, P2P netplay, rewind.
              (shipping soon)
+kintsugi/    Go TUI that slipstreams Windows LTS ISOs — DISM internals, no GUI nonsense.
+             (in development)
 ```
 
-<!-- TODO: swap in real repo link + final name once published -->
-
-## $ whereis me
+<!-- TODO: swap in real repo link + final name once Channel 3 is published -->
+<!-- TODO: add real repo link once Kintsugi has a demoable run -->
 
 ```
+dau-in@github:~$ finger me
+──────────────────────────────
 Best way to reach me →
 ```
 
