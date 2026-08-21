@@ -25,8 +25,6 @@ dau-in@github
 <sub>◇ art by <a href="https://twitter.com/inoitoh">@inoitoh</a> on twt</sub>
 </p>
 
-<br/>
-
 ```
 dau-in@github:~$ ls ./projects
 ──────────────────────────────
@@ -34,19 +32,17 @@ channel-3/   NES emulator running in the browser — WebGL CRT shader, P2P netpl
              (shipping soon)
 kintsugi/    Go TUI that slipstreams Windows LTS ISOs — DISM internals, no GUI nonsense.
              (in development)
-```
 
-<!-- TODO: swap in real repo link + final name once Channel 3 is published -->
-<!-- TODO: add real repo link once Kintsugi has a demoable run -->
-
-```
 dau-in@github:~$ finger me
 ──────────────────────────────
 Best way to reach me →
 ```
 
+<!-- TODO: swap in real repo link + final name once Channel 3 is published -->
+<!-- TODO: add real repo link once Kintsugi has a demoable run -->
+
 <p align="center">
-<a href="https://github.com/dau-in"><b>github.com/dau-in</b></a>
+<a href="https://github.com/dau-in"><b>→ github.com/dau-in</b></a>
 </p>
 
 <!-- TODO: stats section (WakaTime / github-readme-stats), once decided -->
