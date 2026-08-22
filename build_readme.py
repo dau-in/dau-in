@@ -69,8 +69,12 @@ readme = f'''<p align="center">
 {whoami_box}
 ```
 
+<!-- passportdex OG image blocked by Cloudflare when fetched by GitHub's camo proxy (server-side,
+     no browser) -- confirmed broken, reverted to plain link. Darwin can grab a manual screenshot
+     of https://passportdex.com/dauin/og himself (his browser has access) and hand it over to
+     use as a static assets/passport_snapshot.png if he wants the visual card back. -->
 <table align="center"><tr><td align="center">
-<a href="https://passportdex.com/dauin"><img src="https://passportdex.com/dauin/og" width="420"/></a>
+<a href="https://passportdex.com/dauin"><b>→ full passport here</b></a>
 </td></tr></table>
 
 <h2 align="center">{section_title('PROJECTS')}</h2>
