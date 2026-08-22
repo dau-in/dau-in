@@ -1,9 +1,7 @@
-# Test 3 — name combo
+# Test 3 — isolating the typing svg issue
 
-```
- _        ___
-| \ /\ | | | |\ |
-|_//--\|_|_|_| \|
-```
+## A) plain image, no link wrapper
+![typing](https://readme-typing-svg.demolab.com?font=Cutive+Mono&pause=1200&color=8B949E&center=true&vCenter=true&width=500&lines=still+typing+this+myself)
 
-[![typing](https://readme-typing-svg.demolab.com?font=Cutive+Mono&pause=1200&color=8B949E&center=true&vCenter=true&width=500&lines=still+typing+this+myself%2C+mostly;still+figuring+it+out;still+here%2C+still+terminal-pilled)](https://github.com/dau-in)
+## B) same URL we know worked before (blue color, no semicolon multi-line)
+![typing2](https://readme-typing-svg.demolab.com?font=Cutive+Mono&pause=1000&color=79C0FF&center=true&vCenter=true&width=450&lines=dau-in%27s+terminal%2C+probably)
