@@ -3,7 +3,7 @@ import pyfiglet
 
 def box(title, groups):
     lines = [l for g in groups for l in g]
-    width = max([len(l) for l in lines] + [len(title) + 4]) + 3
+    width = max([len(l) for l in lines] + [len(title) + 4]) + 5
     top = '┌─ ' + title + ' ' + '─' * (width - len(title) - 4) + '┐'
     bot = '└' + '─' * (width - 2) + '┘'
     mid = '├' + '─' * (width - 2) + '┤'
@@ -27,9 +27,10 @@ def strip_blank_lines(s):
         lines.pop()
     return '\n'.join(lines)
 
-def sep(width=79):
-    dash = (width - 3) // 2
-    return '▪' + '─' * (dash - 1) + '[ • ]' + '─' * (dash - 1) + '▪'
+def sep():
+    # real <hr> elements are always 100% of the container width -- unlike a
+    # fixed-length dash string, they can't overflow/wrap on narrow (mobile) viewports.
+    return '<hr>\n\n<p align="center">▪ • ▪</p>\n\n<hr>'
 
 name_banner = strip_blank_lines(pyfiglet.figlet_format('DAUIN', font='thin'))
 
@@ -60,11 +61,11 @@ whoami_groups = [
 ]
 whoami_box = box('whoami.txt', whoami_groups)
 
-readme = f'''<table><tr>
+readme = f'''<p align="center"><img src="{typing_url}" width="380" alt="typing"/></p>
+
+<table><tr>
 <td><img width="150" src="assets/section1_photos.gif"/></td>
 <td align="center" valign="middle">
-
-<img src="{typing_url}" width="380" alt="typing"/>
 
 ```
 {name_banner}
