@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-import pyfiglet, sys, os
-sys.path.insert(0, os.path.join('..', 'dauin', 'design-assets'))
-from unicode_styles import convert
+import pyfiglet
 
 def box(title, lines):
     width = max([len(l) for l in lines] + [len(title) + 4]) + 2
@@ -13,8 +11,8 @@ def box(title, lines):
         body.append('│ ' + l + ' ' * max(pad - 1, 0) + '│')
     return '\n'.join([top] + body + [bot])
 
-def section_title(word):
-    return convert(word, 'sans_bold')
+def sep(width=40):
+    return '─' * ((width - 3) // 2) + ' ▪ ' + '─' * ((width - 3) // 2)
 
 name_banner = pyfiglet.figlet_format('DAUIN', font='thin').rstrip('\n')
 
@@ -38,77 +36,51 @@ whoami_lines = [
 ]
 whoami_box = box('whoami.txt', whoami_lines)
 
-projects_lines = [
- 'channel-3/   NES emulator, browser-based — WebGL CRT, netplay.  [soon]',
- 'kintsugi/    Go TUI, Windows LTS ISOs — DISM internals.         [wip]',
-]
-projects_box = box('projects.log', projects_lines)
-
-contact_lines = ['Best way to reach me →']
-contact_box = box('contact.txt', contact_lines)
-
-badge_style = 'style=flat-square&labelColor=0d1117&color=21262d'
-
-readme = f'''<p align="center">
+readme = f'''<img align="left" width="150" src="assets/section1_photos.gif"/>
 
 ```
 {name_banner}
 ```
 
-<img src="{typing_url}" width="420" alt="typing"/>
-
-</p>
-
-<h2 align="center">{section_title('INTRO')}</h2>
-
-<table align="center"><tr><td>
-<img src="assets/section1_photos.gif" width="360"/>
-</td></tr></table>
+<br clear="left"/>
 
 ```
 {whoami_box}
 ```
 
-<!-- live OG image is blocked by Cloudflare for server-side fetches (GitHub camo can't reach it).
-     Darwin downloaded his own share card manually (works fine from his own logged-in browser) --
-     using that as a static asset instead. Won't auto-update; regenerate manually when it's stale. -->
+<img src="{typing_url}" width="420" alt="typing"/>
+
+{sep(60)}
+
 <p align="center">
-<a href="https://passportdex.com/dauin"><img src="assets/passport_card.jpg" width="320"/></a>
+<a href="https://passportdex.com/dauin"><img src="assets/passport_card.jpg" width="380"/></a>
 </p>
 
-<h2 align="center">{section_title('PROJECTS')}</h2>
+<p align="center">∴ interests: games, music, terminal life — full taste on the passport above ↑</p>
 
-```
-{projects_box}
-```
+{sep(60)}
+
+<table align="center"><tr>
+<td><img src="assets/section2_photos.gif" width="150"/></td>
+<td>
+
+| project | description | status |
+|---|---|---|
+| **channel-3** | NES emulator, browser-based — WebGL CRT, netplay | soon |
+| **kintsugi** | Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals | wip |
+
+</td>
+</tr></table>
 
 <!-- TODO: swap in real repo link + final name once Channel 3 is published -->
 <!-- TODO: add real repo link once Kintsugi has a demoable run -->
 
-<h2 align="center">{section_title('CONTACT')}</h2>
+{sep(60)}
 
-<table align="center"><tr><td>
-<img src="assets/section2_photos.gif" width="360"/>
-</td></tr></table>
+<p align="center"><sub>◇ art by <a href="https://x.com/inoitoh">@inoitoh</a> on twt</sub></p>
 
-```
-{contact_box}
-```
-
-<table align="center"><tr><td align="center">
-<a href="https://github.com/dau-in"><b>→ github.com/dau-in</b></a>
-</td></tr></table>
-
-<p align="center">
-<a href="https://discord.com/users/780932598922084384"><img src="https://img.shields.io/badge/Discord-.dauin-161b22?{badge_style}"/></a>
-<a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="https://img.shields.io/badge/Spotify-open-161b22?{badge_style}"/></a>
-<a href="https://steamcommunity.com/id/dauin"><img src="https://img.shields.io/badge/Steam-dauin-161b22?{badge_style}"/></a>
-</p>
-
-<p align="center"><sub><img src="https://img.shields.io/badge/art%20by-%40inoitoh-161b22?{badge_style}"/></sub></p>
-
-<!-- TODO: replace Discord badge with lanyard-profile-readme widget once account is monitored -->
-<!-- TODO: Spotify/Steam -> real stats + last played/listened, once decided -->
+<!-- TODO: replace static passport card with a live embed once passportdex offers one -->
+<!-- TODO: Discord/Spotify/Steam widgets, once decided how -->
 <!-- TODO: stats section (WakaTime / github-readme-stats), once decided -->
 '''
 
