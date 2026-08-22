@@ -34,13 +34,12 @@
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-<!-- passportdex OG image blocked by Cloudflare when fetched by GitHub's camo proxy (server-side,
-     no browser) -- confirmed broken, reverted to plain link. Darwin can grab a manual screenshot
-     of https://passportdex.com/dauin/og himself (his browser has access) and hand it over to
-     use as a static assets/passport_snapshot.png if he wants the visual card back. -->
-<table align="center"><tr><td align="center">
-<a href="https://passportdex.com/dauin"><b>→ full passport here</b></a>
-</td></tr></table>
+<!-- live OG image is blocked by Cloudflare for server-side fetches (GitHub camo can't reach it).
+     Darwin downloaded his own share card manually (works fine from his own logged-in browser) --
+     using that as a static asset instead. Won't auto-update; regenerate manually when it's stale. -->
+<p align="center">
+<a href="https://passportdex.com/dauin"><img src="assets/passport_card.jpg" width="320"/></a>
+</p>
 
 <h2 align="center">𝗣𝗥𝗢𝗝𝗘𝗖𝗧𝗦</h2>
 
