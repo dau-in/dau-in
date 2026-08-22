@@ -1,4 +1,4 @@
-<img align="left" width="150" src="assets/section1_photos.gif"/>
+<table align="left"><tr><td><img width="150" src="assets/section1_photos.gif"/></td></tr></table>
 
 ```
                      
