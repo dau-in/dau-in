@@ -36,7 +36,7 @@ whoami_lines = [
 ]
 whoami_box = box('whoami.txt', whoami_lines)
 
-readme = f'''<img align="left" width="150" src="assets/section1_photos.gif"/>
+readme = f'''<table align="left"><tr><td><img width="150" src="assets/section1_photos.gif"/></td></tr></table>
 
 ```
 {name_banner}
