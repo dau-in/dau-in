@@ -1,14 +1,22 @@
 # -*- coding: utf-8 -*-
 import pyfiglet
 
-def box(title, lines):
-    width = max([len(l) for l in lines] + [len(title) + 4]) + 2
+def box(title, groups):
+    lines = [l for g in groups for l in g]
+    width = max([len(l) for l in lines] + [len(title) + 4]) + 3
     top = '┌─ ' + title + ' ' + '─' * (width - len(title) - 4) + '┐'
     bot = '└' + '─' * (width - 2) + '┘'
-    body = []
-    for l in lines:
+    mid = '├' + '─' * (width - 2) + '┤'
+
+    def row(l):
         pad = width - 2 - len(l)
-        body.append('│ ' + l + ' ' * max(pad - 1, 0) + '│')
+        return '│ ' + l + ' ' * max(pad - 1, 0) + '│'
+
+    body = []
+    for i, g in enumerate(groups):
+        if i > 0:
+            body.append(mid)
+        body.extend(row(l) for l in g)
     return '\n'.join([top] + body + [bot])
 
 def strip_blank_lines(s):
@@ -19,7 +27,7 @@ def strip_blank_lines(s):
         lines.pop()
     return '\n'.join(lines)
 
-def sep(width=60):
+def sep(width=79):
     dash = (width - 3) // 2
     return '▪' + '─' * (dash - 1) + '[ • ]' + '─' * (dash - 1) + '▪'
 
@@ -34,23 +42,27 @@ typing_url = ('https://readme-typing-svg.demolab.com?font=Cutive+Mono&pause=1200
 # pure ASCII icons -- guaranteed identical width on every monospace font, on every OS.
 # no more unicode glyphs in box-drawn content: this is what was breaking alignment on
 # Darwin's own machine (different fallback font than the one this was tested against).
-whoami_lines = [
- '*  Computer Engineer',
- '>  Into agentic programming — building with AI, not just using it',
- '-  Full-stack + IT support + networking, all in one',
- '^  Eternal student — always hungry for more to learn',
- '=  Hardware enthusiast at heart',
- '+  Available for freelance & remote work',
- '~  I live in the terminal — and in the windows too (CachyOS main, though)',
- '<  Clauding my way forward, step by step.',
- '#  "Everything that lives is designed to end"... meanwhile, I leave proof',
- '   of my existence on my passport ↓',
+whoami_groups = [
+ [
+  '*  Computer Engineer',
+  '>  Into agentic programming — building with AI, not just using it',
+  '-  Full-stack + IT support + networking, all in one',
+  '^  Eternal student — always hungry for more to learn',
+  '=  Hardware enthusiast at heart',
+  '+  Available for freelance & remote work',
+ ],
+ [
+  '~  I live in the terminal — and in the windows too (CachyOS main, though)',
+  '<  Clauding my way forward, step by step.',
+  '#  "Everything that lives is designed to end"... meanwhile, I leave proof',
+  '   of my existence on my passport ↓',
+ ],
 ]
-whoami_box = box('whoami.txt', whoami_lines)
+whoami_box = box('whoami.txt', whoami_groups)
 
 readme = f'''<table><tr>
 <td><img width="150" src="assets/section1_photos.gif"/></td>
-<td valign="top">
+<td align="center" valign="middle">
 
 <img src="{typing_url}" width="380" alt="typing"/>
 
@@ -84,7 +96,7 @@ readme = f'''<table><tr>
 
 {sep()}
 
-<p align="center">∴ interests: games, music, terminal life</p>
+<p align="center">∴ off the clock: games, music, and a terminal that never quite closes — full taste below ↓</p>
 
 <p align="center">
 <a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="380"/></a>
