@@ -60,13 +60,13 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
 
 <table align="center"><tr><td align="center">
 
-<a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="380"/></a>
+<p align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="380"/></a></p>
 
-<img src="assets/steam_card.png" width="380"/>
+<p align="center"><img src="assets/steam_card.png" width="380"/></p>
 
-<img src="assets/spotify_card.png" width="380"/>
+<p align="center"><img src="assets/spotify_card.png" width="380"/></p>
 
-<img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&animated=true" width="380" alt="discord"/>
+<p align="center"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&animated=true" width="380" alt="discord"/></p>
 
 </td></tr></table>
 
