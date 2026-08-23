@@ -3,8 +3,11 @@ import pyfiglet
 
 def box(title, groups):
     lines = [l for g in groups for l in g]
-    width = max([len(l) for l in lines] + [len(title) + 4]) + 5
-    top = '┌─ ' + title + ' ' + '─' * (width - len(title) - 4) + '┐'
+    width = max([len(l) for l in lines] + [len(title) + 4]) + 6
+    # top line was 1 char longer than every other line ('┌─ title ─┐' == width+1,
+    # while body/bottom lines == width) -- that's why '┐' never lined up with the
+    # '│' column below it, even though '┘' (computed the same way as the body) did.
+    top = '┌─ ' + title + ' ' + '─' * (width - len(title) - 5) + '┐'
     bot = '└' + '─' * (width - 2) + '┘'
     mid = '├' + '─' * (width - 2) + '┤'
 
@@ -63,20 +66,26 @@ whoami_box = box('whoami.txt', whoami_groups)
 
 readme = f'''<p align="center"><img src="{typing_url}" width="380" alt="typing"/></p>
 
-<table><tr>
+<table align="center"><tr>
 <td><img width="150" src="assets/section1_photos.gif"/></td>
 <td align="center" valign="middle">
 
 ```
+
 {name_banner}
+
 ```
 
 </td>
 </tr></table>
 
+<div align="center">
+
 ```
 {whoami_box}
 ```
+
+</div>
 
 {sep()}
 
