@@ -39,7 +39,7 @@
 <hr>
 
 <table align="center"><tr>
-<td><img src="assets/section2_photos_v2.gif" width="150"/></td>
+<td><img src="assets/section2_static.png" width="150"/></td>
 <td>
 <table>
 <tr><th>project</th><th>description</th><th>status</th></tr>
