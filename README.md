@@ -38,14 +38,18 @@
 
 <hr>
 
-<img src="assets/section2_photos_v2.gif" width="150" align="left">
+<table align="center"><tr>
+<td><img src="assets/section2_photos_v2.gif" width="150"/></td>
+<td valign="top">
 
-| project | description | status |
-|---|---|---|
-| **channel-3** | NES emulator, browser-based — WebGL CRT, netplay | soon |
-| **kintsugi** | Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals | wip |
+**channel-3** &nbsp; <code>soon</code><br>
+NES emulator, browser-based — WebGL CRT, netplay
 
-<br clear="both">
+**kintsugi** &nbsp; <code>wip</code><br>
+Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
+
+</td>
+</tr></table>
 
 <!-- TODO: swap in real repo link + final name once Channel 3 is published -->
 <!-- TODO: add real repo link once Kintsugi has a demoable run -->
