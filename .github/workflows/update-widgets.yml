@@ -24,12 +24,14 @@ jobs:
         id: setup-chrome
 
       - name: Build Steam card
+        continue-on-error: true
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
           CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: python scripts/build_steam_card.py
 
       - name: Build Spotify card
+        continue-on-error: true
         env:
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
@@ -38,6 +40,7 @@ jobs:
         run: python scripts/build_spotify_card.py
 
       - name: Commit if changed
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
