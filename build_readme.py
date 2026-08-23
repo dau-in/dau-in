@@ -33,7 +33,7 @@ def strip_blank_lines(s):
 def sep():
     # real <hr> elements are always 100% of the container width -- unlike a
     # fixed-length dash string, they can't overflow/wrap on narrow (mobile) viewports.
-    return '<hr>\n\n<p align="center">▪ • ▪</p>\n\n<hr>'
+    return '<hr>\n\n<p align="center">[ * ]</p>\n\n<hr>'
 
 name_banner = strip_blank_lines(pyfiglet.figlet_format('DAUIN', font='thin'))
 
