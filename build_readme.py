@@ -112,15 +112,17 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
 
 <p align="center">∴ off the clock: games, music, and a terminal that never quite closes — full taste below ↓</p>
 
-<p align="center">
+<table align="center"><tr><td align="center">
+
 <a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="380"/></a>
-</p>
 
-<p align="center"><img src="assets/steam_card.png" width="380"/></p>
+<img src="assets/steam_card.png" width="380"/>
 
-<p align="center"><img src="assets/spotify_card.png" width="380"/></p>
+<img src="assets/spotify_card.png" width="380"/>
 
-<p align="center"><img src="{discord_url}" width="380" alt="discord"/></p>
+<img src="{discord_url}" width="380" alt="discord"/>
+
+</td></tr></table>
 
 <!-- steam_card.png and spotify_card.png are rebuilt every few hours by
      .github/workflows/update-widgets.yml (scripts/build_steam_card.py and
