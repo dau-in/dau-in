@@ -31,11 +31,10 @@ def strip_blank_lines(s):
     return '\n'.join(lines)
 
 def sep():
-    # real <hr> elements are always 100% of the container width -- unlike a
-    # fixed-length dash string, they can't overflow/wrap on narrow (mobile) viewports.
-    # wrapping in inline code gets GitHub's built-in monospace "pill" background
-    # for free -- ties it visually to the whoami/name code blocks, still pure ASCII.
-    return '<hr>\n\n<p align="center"><code>[ * ]</code></p>\n\n<hr>'
+    # a real <hr> is always 100% of the container width -- unlike a fixed-length
+    # dash string it can't overflow/wrap on narrow viewports, and unlike a marker
+    # between two <hr>s it can't look unfinished/disconnected. plain and boring on purpose.
+    return '<hr>'
 
 name_banner = strip_blank_lines(pyfiglet.figlet_format('DAUIN', font='thin'))
 
@@ -92,7 +91,7 @@ readme = f'''<p align="center"><img src="{typing_url}" width="380" alt="typing"/
 {sep()}
 
 <table align="center"><tr>
-<td><img src="assets/section2_photos.gif" width="150"/></td>
+<td><img src="assets/section2_photos_v2.gif" width="150"/></td>
 <td>
 
 | project | description | status |

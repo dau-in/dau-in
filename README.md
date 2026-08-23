@@ -38,12 +38,8 @@
 
 <hr>
 
-<p align="center"><code>[ * ]</code></p>
-
-<hr>
-
 <table align="center"><tr>
-<td><img src="assets/section2_photos.gif" width="150"/></td>
+<td><img src="assets/section2_photos_v2.gif" width="150"/></td>
 <td>
 
 | project | description | status |
@@ -59,19 +55,11 @@
 
 <hr>
 
-<p align="center"><code>[ * ]</code></p>
-
-<hr>
-
 <p align="center">∴ off the clock: games, music, and a terminal that never quite closes — full taste below ↓</p>
 
 <p align="center">
 <a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="380"/></a>
 </p>
-
-<hr>
-
-<p align="center"><code>[ * ]</code></p>
 
 <hr>
 
