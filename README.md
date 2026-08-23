@@ -1,34 +1,40 @@
 <p align="center"><img src="https://readme-typing-svg.demolab.com?font=Cutive+Mono&pause=1200&color=8B949E&center=true&vCenter=true&width=380&height=30&lines=still+typing+this+myself%2C+mostly;still+figuring+it+out;still+here%2C+still+terminal-pilled" width="380" alt="typing"/></p>
 
-<table><tr>
+<table align="center"><tr>
 <td><img width="150" src="assets/section1_photos.gif"/></td>
 <td align="center" valign="middle">
 
 ```
+
 ,--. ,---..   .|,   .
 |   ||---||   |||\  |
 |   ||   ||   ||| \ |
 `--' `   '`---'``  `'
+
 ```
 
 </td>
 </tr></table>
 
+<div align="center">
+
 ```
 ┌─ whoami.txt ────────────────────────────────────────────────────────────────┐
-│ *  Computer Engineer                                                       │
-│ >  Into agentic programming — building with AI, not just using it          │
-│ -  Full-stack + IT support + networking, all in one                        │
-│ ^  Eternal student — always hungry for more to learn                       │
-│ =  Hardware enthusiast at heart                                            │
-│ +  Available for freelance & remote work                                   │
-├────────────────────────────────────────────────────────────────────────────┤
-│ ~  I live in the terminal — and in the windows too (CachyOS main, though)  │
-│ <  Clauding my way forward, step by step.                                  │
-│ #  "Everything that lives is designed to end"... meanwhile, I leave proof  │
-│    of my existence on my passport ↓                                        │
-└────────────────────────────────────────────────────────────────────────────┘
+│ *  Computer Engineer                                                        │
+│ >  Into agentic programming — building with AI, not just using it           │
+│ -  Full-stack + IT support + networking, all in one                         │
+│ ^  Eternal student — always hungry for more to learn                        │
+│ =  Hardware enthusiast at heart                                             │
+│ +  Available for freelance & remote work                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ~  I live in the terminal — and in the windows too (CachyOS main, though)   │
+│ <  Clauding my way forward, step by step.                                   │
+│ #  "Everything that lives is designed to end"... meanwhile, I leave proof   │
+│    of my existence on my passport ↓                                         │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+</div>
 
 <hr>
 
