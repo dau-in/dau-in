@@ -1,0 +1,46 @@
+name: Update widget cards
+
+on:
+  schedule:
+    - cron: '17 */4 * * *'   # every 4 hours, off the hour to avoid GitHub's cron rush
+  workflow_dispatch: {}       # lets you trigger a run manually from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install -r scripts/requirements.txt
+
+      - uses: browser-actions/setup-chrome@v2
+        id: setup-chrome
+
+      - name: Build Steam card
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+          CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: python scripts/build_steam_card.py
+
+      - name: Build Spotify card
+        env:
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
+          CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: python scripts/build_spotify_card.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/steam_card.png assets/spotify_card.png
+          git diff --staged --quiet || git commit -m "chore: refresh widget cards [skip ci]"
+          git push
