@@ -38,7 +38,7 @@
 
 <hr>
 
-<p align="center">▪ • ▪</p>
+<p align="center">[ * ]</p>
 
 <hr>
 
@@ -59,7 +59,7 @@
 
 <hr>
 
-<p align="center">▪ • ▪</p>
+<p align="center">[ * ]</p>
 
 <hr>
 
@@ -71,7 +71,7 @@
 
 <hr>
 
-<p align="center">▪ • ▪</p>
+<p align="center">[ * ]</p>
 
 <hr>
 
