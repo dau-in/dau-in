@@ -91,7 +91,7 @@ readme = f'''<p align="center"><img src="{typing_url}" width="380" alt="typing"/
 {sep()}
 
 <table align="center"><tr>
-<td><img src="assets/section2_photos_v2.gif" width="150"/></td>
+<td><img src="assets/section2_static.png" width="150"/></td>
 <td>
 <table>
 <tr><th>project</th><th>description</th><th>status</th></tr>
