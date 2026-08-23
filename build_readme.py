@@ -65,6 +65,8 @@ whoami_groups = [
 ]
 whoami_box = box('whoami.txt', whoami_groups)
 
+discord_url = 'https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&animated=true'
+
 readme = f'''<p align="center"><img src="{typing_url}" width="380" alt="typing"/></p>
 
 <table align="center"><tr>
@@ -114,12 +116,22 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
 <a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="380"/></a>
 </p>
 
+<table align="center"><tr>
+<td><img src="assets/steam_card.png" width="190"/></td>
+<td><img src="assets/spotify_card.png" width="190"/></td>
+</tr></table>
+
+<p align="center"><img src="{discord_url}" width="380" alt="discord"/></p>
+
+<!-- steam_card.png and spotify_card.png are rebuilt every few hours by
+     .github/workflows/update-widgets.yml (scripts/build_steam_card.py and
+     scripts/build_spotify_card.py) -- never hand-edited. -->
+
 {sep()}
 
 <p align="center"><sub>◇ art by <a href="https://x.com/inoitoh">@inoitoh</a> on twt</sub></p>
 
 <!-- TODO: replace static passport card with a live embed once passportdex offers one -->
-<!-- TODO: Discord/Spotify/Steam widgets, once decided how -->
 <!-- TODO: stats section (WakaTime / github-readme-stats), once decided -->
 '''
 
