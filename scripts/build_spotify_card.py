@@ -1,10 +1,11 @@
 """
-Builds assets/spotify_card.png from live Spotify data (currently playing, falling
-back to the most recently played track).
+Builds assets/spotify_card.png from live Spotify data: profile picture, top artist
+and top track over the last ~6 months (time_range=medium_term -- stable "who I
+actually listen to" rather than one noisy recent play).
 
-Requires three env vars, all from your own Spotify Developer app + a one-time OAuth
-consent (see spotify_auth.py): SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET,
-SPOTIFY_REFRESH_TOKEN. Never commit these -- env vars / GitHub Actions secrets only.
+Requires SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN in the
+environment (see spotify_auth.py for the one-time OAuth setup). The refresh token
+must have been issued with scopes: user-top-read user-read-private
 """
 import base64
 import json
@@ -40,38 +41,28 @@ def spotify_get(endpoint, token):
         f'https://api.spotify.com/v1{endpoint}',
         headers={'Authorization': f'Bearer {token}'},
     )
-    try:
-        with urllib.request.urlopen(req, timeout=15) as r:
-            if r.status == 204:
-                return None
-            return json.loads(r.read())
-    except urllib.error.HTTPError as e:
-        if e.code == 204:
-            return None
-        raise
+    with urllib.request.urlopen(req, timeout=15) as r:
+        return json.loads(r.read())
 
 
 def fetch_data():
     token = get_access_token()
 
-    now = spotify_get('/me/player/currently-playing', token)
-    if now and now.get('item') and now.get('is_playing'):
-        track = now['item']
-        status = 'listening now'
-    else:
-        recent = spotify_get('/me/player/recently-played?limit=1', token)
-        track = recent['items'][0]['track'] if recent and recent.get('items') else None
-        status = 'last played'
+    me = spotify_get('/me', token)
+    top_artists = spotify_get('/me/top/artists?time_range=medium_term&limit=1', token)
+    top_tracks = spotify_get('/me/top/tracks?time_range=medium_term&limit=1', token)
 
-    if not track:
-        return None
+    artist = top_artists['items'][0] if top_artists.get('items') else None
+    track = top_tracks['items'][0] if top_tracks.get('items') else None
 
     return {
-        'status': status,
-        'track_name': track['name'],
-        'artist': ', '.join(a['name'] for a in track['artists']),
-        'art_url': track['album']['images'][0]['url'] if track['album']['images'] else None,
-        'track_url': track['external_urls']['spotify'],
+        'display_name': me.get('display_name') or 'me',
+        'avatar_url': me['images'][0]['url'] if me.get('images') else None,
+        'top_artist_name': artist['name'] if artist else None,
+        'top_artist_img': artist['images'][0]['url'] if artist and artist.get('images') else None,
+        'top_track_name': track['name'] if track else None,
+        'top_track_artist': ', '.join(a['name'] for a in track['artists']) if track else None,
+        'top_track_img': track['album']['images'][0]['url'] if track and track['album'].get('images') else None,
     }
 
 
@@ -88,24 +79,46 @@ CSS = '''
 body { background:#000; margin:0; padding:20px; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
 .card { width:420px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:18px 20px; }
 .row { display:flex; align-items:center; gap:14px; }
-.art { width:56px; height:56px; border-radius:6px; object-fit:cover; }
-.label { font-size:11px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px; }
-.track { font-weight:700; font-size:16px; color:#fff; line-height:1.3; }
-.artist { font-size:13px; color:#a7a0a7; margin-top:2px; }
+.avatar { width:56px; height:56px; border-radius:50%; object-fit:cover; background:#222; }
+.name { font-weight:700; font-size:22px; color:#fff; line-height:1.1; }
+.window { font-size:13px; color:#a7a0a7; margin-top:2px; }
+.divider { height:1px; background:rgba(255,255,255,0.08); margin:14px 0; }
+.stat-label { font-size:11px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px; }
+.stat-row { display:flex; align-items:center; gap:12px; }
+.stat-row + .stat-row { margin-top:14px; }
+.stat-img { width:40px; height:40px; border-radius:6px; object-fit:cover; background:#222; }
+.stat-name { font-size:14px; color:#e5e5e5; font-weight:500; }
+.stat-sub { font-size:12px; color:#a7a0a7; margin-top:1px; }
 .brand { display:flex; align-items:center; justify-content:flex-end; font-size:12px; color:#a7a0a7; margin-top:16px; }
 '''
 
 
-def build_html(data, art_b64):
-    art_tag = f'<img class="art" src="data:image/jpeg;base64,{art_b64}"/>' if art_b64 else ''
+def build_html(data, avatar_b64, artist_img_b64, track_img_b64):
+    avatar_tag = f'<img class="avatar" src="data:image/jpeg;base64,{avatar_b64}"/>' if avatar_b64 else '<div class="avatar"></div>'
+    artist_img_tag = f'<img class="stat-img" src="data:image/jpeg;base64,{artist_img_b64}"/>' if artist_img_b64 else '<div class="stat-img"></div>'
+    track_img_tag = f'<img class="stat-img" src="data:image/jpeg;base64,{track_img_b64}"/>' if track_img_b64 else '<div class="stat-img"></div>'
+
     return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body>
 <div class="card">
-<div class="label">{data['status']}</div>
 <div class="row">
-{art_tag}
+{avatar_tag}
 <div>
-<div class="track">{data['track_name']}</div>
-<div class="artist">{data['artist']}</div>
+<div class="name">{data['display_name']}</div>
+<div class="window">last ~6 months</div>
+</div>
+</div>
+<div class="divider"></div>
+<div class="stat-label">top artist</div>
+<div class="stat-row">
+{artist_img_tag}
+<div class="stat-name">{data['top_artist_name']}</div>
+</div>
+<div class="stat-label" style="margin-top:16px;">top track</div>
+<div class="stat-row">
+{track_img_tag}
+<div>
+<div class="stat-name">{data['top_track_name']}</div>
+<div class="stat-sub">{data['top_track_artist']}</div>
 </div>
 </div>
 <div class="brand">{SPOTIFY_LOGO}open.spotify.com</div>
@@ -130,7 +143,7 @@ def render(html_path, tmp_dir, out_path, chrome):
     raw = tmp_dir / 'raw.png'
     subprocess.run([
         chrome, '--headless', '--disable-gpu', '--no-sandbox',
-        '--force-device-scale-factor=2', '--window-size=560,260',
+        '--force-device-scale-factor=2', '--window-size=560,420',
         f'--screenshot={raw}', f'file:///{html_path.as_posix()}',
     ], check=True)
 
@@ -150,21 +163,26 @@ def main():
     import tempfile
 
     data = fetch_data()
-    if not data:
-        print('No listening history available at all -- skipping (card left as-is).')
+    if not data['top_artist_name'] and not data['top_track_name']:
+        print('No top-artist/top-track data available yet -- skipping (card left as-is).')
         return
 
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
 
-        art_b64 = None
-        if data['art_url']:
-            art_path = tmp / 'art.jpg'
-            download(data['art_url'], art_path)
-            art_b64 = base64.b64encode(art_path.read_bytes()).decode()
+        def maybe_download(url, name):
+            if not url:
+                return None
+            p = tmp / name
+            download(url, p)
+            return base64.b64encode(p.read_bytes()).decode()
+
+        avatar_b64 = maybe_download(data['avatar_url'], 'avatar.jpg')
+        artist_img_b64 = maybe_download(data['top_artist_img'], 'artist.jpg')
+        track_img_b64 = maybe_download(data['top_track_img'], 'track.jpg')
 
         html_path = tmp / 'card.html'
-        html_path.write_text(build_html(data, art_b64), encoding='utf-8')
+        html_path.write_text(build_html(data, avatar_b64, artist_img_b64, track_img_b64), encoding='utf-8')
 
         out_path = HERE.parent / 'assets' / 'spotify_card.png'
         render(html_path, tmp, out_path, find_chrome())
