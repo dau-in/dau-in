@@ -70,7 +70,7 @@ STEAM_LOGO = '''<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-
 # card sits side-by-side with the spotify one at a narrow display width, so its
 # own font sizes need to already read fine around 250-260px wide.
 CSS = '''
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,500,600,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 body { background:#000; margin:0; padding:20px; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
 .card { width:260px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px 16px; }
 .row { display:flex; align-items:center; gap:10px; }
