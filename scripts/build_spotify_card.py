@@ -103,7 +103,7 @@ def build_html(data, avatar_b64, artist_img_b64, track_img_b64):
 <div class="row">
 {avatar_tag}
 <div>
-<div class="name">{data['display_name']}</div>
+<div class="name">𝓓`</div>
 <div class="window">last ~6 months</div>
 </div>
 </div>
