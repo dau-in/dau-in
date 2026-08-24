@@ -67,7 +67,7 @@ whoami_box = box('whoami.txt', whoami_groups)
 
 discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
-               '&idleMessage=off+the+clock%2C+for+now')
+               '&idleMessage=bored%2C+for+now')
 
 readme = f'''<p align="center"><img src="{typing_url}" width="380" alt="typing"/></p>
 
@@ -114,17 +114,33 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
 
 <p align="center">∴ off the clock: games, music, and a terminal that never quite closes — full taste below ↓</p>
 
-<table align="center"><tr><td align="center">
+<!-- single flat table, no nesting -- a table-within-a-table is what broke images
+     on the GitHub mobile app before (see commit 8325169); colspan avoids that
+     entirely while still mixing full-width rows with a 2-column row. -->
+<table align="center">
+
+<tr><td colspan="2" align="center">
 
 <p align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="380"/></a></p>
 
-<p align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="380"/></a></p>
+</td></tr>
 
-<p align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="380"/></a></p>
+<tr><td colspan="2" align="center"><sub>· steam · spotify ·</sub></td></tr>
+
+<tr>
+<td align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="183"/></a></td>
+<td align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="183"/></a></td>
+</tr>
+
+<tr><td colspan="2" align="center"><sub>· discord ·</sub></td></tr>
+
+<tr><td colspan="2" align="center">
 
 <p align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="380" alt="discord"/></a></p>
 
-</td></tr></table>
+</td></tr>
+
+</table>
 
 <!-- steam_card.png and spotify_card.png are rebuilt every few hours by
      .github/workflows/update-widgets.yml (scripts/build_steam_card.py and
