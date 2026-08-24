@@ -1,9 +1,9 @@
-<p align="center">
+<div align="center">
 
 ![typing](assets/typing_dark.png#gh-dark-mode-only)
 ![typing](assets/typing_light.png#gh-light-mode-only)
 
-</p>
+</div>
 
 <table align="center"><tr>
 <td><img width="180" src="assets/section1_photos.gif"/></td>
@@ -63,18 +63,20 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
 
 <p align="center">∴ off the clock: games, music, and a terminal that never quite closes — full taste below ↓</p>
 
-<!-- no <table> here on purpose -- GitHub's markdown CSS puts a visible 1px
-     border on every td, and since it strips style=/border= attributes there's
-     no way to turn it off from inside a table. plain <p> blocks have no such
-     border; steam+spotify sit side by side as two <img> in one paragraph. -->
-<p align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="380"/></a></p>
+<!-- one small table PER row instead of one big table with colspan rows --
+     colspan stretched the passport/discord cells to match the wider
+     steam+spotify row, leaving dead space around the (narrower) centered
+     image inside them, and GitHub borders that dead space along with
+     everything else (can't turn it off -- style=/border= get stripped). A
+     table sized to its own single image has no leftover space to border. -->
+<table align="center"><tr><td align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="380"/></a></td></tr></table>
 
-<p align="center">
-<a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="300"/></a>
-<a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="300"/></a>
-</p>
+<table align="center"><tr>
+<td align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="300"/></a></td>
+<td align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="300"/></a></td>
+</tr></table>
 
-<p align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="380" alt="discord"/></a></p>
+<table align="center"><tr><td align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="380" alt="discord"/></a></td></tr></table>
 
 <!-- steam_card.png and spotify_card.png are rebuilt every few hours by
      .github/workflows/update-widgets.yml (scripts/build_steam_card.py and
