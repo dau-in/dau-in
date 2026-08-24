@@ -147,7 +147,7 @@ def render(html_path, tmp_dir, out_path, chrome):
     subprocess.run([
         chrome, '--headless', '--disable-gpu', '--no-sandbox',
         '--force-device-scale-factor=2', '--window-size=400,400',
-        f'--screenshot={raw}', f'file:///{html_path.as_posix()}',
+        '--virtual-time-budget=4000', f'--screenshot={raw}', f'file:///{html_path.as_posix()}',
     ], check=True)
 
     from PIL import Image, ImageChops
