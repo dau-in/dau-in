@@ -62,11 +62,12 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
 
 <p align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="380"/></a></p>
 
-<p align="center"><img src="assets/steam_card.png" width="380"/></p>
+<p align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="380"/></a></p>
 
 <p align="center"><img src="assets/spotify_card.png" width="380"/></p>
+<!-- TODO: wrap in <a href="..."> once Darwin confirms his real open.spotify.com profile URL -->
 
-<p align="center"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&animated=true" width="380" alt="discord"/></p>
+<p align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=off+the+clock%2C+for+now" width="380" alt="discord"/></a></p>
 
 </td></tr></table>
 
