@@ -100,29 +100,29 @@ STEAM_LOGO = '''<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-
 CSS = '''
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 body { background:#000; margin:0; padding:20px; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
-.card { width:320px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:18px 20px; }
-.row { display:flex; align-items:center; gap:12px; }
-.avatar { width:52px; height:52px; border-radius:50%; flex-shrink:0; }
-.name { font-weight:700; font-size:21px; color:#fff; line-height:1.15; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.level { font-size:10px; font-weight:700; color:#a7a0a7; border:1px solid rgba(255,255,255,0.15); border-radius:999px; padding:2px 7px; }
-.meta-row { display:flex; align-items:center; gap:6px; margin-top:2px; }
-.games { font-size:12px; color:#a7a0a7; }
+.card { width:340px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:22px 24px; }
+.row { display:flex; align-items:center; gap:13px; }
+.avatar { width:60px; height:60px; border-radius:50%; flex-shrink:0; }
+.name { font-weight:700; font-size:24px; color:#fff; line-height:1.15; display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+.level { font-size:11px; font-weight:700; color:#a7a0a7; border:1px solid rgba(255,255,255,0.15); border-radius:999px; padding:2px 8px; }
+.meta-row { display:flex; align-items:center; gap:7px; margin-top:3px; }
+.games { font-size:13px; color:#a7a0a7; }
 .dot { font-size:8px; color:#444; }
-.status { font-size:12px; color:#e5e5e5; }
+.status { font-size:13px; color:#e5e5e5; }
 .status-dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px; vertical-align:middle; }
-.divider { height:1px; background:rgba(255,255,255,0.08); margin:14px 0; }
-.hero { display:flex; align-items:baseline; gap:8px; }
-.hero-num { font-size:34px; font-weight:800; color:#fff; line-height:1; }
-.hero-unit { font-size:16px; color:#a7a0a7; }
-.hero-label { font-size:11px; color:#a7a0a7; margin-top:2px; }
-.stat-label { font-size:10px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px; }
-.stat-row { display:flex; align-items:center; gap:10px; }
-.stat-row + .stat-row { margin-top:10px; }
-.stat-img { width:32px; height:32px; border-radius:6px; flex-shrink:0; }
-.stat-name { font-size:13px; color:#e5e5e5; font-weight:600; line-height:1.25; }
-.stat-sub { font-size:11px; color:#a7a0a7; margin-top:1px; }
-.brand { display:flex; align-items:center; justify-content:flex-end; font-size:11px; color:#a7a0a7; margin-top:14px; }
-.brand svg { width:13px; height:13px; }
+.divider { height:1px; background:rgba(255,255,255,0.08); margin:18px 0; }
+.hero { display:flex; align-items:baseline; gap:9px; }
+.hero-num { font-size:42px; font-weight:800; color:#fff; line-height:1; }
+.hero-unit { font-size:18px; color:#a7a0a7; }
+.hero-label { font-size:12px; color:#a7a0a7; margin-top:2px; }
+.stat-label { font-size:11px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:9px; }
+.stat-row { display:flex; align-items:center; gap:11px; }
+.stat-row + .stat-row { margin-top:12px; }
+.stat-img { width:40px; height:40px; border-radius:6px; flex-shrink:0; }
+.stat-name { font-size:15px; color:#e5e5e5; font-weight:600; line-height:1.25; }
+.stat-sub { font-size:12px; color:#a7a0a7; margin-top:2px; }
+.brand { display:flex; align-items:center; justify-content:flex-end; font-size:12px; color:#a7a0a7; margin-top:16px; }
+.brand svg { width:14px; height:14px; }
 '''
 
 
