@@ -129,19 +129,19 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
 
 <tr><td colspan="2" align="center">
 
-<p align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="380"/></a></p>
+<p align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="420"/></a></p>
 
 </td></tr>
 
 <tr>
-<td align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="300"/></a></td>
-<td align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="300"/></a></td>
+<td align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="320"/></a></td>
+<td align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="320"/></a></td>
 </tr>
 
 <tr><td colspan="2" align="center">
 
-<p align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="380" alt="discord"/></a></p>
-<p align="center"><sub>{discord_logo}discord.com/users/780932598922084384</sub></p>
+<p align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="420" alt="discord"/></a></p>
+<p align="center"><sub>{discord_logo}discord.com</sub></p>
 
 </td></tr>
 

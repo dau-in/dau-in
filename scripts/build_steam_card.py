@@ -42,8 +42,16 @@ def fetch_data():
     games_count = owned['response'].get('game_count', len(games))
 
     last_played = None
+    most_played = None
     if games:
         last_played = max(games, key=lambda g: g.get('rtime_last_played', 0))
+        most_played = max(games, key=lambda g: g.get('playtime_forever', 0))
+
+    def icon_url(game):
+        if not game or not game.get('img_icon_url'):
+            return None
+        return (f"https://media.steampowered.com/steamcommunity/public/images/apps/"
+                f"{game['appid']}/{game['img_icon_url']}.jpg")
 
     return {
         'persona_name': player['personaname'],
@@ -51,10 +59,10 @@ def fetch_data():
         'level': player_level,
         'games_count': games_count,
         'last_played_name': last_played['name'] if last_played else None,
-        'last_played_icon_url': (
-            f"https://media.steampowered.com/steamcommunity/public/images/apps/"
-            f"{last_played['appid']}/{last_played['img_icon_url']}.jpg"
-        ) if last_played and last_played.get('img_icon_url') else None,
+        'last_played_icon_url': icon_url(last_played),
+        'most_played_name': most_played['name'] if most_played else None,
+        'most_played_hours': round(most_played['playtime_forever'] / 60) if most_played else None,
+        'most_played_icon_url': icon_url(most_played),
     }
 
 
@@ -66,8 +74,9 @@ STEAM_LOGO = '''<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-
 <path d="M11.979 0C5.678 0 0.511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.591 1.912-.591.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.505 2.038-4.543 4.543-4.543 2.505 0 4.543 2.039 4.543 4.545 0 2.506-2.038 4.545-4.543 4.545h-.101l-4.076 2.909c.001.053.003.106.003.159 0 1.9-1.544 3.444-3.444 3.444-1.669 0-3.061-1.19-3.379-2.766l-4.6-1.902C1.547 19.298 6.242 24 11.979 24c6.626 0 11.999-5.373 11.999-12S18.605 0 11.979 0zM7.54 18.21l-1.473-.61c.262.542.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.398.957-1.497 1.41-2.454 1.012zm11.415-9.303c0-1.665-1.353-3.017-3.015-3.017-1.665 0-3.015 1.353-3.015 3.017 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273-.005c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.253 0-2.265-1.014-2.265-2.265z"/>
 </svg>'''
 
-# designed natively at this size -- sits side-by-side with the spotify card, sized
-# up per Darwin's feedback so the pair reads as a bigger, more prominent block.
+# designed natively at this size -- sits side-by-side with the spotify card. Sized
+# up (and given a second stat row, "most played") per Darwin's feedback, both to
+# read bigger and to match spotify's card height/content structure more closely.
 CSS = '''
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 body { background:#000; margin:0; padding:20px; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
@@ -78,26 +87,39 @@ body { background:#000; margin:0; padding:20px; font-family:Inter,-apple-system,
 .level { font-size:10px; font-weight:700; color:#a7a0a7; border:1px solid rgba(255,255,255,0.15); border-radius:999px; padding:2px 7px; }
 .games { font-size:12px; color:#a7a0a7; margin-top:2px; }
 .divider { height:1px; background:rgba(255,255,255,0.08); margin:14px 0; }
-.last-label { font-size:10px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px; }
-.last-row { display:flex; align-items:center; gap:10px; }
-.last-icon { width:36px; height:36px; border-radius:6px; flex-shrink:0; }
-.last-name { font-size:14px; color:#e5e5e5; font-weight:600; line-height:1.25; }
+.stat-label { font-size:10px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px; }
+.stat-row { display:flex; align-items:center; gap:10px; }
+.stat-row + .stat-row { margin-top:14px; }
+.stat-img { width:36px; height:36px; border-radius:6px; flex-shrink:0; }
+.stat-name { font-size:14px; color:#e5e5e5; font-weight:600; line-height:1.25; }
+.stat-sub { font-size:11px; color:#a7a0a7; margin-top:1px; }
 .brand { display:flex; align-items:center; justify-content:flex-end; font-size:11px; color:#a7a0a7; margin-top:14px; }
 .brand svg { width:13px; height:13px; }
 '''
 
 
-def build_html(data, avatar_b64, icon_b64):
-    last_played_block = ''
-    if data['last_played_name']:
-        icon_tag = f'<img class="last-icon" src="data:image/jpeg;base64,{icon_b64}"/>' if icon_b64 else ''
-        last_played_block = f'''
-<div class="divider"></div>
-<div class="last-label">last played</div>
-<div class="last-row">
+def build_html(data, avatar_b64, last_icon_b64, most_icon_b64):
+    stats_block = ''
+    if data['most_played_name'] or data['last_played_name']:
+        parts = ['<div class="divider"></div>']
+        if data['most_played_name']:
+            icon_tag = f'<img class="stat-img" src="data:image/jpeg;base64,{most_icon_b64}"/>' if most_icon_b64 else '<div class="stat-img"></div>'
+            parts.append(f'''<div class="stat-label">most played</div>
+<div class="stat-row">
 {icon_tag}
-<div class="last-name">{data['last_played_name']}</div>
-</div>'''
+<div>
+<div class="stat-name">{data['most_played_name']}</div>
+<div class="stat-sub">{data['most_played_hours']}h total</div>
+</div>
+</div>''')
+        if data['last_played_name']:
+            icon_tag = f'<img class="stat-img" src="data:image/jpeg;base64,{last_icon_b64}"/>' if last_icon_b64 else '<div class="stat-img"></div>'
+            parts.append(f'''<div class="stat-label" style="margin-top:16px;">last played</div>
+<div class="stat-row">
+{icon_tag}
+<div class="stat-name">{data['last_played_name']}</div>
+</div>''')
+        stats_block = '\n'.join(parts)
 
     return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body>
 <div class="card">
@@ -108,7 +130,7 @@ def build_html(data, avatar_b64, icon_b64):
 <div class="games">{data['games_count']} games in library</div>
 </div>
 </div>
-{last_played_block}
+{stats_block}
 <div class="brand">{STEAM_LOGO}steamcommunity.com/id/dauin</div>
 </div>
 </body></html>'''
@@ -132,7 +154,7 @@ def render(html_path, tmp_dir, out_path, chrome):
     subprocess.run([
         chrome, '--headless', '--disable-gpu', '--no-sandbox',
         '--force-device-scale-factor=2', '--window-size=400,340',
-        f'--screenshot={raw}', f'file:///{html_path.as_posix()}',
+        '--virtual-time-budget=4000', f'--screenshot={raw}', f'file:///{html_path.as_posix()}',
     ], check=True)
 
     from PIL import Image, ImageChops
@@ -159,14 +181,18 @@ def main():
         download(data['avatar_url'], avatar_path)
         avatar_b64 = base64.b64encode(avatar_path.read_bytes()).decode()
 
-        icon_b64 = None
-        if data['last_played_icon_url']:
-            icon_path = tmp / 'icon.jpg'
-            download(data['last_played_icon_url'], icon_path)
-            icon_b64 = base64.b64encode(icon_path.read_bytes()).decode()
+        def maybe_download(url, name):
+            if not url:
+                return None
+            p = tmp / name
+            download(url, p)
+            return base64.b64encode(p.read_bytes()).decode()
+
+        last_icon_b64 = maybe_download(data['last_played_icon_url'], 'last.jpg')
+        most_icon_b64 = maybe_download(data['most_played_icon_url'], 'most.jpg')
 
         html_path = tmp / 'card.html'
-        html_path.write_text(build_html(data, avatar_b64, icon_b64), encoding='utf-8')
+        html_path.write_text(build_html(data, avatar_b64, last_icon_b64, most_icon_b64), encoding='utf-8')
 
         out_path = HERE.parent / 'assets' / 'steam_card.png'
         render(html_path, tmp, out_path, find_chrome())
