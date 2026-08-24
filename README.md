@@ -70,8 +70,8 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
 </td></tr>
 
 <tr>
-<td align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="320"/></a></td>
-<td align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="320"/></a></td>
+<td align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="340"/></a></td>
+<td align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="340"/></a></td>
 </tr>
 
 <tr><td colspan="2" align="center">
