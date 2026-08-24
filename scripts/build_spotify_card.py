@@ -1,7 +1,8 @@
 """
-Builds assets/spotify_card.png from live Spotify data: top artist + genre (all-time,
-time_range=long_term), top 5 tracks this month (time_range=short_term, ~4 weeks),
-and the single most recently played track.
+Builds assets/spotify_card.png from live Spotify data: top artist + genre (last 6
+months, time_range=medium_term -- long_term/all-time felt too static since taste
+changes), top 5 tracks this month (time_range=short_term, ~4 weeks), and the single
+most recently played track with a relative "how long ago".
 
 Requires SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN in the
 environment (see spotify_auth.py for the one-time OAuth setup). The refresh token
@@ -14,7 +15,28 @@ import shutil
 import subprocess
 import sys
 import urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
+
+
+def time_ago(iso_ts):
+    for fmt in ('%Y-%m-%dT%H:%M:%S.%fZ', '%Y-%m-%dT%H:%M:%SZ'):
+        try:
+            then = datetime.strptime(iso_ts, fmt).replace(tzinfo=timezone.utc)
+            break
+        except ValueError:
+            continue
+    else:
+        return ''
+    delta = datetime.now(timezone.utc) - then
+    minutes = delta.total_seconds() / 60
+    if minutes < 60:
+        return f'{max(round(minutes), 1)}m ago'
+    hours = minutes / 60
+    if hours < 24:
+        return f'{round(hours)}h ago'
+    days = hours / 24
+    return f'{round(days)}d ago'
 
 HERE = Path(__file__).parent
 CLIENT_ID = os.environ['SPOTIFY_CLIENT_ID']
@@ -49,13 +71,14 @@ def fetch_data():
     token = get_access_token()
 
     me = spotify_get('/me', token)
-    top_artists = spotify_get('/me/top/artists?time_range=long_term&limit=1', token)
+    top_artists = spotify_get('/me/top/artists?time_range=medium_term&limit=1', token)
     top_tracks = spotify_get('/me/top/tracks?time_range=short_term&limit=5', token)
     recent = spotify_get('/me/player/recently-played?limit=1', token)
 
     artist = top_artists['items'][0] if top_artists.get('items') else None
     tracks = top_tracks.get('items', [])
-    last = recent['items'][0]['track'] if recent and recent.get('items') else None
+    last_item = recent['items'][0] if recent and recent.get('items') else None
+    last = last_item['track'] if last_item else None
 
     return {
         'display_name': me.get('display_name') or 'me',
@@ -74,6 +97,7 @@ def fetch_data():
         'last_track_name': last['name'] if last else None,
         'last_track_artist': ', '.join(a['name'] for a in last['artists']) if last else None,
         'last_track_img': last['album']['images'][0]['url'] if last and last['album'].get('images') else None,
+        'last_track_ago': time_ago(last_item['played_at']) if last_item else None,
     }
 
 
@@ -117,7 +141,7 @@ def build_html(data, avatar_b64, artist_img_b64, track_imgs_b64, last_img_b64):
         sub = f'<div class="stat-sub">{data["genre"]}</div>' if data['genre'] else ''
         artist_block = f'''
 <div class="divider"></div>
-<div class="stat-label">top artist &middot; all time</div>
+<div class="stat-label">top artist &middot; 6 months</div>
 <div class="stat-row">
 {icon_tag}
 <div>
@@ -147,6 +171,7 @@ def build_html(data, avatar_b64, artist_img_b64, track_imgs_b64, last_img_b64):
     last_block = ''
     if data['last_track_name']:
         icon_tag = f'<img class="stat-img" src="data:image/jpeg;base64,{last_img_b64}"/>' if last_img_b64 else '<div class="stat-img"></div>'
+        ago = f' &middot; {data["last_track_ago"]}' if data.get('last_track_ago') else ''
         last_block = f'''
 <div class="divider"></div>
 <div class="stat-label">last played</div>
@@ -154,7 +179,7 @@ def build_html(data, avatar_b64, artist_img_b64, track_imgs_b64, last_img_b64):
 {icon_tag}
 <div>
 <div class="stat-name">{data['last_track_name']}</div>
-<div class="stat-sub">{data['last_track_artist']}</div>
+<div class="stat-sub">{data['last_track_artist']}{ago}</div>
 </div>
 </div>'''
 

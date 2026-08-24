@@ -68,6 +68,7 @@ def fetch_data():
 
     most_played = max(games, key=lambda g: g.get('playtime_forever', 0)) if games else None
     recent = sorted(games, key=lambda g: g.get('rtime_last_played', 0), reverse=True)[:3] if games else []
+    hours_2weeks_total = round(sum(g.get('playtime_2weeks', 0) for g in games) / 60, 1)
 
     status_text, status_color = STATUS_MAP.get(player.get('personastate', 0), STATUS_MAP[0])
 
@@ -78,14 +79,11 @@ def fetch_data():
         'games_count': games_count,
         'status_text': status_text,
         'status_color': status_color,
+        'hours_2weeks_total': hours_2weeks_total,
         'most_played_name': most_played['name'] if most_played else None,
         'most_played_icon_url': icon_url(most_played),
         'recent': [
-            {
-                'name': g['name'],
-                'icon_url': icon_url(g),
-                'hours_2weeks': round(g.get('playtime_2weeks', 0) / 60, 1),
-            }
+            {'name': g['name'], 'icon_url': icon_url(g)}
             for g in recent
         ],
     }
@@ -110,9 +108,13 @@ body { background:#000; margin:0; padding:20px; font-family:Inter,-apple-system,
 .meta-row { display:flex; align-items:center; gap:6px; margin-top:2px; }
 .games { font-size:12px; color:#a7a0a7; }
 .dot { font-size:8px; color:#444; }
-.status { font-size:12px; }
+.status { font-size:12px; color:#e5e5e5; }
 .status-dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px; vertical-align:middle; }
 .divider { height:1px; background:rgba(255,255,255,0.08); margin:14px 0; }
+.hero { display:flex; align-items:baseline; gap:8px; }
+.hero-num { font-size:34px; font-weight:800; color:#fff; line-height:1; }
+.hero-unit { font-size:16px; color:#a7a0a7; }
+.hero-label { font-size:11px; color:#a7a0a7; margin-top:2px; }
 .stat-label { font-size:10px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px; }
 .stat-row { display:flex; align-items:center; gap:10px; }
 .stat-row + .stat-row { margin-top:10px; }
@@ -141,19 +143,23 @@ def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
         rows = []
         for g, icon_b64 in zip(data['recent'], recent_icons_b64):
             icon_tag = f'<img class="stat-img" src="data:image/jpeg;base64,{icon_b64}"/>' if icon_b64 else '<div class="stat-img"></div>'
-            hours = g['hours_2weeks']
-            sub = f'{hours}h last 2 weeks' if hours else 'no playtime last 2 weeks'
             rows.append(f'''<div class="stat-row">
 {icon_tag}
-<div>
 <div class="stat-name">{g['name']}</div>
-<div class="stat-sub">{sub}</div>
-</div>
 </div>''')
         recent_block = f'''
 <div class="divider"></div>
 <div class="stat-label">recently played</div>
 ''' + '\n'.join(rows)
+
+    hero_block = ''
+    if data['hours_2weeks_total']:
+        hero_block = f'''
+<div class="divider"></div>
+<div class="hero">
+<div class="hero-num">{data['hours_2weeks_total']}<span class="hero-unit">h</span></div>
+<div class="hero-label">played in the last 2 weeks</div>
+</div>'''
 
     return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body>
 <div class="card">
@@ -168,6 +174,7 @@ def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
 </div>
 </div>
 </div>
+{hero_block}
 {most_block}
 {recent_block}
 <div class="brand">{STEAM_LOGO}steamcommunity.com/id/dauin</div>
