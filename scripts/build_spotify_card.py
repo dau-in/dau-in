@@ -114,19 +114,19 @@ CSS = '''
 body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
 .card { width:340px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 22px; }
 .row { display:flex; align-items:center; gap:12px; }
-.avatar { width:56px; height:56px; border-radius:50%; object-fit:cover; background:#222; flex-shrink:0; }
+.avatar { width:64px; height:64px; border-radius:50%; object-fit:cover; background:#222; flex-shrink:0; }
 .name { font-weight:700; font-size:22px; color:#fff; line-height:1.15; }
 .divider { height:1px; background:rgba(255,255,255,0.08); margin:16px 0; }
 .stat-label { font-size:11px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:9px; }
 .stat-row { display:flex; align-items:center; gap:11px; }
 .stat-row + .stat-row { margin-top:11px; }
-.stat-img { width:36px; height:36px; border-radius:6px; object-fit:cover; background:#222; flex-shrink:0; }
+.stat-img { width:46px; height:46px; border-radius:6px; object-fit:cover; background:#222; flex-shrink:0; }
 .stat-name { font-size:14px; color:#e5e5e5; font-weight:600; line-height:1.25; }
 .stat-sub { font-size:12px; color:#a7a0a7; margin-top:2px; }
 .rank-row { display:flex; align-items:center; gap:10px; }
 .rank-row + .rank-row { margin-top:10px; }
 .rank-num { font-size:13px; color:#555; font-weight:700; width:16px; flex-shrink:0; text-align:center; }
-.rank-img { width:30px; height:30px; border-radius:5px; object-fit:cover; background:#222; flex-shrink:0; }
+.rank-img { width:38px; height:38px; border-radius:5px; object-fit:cover; background:#222; flex-shrink:0; }
 .rank-name { font-size:13px; color:#e5e5e5; font-weight:600; line-height:1.2; }
 .rank-sub { font-size:11px; color:#777; line-height:1.2; margin-top:1px; }
 .brand { display:flex; align-items:center; justify-content:flex-end; font-size:12px; color:#a7a0a7; margin-top:16px; }
@@ -214,7 +214,7 @@ def render(html_path, tmp_dir, out_path, chrome):
     raw = tmp_dir / 'raw.png'
     subprocess.run([
         chrome, '--headless', '--disable-gpu', '--no-sandbox',
-        '--force-device-scale-factor=2', '--window-size=400,950',
+        '--force-device-scale-factor=2', '--window-size=460,950',
         '--virtual-time-budget=4000', f'--screenshot={raw}', f'file:///{html_path.as_posix()}',
     ], check=True)
 

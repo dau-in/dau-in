@@ -102,7 +102,7 @@ CSS = '''
 body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
 .card { width:340px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:22px 24px; }
 .row { display:flex; align-items:center; gap:13px; }
-.avatar { width:60px; height:60px; border-radius:50%; flex-shrink:0; }
+.avatar { width:68px; height:68px; border-radius:50%; flex-shrink:0; }
 .name { font-weight:700; font-size:24px; color:#fff; line-height:1.15; display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
 .level { font-size:11px; font-weight:700; color:#a7a0a7; border:1px solid rgba(255,255,255,0.15); border-radius:999px; padding:2px 8px; }
 .meta-row { display:flex; align-items:center; gap:7px; margin-top:3px; }
@@ -118,7 +118,7 @@ body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Int
 .stat-label { font-size:11px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:9px; }
 .stat-row { display:flex; align-items:center; gap:11px; }
 .stat-row + .stat-row { margin-top:12px; }
-.stat-img { width:40px; height:40px; border-radius:6px; flex-shrink:0; }
+.stat-img { width:50px; height:50px; border-radius:6px; flex-shrink:0; }
 .stat-name { font-size:15px; color:#e5e5e5; font-weight:600; line-height:1.25; }
 .stat-sub { font-size:12px; color:#a7a0a7; margin-top:2px; }
 .brand { display:flex; align-items:center; justify-content:flex-end; font-size:12px; color:#a7a0a7; margin-top:16px; }
@@ -181,7 +181,7 @@ def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
      card (which naturally has more content blocks: 7 vs steam's 4) so the pair
      reads as roughly the same size side by side. Recalculated by measuring both
      cards' actual rendered heights; may need retuning if content wraps longer. -->
-<div style="height:54px;"></div>
+<div style="height:66px;"></div>
 <div class="brand">{STEAM_LOGO}steamcommunity.com/id/dauin</div>
 </div>
 </body></html>'''
@@ -204,7 +204,7 @@ def render(html_path, tmp_dir, out_path, chrome):
     raw = tmp_dir / 'raw.png'
     subprocess.run([
         chrome, '--headless', '--disable-gpu', '--no-sandbox',
-        '--force-device-scale-factor=2', '--window-size=400,900',
+        '--force-device-scale-factor=2', '--window-size=460,900',
         '--virtual-time-budget=4000', f'--screenshot={raw}', f'file:///{html_path.as_posix()}',
     ], check=True)
 
