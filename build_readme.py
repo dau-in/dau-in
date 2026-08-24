@@ -38,12 +38,6 @@ def sep():
 
 name_banner = strip_blank_lines(pyfiglet.figlet_format('DAUIN', font='thin'))
 
-typing_url = ('https://readme-typing-svg.demolab.com?font=JetBrains+Mono&pause=1200'
-              '&color=8B949E&center=true&vCenter=true&width=380&height=30'
-              '&lines=still+typing+this+myself%2C+mostly;'
-              'still+figuring+it+out;'
-              'still+here%2C+still+terminal-pilled')
-
 # pure ASCII icons -- guaranteed identical width on every monospace font, on every OS.
 # no more unicode glyphs in box-drawn content: this is what was breaking alignment on
 # Darwin's own machine (different fallback font than the one this was tested against).
@@ -70,7 +64,10 @@ discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '&idleMessage=bored%2C+for+now&showDisplayName=true')
 
 
-readme = f'''<p align="center"><img src="{typing_url}" width="380" alt="typing"/></p>
+# typing.png is a self-built animated APNG (scripts/build_typing_png.py),
+# not the old readme-typing-svg widget -- that service only accepts Google
+# Fonts, and Departure Mono (the pixel font here) isn't on Google Fonts.
+readme = f'''<p align="center"><img src="assets/typing.png" width="380" alt="typing"/></p>
 
 <table align="center"><tr>
 <td><img width="150" src="assets/section1_photos.gif"/></td>
