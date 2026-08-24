@@ -1,4 +1,4 @@
-<p align="center"><img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&pause=1200&color=8B949E&center=true&vCenter=true&width=380&height=30&lines=still+typing+this+myself%2C+mostly;still+figuring+it+out;still+here%2C+still+terminal-pilled" width="380" alt="typing"/></p>
+<p align="center"><img src="assets/typing.png" width="380" alt="typing"/></p>
 
 <table align="center"><tr>
 <td><img width="150" src="assets/section1_photos.gif"/></td>
