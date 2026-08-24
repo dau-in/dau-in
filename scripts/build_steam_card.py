@@ -66,21 +66,25 @@ STEAM_LOGO = '''<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-
 <path d="M11.979 0C5.678 0 0.511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.591 1.912-.591.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.505 2.038-4.543 4.543-4.543 2.505 0 4.543 2.039 4.543 4.545 0 2.506-2.038 4.545-4.543 4.545h-.101l-4.076 2.909c.001.053.003.106.003.159 0 1.9-1.544 3.444-3.444 3.444-1.669 0-3.061-1.19-3.379-2.766l-4.6-1.902C1.547 19.298 6.242 24 11.979 24c6.626 0 11.999-5.373 11.999-12S18.605 0 11.979 0zM7.54 18.21l-1.473-.61c.262.542.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.398.957-1.497 1.41-2.454 1.012zm11.415-9.303c0-1.665-1.353-3.017-3.015-3.017-1.665 0-3.015 1.353-3.015 3.017 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273-.005c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.253 0-2.265-1.014-2.265-2.265z"/>
 </svg>'''
 
+# designed natively compact (not a shrunk-down version of a wider card) -- this
+# card sits side-by-side with the spotify one at a narrow display width, so its
+# own font sizes need to already read fine around 250-260px wide.
 CSS = '''
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,500,600,700;1,400&display=swap');
 body { background:#000; margin:0; padding:20px; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
-.card { width:420px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:18px 20px; }
-.row { display:flex; align-items:center; gap:14px; }
-.avatar { width:56px; height:56px; border-radius:50%; }
-.name { font-weight:700; font-size:22px; color:#fff; line-height:1.1; display:flex; align-items:center; gap:8px; }
-.level { font-size:11px; font-weight:700; color:#a7a0a7; border:1px solid rgba(255,255,255,0.15); border-radius:999px; padding:2px 8px; }
-.games { font-size:13px; color:#a7a0a7; margin-top:2px; }
-.divider { height:1px; background:rgba(255,255,255,0.08); margin:14px 0; }
-.last-label { font-size:11px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px; }
-.last-row { display:flex; align-items:center; gap:12px; }
-.last-icon { width:40px; height:40px; border-radius:6px; }
-.last-name { font-size:14px; color:#e5e5e5; font-weight:500; }
-.brand { display:flex; align-items:center; justify-content:flex-end; font-size:12px; color:#a7a0a7; margin-top:16px; }
+.card { width:260px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px 16px; }
+.row { display:flex; align-items:center; gap:10px; }
+.avatar { width:42px; height:42px; border-radius:50%; flex-shrink:0; }
+.name { font-weight:700; font-size:17px; color:#fff; line-height:1.15; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.level { font-size:9px; font-weight:700; color:#a7a0a7; border:1px solid rgba(255,255,255,0.15); border-radius:999px; padding:1px 6px; }
+.games { font-size:11px; color:#a7a0a7; margin-top:2px; }
+.divider { height:1px; background:rgba(255,255,255,0.08); margin:12px 0; }
+.last-label { font-size:9px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:7px; }
+.last-row { display:flex; align-items:center; gap:8px; }
+.last-icon { width:30px; height:30px; border-radius:5px; flex-shrink:0; }
+.last-name { font-size:12px; color:#e5e5e5; font-weight:600; line-height:1.25; }
+.brand { display:flex; align-items:center; justify-content:flex-end; font-size:10px; color:#a7a0a7; margin-top:12px; }
+.brand svg { width:12px; height:12px; }
 '''
 
 
@@ -128,7 +132,7 @@ def render(html_path, tmp_dir, out_path, chrome):
     raw = tmp_dir / 'raw.png'
     subprocess.run([
         chrome, '--headless', '--disable-gpu', '--no-sandbox',
-        '--force-device-scale-factor=2', '--window-size=560,340',
+        '--force-device-scale-factor=2', '--window-size=340,280',
         f'--screenshot={raw}', f'file:///{html_path.as_posix()}',
     ], check=True)
 
