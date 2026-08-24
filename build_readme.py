@@ -69,13 +69,6 @@ discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
                '&idleMessage=bored%2C+for+now&showDisplayName=true')
 
-# Lanyard's widget has no logo/brand mark of its own (unlike the steam/spotify
-# cards, which are ours and show their own in-card branding) -- add one below it,
-# same small-muted-caption style, so it's identifiable as Discord at a glance.
-# NOTE: a raw inline <svg> here gets silently stripped by GitHub's markdown
-# sanitizer (unlike <img>, which is always safe) -- that's why this is a small
-# rasterized PNG instead, same as every other icon in this README.
-discord_logo = '<img src="assets/discord_logo.png" width="13" align="absmiddle"/> '
 
 readme = f'''<p align="center"><img src="{typing_url}" width="380" alt="typing"/></p>
 
@@ -141,7 +134,6 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
 <tr><td colspan="2" align="center">
 
 <p align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="420" alt="discord"/></a></p>
-<p align="center"><sub>{discord_logo}discord.com</sub></p>
 
 </td></tr>
 

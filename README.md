@@ -77,7 +77,6 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
 <tr><td colspan="2" align="center">
 
 <p align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="420" alt="discord"/></a></p>
-<p align="center"><sub><img src="assets/discord_logo.png" width="13" align="absmiddle"/> discord.com</sub></p>
 
 </td></tr>
 
