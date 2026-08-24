@@ -1,4 +1,4 @@
-<p align="center"><img src="https://readme-typing-svg.demolab.com?font=Cutive+Mono&pause=1200&color=8B949E&center=true&vCenter=true&width=380&height=30&lines=still+typing+this+myself%2C+mostly;still+figuring+it+out;still+here%2C+still+terminal-pilled" width="380" alt="typing"/></p>
+<p align="center"><img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&pause=1200&color=8B949E&center=true&vCenter=true&width=380&height=30&lines=still+typing+this+myself%2C+mostly;still+figuring+it+out;still+here%2C+still+terminal-pilled" width="380" alt="typing"/></p>
 
 <table align="center"><tr>
 <td><img width="150" src="assets/section1_photos.gif"/></td>
@@ -58,29 +58,18 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
 
 <p align="center">∴ off the clock: games, music, and a terminal that never quite closes — full taste below ↓</p>
 
-<!-- single flat table, no nesting -- a table-within-a-table is what broke images
-     on the GitHub mobile app before (see commit 8325169); colspan avoids that
-     entirely while still mixing full-width rows with a 2-column row. -->
-<table align="center">
-
-<tr><td colspan="2" align="center">
-
+<!-- no <table> here on purpose -- GitHub's markdown CSS puts a visible 1px
+     border on every td, and since it strips style=/border= attributes there's
+     no way to turn it off from inside a table. plain <p> blocks have no such
+     border; steam+spotify sit side by side as two <img> in one paragraph. -->
 <p align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="420"/></a></p>
 
-</td></tr>
-
-<tr>
-<td align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="340"/></a></td>
-<td align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="340"/></a></td>
-</tr>
-
-<tr><td colspan="2" align="center">
+<p align="center">
+<a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="340"/></a>
+<a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="340"/></a>
+</p>
 
 <p align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="420" alt="discord"/></a></p>
-
-</td></tr>
-
-</table>
 
 <!-- steam_card.png and spotify_card.png are rebuilt every few hours by
      .github/workflows/update-widgets.yml (scripts/build_steam_card.py and
