@@ -114,6 +114,16 @@ def build_variant(css, out_path, chrome, tmp):
             durations.append(30)
         durations[-1] = 150  # brief pause on empty before the next line
 
+    # Plain markdown ![]() image syntax is what actually gets GitHub's
+    # #gh-dark-mode-only / #gh-light-mode-only theme-swap treatment -- a raw
+    # HTML <img src="...#gh-dark-mode-only"> does NOT (confirmed by fetching
+    # the rendered page: no picture wrap, no hiding class, both shown at
+    # once). Markdown image syntax has no width= to scale a 2x render back
+    # down, so instead we render at 2x for antialiasing quality and then
+    # downscale the frames here -- the file's own pixel width ends up being
+    # the actual display width, no HTML-side scaling needed.
+    frames = [f.resize((f.width // 2, f.height // 2), Image.LANCZOS) for f in frames]
+
     # disposal=0 (APNG_DISPOSE_OP_NONE): each of our frames is a complete,
     # independent screenshot, not a hand-computed delta -- Pillow's own APNG
     # writer diffs consecutive frames into a minimal patch + bbox for us.

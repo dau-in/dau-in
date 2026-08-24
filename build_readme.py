@@ -68,11 +68,17 @@ discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
 # not the old readme-typing-svg widget -- that service only accepts Google
 # Fonts, and Departure Mono (the pixel font here) isn't on Google Fonts. Two
 # variants (near-white text / near-black text, no drop shadow on either)
-# because one color can't read well on both GitHub themes; the #gh-*-mode-only
-# fragments are GitHub's own convention for swapping images by site theme.
+# because one color can't read well on both GitHub themes. The #gh-*-mode-only
+# swap only works through markdown ![]() image syntax, not raw <img> tags --
+# confirmed by fetching the rendered page, a plain <img src="...#gh-dark-mode-only">
+# just shows both, unhidden -- so this needs blank lines to drop out of the
+# surrounding HTML block and be parsed as markdown, and can't take a width=
+# (the files are already baked out at their intended display size instead).
 readme = f'''<p align="center">
-<img src="assets/typing_dark.png#gh-dark-mode-only" width="380" alt="typing"/>
-<img src="assets/typing_light.png#gh-light-mode-only" width="380" alt="typing"/>
+
+![typing](assets/typing_dark.png#gh-dark-mode-only)
+![typing](assets/typing_light.png#gh-light-mode-only)
+
 </p>
 
 <table align="center"><tr>

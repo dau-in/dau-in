@@ -1,6 +1,8 @@
 <p align="center">
-<img src="assets/typing_dark.png#gh-dark-mode-only" width="380" alt="typing"/>
-<img src="assets/typing_light.png#gh-light-mode-only" width="380" alt="typing"/>
+
+![typing](assets/typing_dark.png#gh-dark-mode-only)
+![typing](assets/typing_light.png#gh-light-mode-only)
+
 </p>
 
 <table align="center"><tr>
