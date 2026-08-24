@@ -101,7 +101,7 @@ def build_html(data, avatar_b64, icon_b64):
 <div class="row">
 <img class="avatar" src="data:image/png;base64,{avatar_b64}"/>
 <div>
-<div class="name">{data['persona_name']} <span class="level">Lv. {data['level']}</span></div>
+<div class="name">𝓓` <span class="level">Lv. {data['level']}</span></div>
 <div class="games">{data['games_count']} games in library</div>
 </div>
 </div>
