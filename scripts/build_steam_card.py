@@ -99,7 +99,7 @@ STEAM_LOGO = '''<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-
 
 CSS = '''
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
-body { background:#000; margin:0; padding:20px; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
+body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
 .card { width:340px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:22px 24px; }
 .row { display:flex; align-items:center; gap:13px; }
 .avatar { width:60px; height:60px; border-radius:50%; flex-shrink:0; }
