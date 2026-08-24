@@ -100,7 +100,7 @@ STEAM_LOGO = '''<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-
 CSS = '''
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
-.card { width:340px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:22px 24px; }
+.card { width:340px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 22px; }
 .row { display:flex; align-items:center; gap:13px; }
 .avatar { width:68px; height:68px; border-radius:50%; flex-shrink:0; }
 .name { font-weight:700; font-size:24px; color:#fff; line-height:1.15; display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
@@ -181,7 +181,7 @@ def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
      card (which naturally has more content blocks: 7 vs steam's 4) so the pair
      reads as roughly the same size side by side. Recalculated by measuring both
      cards' actual rendered heights; may need retuning if content wraps longer. -->
-<div style="height:66px;"></div>
+<div style="height:70px;"></div>
 <div class="brand">{STEAM_LOGO}steamcommunity.com/id/dauin</div>
 </div>
 </body></html>'''

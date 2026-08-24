@@ -64,13 +64,19 @@ discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '&idleMessage=bored%2C+for+now&showDisplayName=true')
 
 
-# typing.png is a self-built animated APNG (scripts/build_typing_png.py),
+# typing_dark/light.png are self-built animated APNGs (scripts/build_typing_png.py),
 # not the old readme-typing-svg widget -- that service only accepts Google
-# Fonts, and Departure Mono (the pixel font here) isn't on Google Fonts.
-readme = f'''<p align="center"><img src="assets/typing.png" width="380" alt="typing"/></p>
+# Fonts, and Departure Mono (the pixel font here) isn't on Google Fonts. Two
+# variants (near-white text / near-black text, no drop shadow on either)
+# because one color can't read well on both GitHub themes; the #gh-*-mode-only
+# fragments are GitHub's own convention for swapping images by site theme.
+readme = f'''<p align="center">
+<img src="assets/typing_dark.png#gh-dark-mode-only" width="380" alt="typing"/>
+<img src="assets/typing_light.png#gh-light-mode-only" width="380" alt="typing"/>
+</p>
 
 <table align="center"><tr>
-<td><img width="150" src="assets/section1_photos.gif"/></td>
+<td><img width="180" src="assets/section1_photos.gif"/></td>
 <td align="center" valign="middle">
 
 ```
@@ -93,7 +99,7 @@ readme = f'''<p align="center"><img src="assets/typing.png" width="380" alt="typ
 {sep()}
 
 <table align="center"><tr>
-<td><img src="assets/section2_photos_v2.gif" width="150"/></td>
+<td><img src="assets/section2_photos_v2.gif" width="180"/></td>
 <td valign="top">
 
 **channel-3** &nbsp; <code>soon</code><br>
@@ -116,14 +122,14 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
      border on every td, and since it strips style=/border= attributes there's
      no way to turn it off from inside a table. plain <p> blocks have no such
      border; steam+spotify sit side by side as two <img> in one paragraph. -->
-<p align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="420"/></a></p>
+<p align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="380"/></a></p>
 
 <p align="center">
-<a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="340"/></a>
-<a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="340"/></a>
+<a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="300"/></a>
+<a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="300"/></a>
 </p>
 
-<p align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="420" alt="discord"/></a></p>
+<p align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="380" alt="discord"/></a></p>
 
 <!-- steam_card.png and spotify_card.png are rebuilt every few hours by
      .github/workflows/update-widgets.yml (scripts/build_steam_card.py and
