@@ -177,6 +177,11 @@ def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
 {hero_block}
 {most_block}
 {recent_block}
+<!-- fixed spacer, not fake content -- closes the height gap against the spotify
+     card (which naturally has more content blocks: 7 vs steam's 4) so the pair
+     reads as roughly the same size side by side. Recalculated by measuring both
+     cards' actual rendered heights; may need retuning if content wraps longer. -->
+<div style="height:150px;"></div>
 <div class="brand">{STEAM_LOGO}steamcommunity.com/id/dauin</div>
 </div>
 </body></html>'''
