@@ -67,7 +67,7 @@ whoami_box = box('whoami.txt', whoami_groups)
 
 discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
-               '&idleMessage=bored%2C+for+now')
+               '&idleMessage=bored%2C+for+now&showDisplayName=true')
 
 readme = f'''<p align="center"><img src="{typing_url}" width="380" alt="typing"/></p>
 
@@ -128,8 +128,8 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
 <tr><td colspan="2" align="center"><sub>· steam · spotify ·</sub></td></tr>
 
 <tr>
-<td align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="183"/></a></td>
-<td align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="183"/></a></td>
+<td align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="230"/></a></td>
+<td align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="230"/></a></td>
 </tr>
 
 <tr><td colspan="2" align="center"><sub>· discord ·</sub></td></tr>
