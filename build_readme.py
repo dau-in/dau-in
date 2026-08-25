@@ -136,14 +136,16 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
      though: a 100%-wide colspan cell pulls the auto table-layout algorithm
      into inflating steam/spotify's columns to match it, leaving *them* with
      dead space instead (checked live -- td grew to 423px around a still-300px
-     img). Pinning width= directly on the steam/spotify <td>s (327, their own
-     natural size at width=300 -- measured live) holds that column fixed
-     regardless of what the colspan row asks for. -->
+     img). Pinning width= directly on the steam/spotify <td>s (their own
+     natural size at whatever width= the two images are set to, +27 for
+     GitHub's fixed td padding/border) holds that column fixed regardless of
+     what the colspan row asks for; passport/discord's 100% then rides along
+     with it automatically since they fill whatever this row ends up being. -->
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
 <tr>
-<td width="327" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="300"/></a></td>
-<td width="327" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="300"/></a></td>
+<td width="277" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="250"/></a></td>
+<td width="277" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="250"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="100%" alt="discord"/></a></td></tr>
 </table>
