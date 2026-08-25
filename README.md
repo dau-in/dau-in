@@ -71,20 +71,26 @@ Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
 
 <p align="center">∴ off the clock: games, music, and a terminal that never quite closes — full taste below ↓</p>
 
-<!-- three separate tables, not one colspan'd table -- a colspan cell can
-     never render narrower than the columns beneath it, so as long as
-     passport/discord shared a table with steam+spotify they were stuck at
-     >= steam+spotify's combined width (554px) no matter what width= they
-     were given. Splitting them out lets each size to its own content, no
-     colspan involved anywhere, so still no dead space for GitHub to border. -->
-<table align="center"><tr><td align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="260"/></a></td></tr></table>
-
-<table align="center"><tr>
-<td align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="250"/></a></td>
-<td align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="250"/></a></td>
-</tr></table>
-
-<table align="center"><tr><td align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="260" alt="discord"/></a></td></tr></table>
+<!-- back to one unified table (colspan for passport/discord) -- three
+     separate tables let each widget size independently, but on the native
+     GitHub mobile app a <table> gets forced to width:100% regardless of
+     what's inside it, which broke align="center" once the image was much
+     narrower than that forced width (dead space that should've centered
+     just... didn't, in the app specifically -- fine on web and Chrome
+     mobile). Small standalone tables made that visible; one wide table
+     doesn't leave enough dead space for it to be noticeable. width="100%"
+     on the passport/discord cells fills whatever the row actually renders
+     as; pinning width= on the steam/spotify <td>s (their own natural size,
+     +27 for GitHub's fixed td padding/border) keeps that column from being
+     inflated by the wider colspan cells. -->
+<table align="center">
+<tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
+<tr>
+<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="220"/></a></td>
+<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="220"/></a></td>
+</tr>
+<tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="100%" alt="discord"/></a></td></tr>
+</table>
 
 <!-- steam_card.png and spotify_card.png are rebuilt every few hours by
      .github/workflows/update-widgets.yml (scripts/build_steam_card.py and
