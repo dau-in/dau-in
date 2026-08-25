@@ -38,7 +38,7 @@
 │ -  Full-stack + IT support + networking, all in one                         │
 │ ^  Eternal student — always hungry for more to learn                        │
 │ =  Hardware enthusiast at heart                                             │
-│ +  Here purely for the love of it — not exactly job hunting                 │
+│ +  Just for fun, I think                                                    │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ ~  I live in the terminal — and in the windows too (CachyOS main, though)   │
 │ <  Clauding my way forward, step by step.                                   │
