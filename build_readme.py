@@ -99,13 +99,21 @@ readme = f'''<div align="center">
 </td>
 </tr></table>
 
-<div align="center">
+<!-- table+td, not <div align="center"> -- on real mobile (GitHub app and
+     Chrome mobile both) this box was rendering broken: overflow-x:auto is
+     set on the <pre> same as everywhere else, but nothing above it in a bare
+     <div> ancestor chain forces a definite (viewport-bound) width, so the
+     unwrappable (white-space:pre) 846px-wide content just expands its own
+     box instead of scrolling inside a contained one. A <td> is the one
+     wrapper already proven (by the rest of this file) to hold its content
+     to a definite width without GitHub stripping/ignoring it. -->
+<table align="center"><tr><td align="center">
 
 ```
 {whoami_box}
 ```
 
-</div>
+</td></tr></table>
 
 {sep()}
 
