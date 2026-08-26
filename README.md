@@ -67,6 +67,13 @@ Go TUI — Windows LTSB/LTSC ISOs, DISM internals
 <!-- TODO: swap in real repo link + final name once Channel 3 is published -->
 <!-- TODO: add real repo link once Kintsugi has a demoable run -->
 
+<!-- lives next to the projects table, not down with steam/spotify/discord --
+     this is about what's actually shipped (a real git push), those are
+     about downtime activity. Rebuilt every few hours by
+     .github/workflows/update-widgets.yml (scripts/build_last_commit_card.py)
+     -- never hand-edited. -->
+<table align="center"><tr><td align="center"><img src="assets/last_commit_card.png" width="340"/></td></tr></table>
+
 <hr>
 
 <p align="center">∴ off the clock: games, music, and a terminal that never quite closes — full taste below ↓</p>
