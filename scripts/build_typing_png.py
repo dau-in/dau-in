@@ -115,15 +115,20 @@ def build_variant(css, out_path, chrome, tmp):
             line_frames.append(Image.open(out).convert('RGBA'))
             out.unlink()
 
+        # Slower than the old multi-word version's per-char timing -- that
+        # was tuned for long sentences, where even a quick per-char pace
+        # still gave the eye time to read while later characters typed. A
+        # single 5-character name has no such runway: at the old speed the
+        # whole cycle was over in ~1.6s and read as a flicker, not a type.
         for img in line_frames:
             frames.append(img)
-            durations.append(55)
-        durations[-1] = 1100  # hold on the completed line
+            durations.append(110)
+        durations[-1] = 2400  # hold on the completed name -- long enough to actually register
 
         for img in reversed(line_frames[:-1]):
             frames.append(img)
-            durations.append(30)
-        durations[-1] = 150  # brief pause on empty before the next line
+            durations.append(70)
+        durations[-1] = 500  # pause on empty before retyping
 
     # Plain markdown ![]() image syntax is what actually gets GitHub's
     # #gh-dark-mode-only / #gh-light-mode-only theme-swap treatment -- a raw
