@@ -59,7 +59,7 @@
 NES emulator, browser-based — WebGL CRT, netplay
 
 **kintsugi** &nbsp; <code>wip</code><br>
-Go TUI — Windows LTSB/LTSC/Legacy ISOs, DISM internals
+Go TUI — Windows LTSB/LTSC ISOs, DISM internals
 
 </td>
 </tr></table>
