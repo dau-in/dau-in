@@ -1,7 +1,7 @@
 <div align="center">
 
-![typing](assets/typing_dark.png#gh-dark-mode-only)
-![typing](assets/typing_light.png#gh-light-mode-only)
+![name](assets/typing_dark.png#gh-dark-mode-only)
+![name](assets/typing_light.png#gh-light-mode-only)
 
 </div>
 
