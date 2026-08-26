@@ -81,8 +81,8 @@ discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
 # the same way, but a <div> can legally contain a <p> instead of closing early.
 readme = f'''<div align="center">
 
-![typing](assets/typing_dark.png#gh-dark-mode-only)
-![typing](assets/typing_light.png#gh-light-mode-only)
+![name](assets/typing_dark.png#gh-dark-mode-only)
+![name](assets/typing_light.png#gh-light-mode-only)
 
 </div>
 

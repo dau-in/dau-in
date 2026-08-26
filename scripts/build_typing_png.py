@@ -35,13 +35,18 @@ HERE = Path(__file__).parent
 FONT_PATH = HERE / 'fonts' / 'DepartureMono-Regular.woff2'
 ASSETS = HERE.parent / 'assets'
 
-LINES = [
-    'still typing this myself, mostly',
-    'still figuring it out',
-    'still here, still terminal-pilled',
-]
+# Just the name now, typed and erased on loop -- was 3 rotating English
+# lines; replaced per Darwin's call to lead with ダーウィン (his actual name)
+# instead, since it reads better than a Latin/katakana "aka" mashup.
+LINES = ['ダーウィン']
 
-CANVAS_W, CANVAS_H = 430, 38
+# Canvas is fixed-size (not cropped to content) because content width changes
+# frame to frame as the word types/erases -- cropping per-frame would make
+# the image jump size mid-animation. Sized to fit just "ダーウィン_", down
+# from 430 when this held a full rotating sentence; that leftover width was
+# invisible (transparent) but still pushed the visible glyph off-center
+# within whatever centers the <img> itself.
+CANVAS_W, CANVAS_H = 150, 38
 
 VARIANTS = {
     'typing_dark.png': {'color': '#f0f0f0', 'shadow': '0 1px 1px rgba(0,0,0,0.45)'},
@@ -65,13 +70,19 @@ def find_chrome():
 
 
 def build_css(font_b64, color, shadow):
+    # Departure Mono has no katakana glyphs -- Noto Sans JP fills that gap in
+    # the font-family fallback stack. Self-hosting Departure Mono was needed
+    # because it isn't on Google Fonts; Noto Sans JP is, so it's pulled
+    # straight from there instead of vendoring another font file.
     return f'''
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700&display=swap');
 @font-face {{ font-family:"Departure Mono"; src:url(data:font/woff2;base64,{font_b64}) format("woff2"); }}
 html, body {{ background:transparent; margin:0; padding:0; -webkit-font-smoothing:antialiased; overflow:hidden; }}
 .row {{
-  font-family:"Departure Mono", monospace; font-size:16px; color:{color}; white-space:nowrap;
+  font-family:"Departure Mono", "Noto Sans JP", monospace; font-size:22px; font-weight:700; color:{color}; white-space:nowrap;
   text-shadow: {shadow};
   padding:11px 6px;
+  text-align:center;
 }}
 '''
 
