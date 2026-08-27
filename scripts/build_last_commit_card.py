@@ -27,27 +27,23 @@ HERE = Path(__file__).parent
 USERNAME = 'dau-in'
 MESSAGE_MAX_LEN = 90
 
-# GitHub's own per-language colors (github-linguist/linguist), just the
-# subset actually likely to show up here -- unlisted languages fall back to
-# a neutral gray dot rather than erroring.
-LANGUAGE_COLORS = {
-    'Python': '#3572A5',
-    'Go': '#00ADD8',
-    'JavaScript': '#f1e05a',
-    'TypeScript': '#3178c6',
-    'HTML': '#e34c26',
-    'CSS': '#563d7c',
-    'Shell': '#89e051',
-    'Rust': '#dea584',
-    'C': '#555555',
-    'C++': '#f34b7d',
-    'C#': '#178600',
-    'Java': '#b07219',
-    'Lua': '#000080',
-    'Dockerfile': '#384d54',
-    'PowerShell': '#012456',
-}
+# All 692 of GitHub's own per-language colors (github-linguist/linguist's
+# languages.yml, re-extracted whenever it's worth refreshing -- see
+# scripts/build_language_colors.py), not a hand-picked subset: a hardcoded
+# ~15-language list left anything else falling back to gray, and one entry
+# (C#) was even wrong -- linguist has it as #7355dd, not the #178600 that
+# was hardcoded here before. Unrecognized/unlisted languages still fall back
+# to gray rather than erroring.
+LANGUAGE_COLORS = json.loads((HERE / 'language_colors.json').read_text(encoding='utf-8'))
 DEFAULT_LANGUAGE_COLOR = '#8b8b8b'
+
+# GitHub language name -> devicon slug, for the ~90 languages devicon has an
+# icon for (see scripts/build_language_icons.py). Missing entirely for
+# anything unmapped -- that's expected for most of the 692 languages
+# (nobody's making a real icon for e.g. "Roff"), and build_html() falls back
+# to the plain colored dot in that case rather than erroring.
+LANGUAGE_ICON_SLUGS = json.loads((HERE / 'language_icon_slugs.json').read_text(encoding='utf-8'))
+DEVICON_URL = 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{slug}/{slug}-original.svg'
 
 
 def time_ago(iso_ts):
@@ -78,6 +74,19 @@ def github_api(path):
         return json.loads(r.read())
 
 
+def fetch_language_icon_b64(language):
+    slug = LANGUAGE_ICON_SLUGS.get(language)
+    if not slug:
+        return None
+    try:
+        with urllib.request.urlopen(DEVICON_URL.format(slug=slug), timeout=10) as r:
+            return base64.b64encode(r.read()).decode()
+    except Exception:
+        # a CDN hiccup or a slug devicon has since renamed shouldn't break
+        # the whole card -- just fall back to the plain colored dot
+        return None
+
+
 def truncate(message, limit):
     first_line = message.split('\n', 1)[0]
     if len(first_line) <= limit:
@@ -101,6 +110,7 @@ def fetch_data():
         'repo_name': repo_name,
         'language': language,
         'language_color': LANGUAGE_COLORS.get(language, DEFAULT_LANGUAGE_COLOR),
+        'language_icon_b64': fetch_language_icon_b64(language) if language else None,
         'message': truncate(commit['commit']['message'], MESSAGE_MAX_LEN),
         'sha_short': commit['sha'][:7],
         'additions': stats.get('additions', 0),
@@ -118,6 +128,7 @@ body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Int
 .stat-label { font-size:11px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px; }
 .repo-row { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
 .lang-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.lang-icon { width:20px; height:20px; flex-shrink:0; }
 .repo { font-size:16px; color:#fff; font-weight:700; font-family:"JetBrains Mono",monospace; }
 .lang-name { font-size:12px; color:#a7a0a7; margin-left:auto; font-family:"JetBrains Mono",monospace; }
 .msg { font-size:14.5px; color:#e5e5e5; line-height:1.5; margin-bottom:16px; padding-left:14px; border-left:2px solid rgba(255,255,255,0.12); }
@@ -134,12 +145,19 @@ body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Int
 
 def build_html(data, avatar_b64):
     lang_block = f'<span class="lang-name">{data["language"]}</span>' if data['language'] else ''
+    # icon when devicon has one for this language (real personality, its own
+    # brand colors baked into the svg) -- plain colored dot otherwise, same
+    # as before this existed
+    if data['language_icon_b64']:
+        lang_marker = f'<img class="lang-icon" src="data:image/svg+xml;base64,{data["language_icon_b64"]}"/>'
+    else:
+        lang_marker = f'<span class="lang-dot" style="background:{data["language_color"]}; box-shadow:0 0 8px {data["language_color"]}aa;"></span>'
     return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body>
 <div class="card">
 <div class="accent" style="background:linear-gradient(90deg, {data['language_color']}, transparent);"></div>
 <div class="stat-label">latest commit</div>
 <div class="repo-row">
-<span class="lang-dot" style="background:{data['language_color']}; box-shadow:0 0 8px {data['language_color']}aa;"></span>
+{lang_marker}
 <span class="repo">{data['repo_name']}</span>
 {lang_block}
 </div>
