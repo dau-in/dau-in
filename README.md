@@ -61,8 +61,8 @@
      (scripts/build_last_commit_card.py) -- never hand-edited. -->
 <table align="center">
 <tr>
-<td width="190"><img src="assets/section2_photos_v2.gif" width="180"/></td>
-<td width="310" valign="top">
+<td width="170"><img src="assets/section2_photos_v2.gif" width="160"/></td>
+<td width="280" valign="top">
 
 **channel-3** &nbsp; <code>soon</code><br>
 NES emulator, browser-based — WebGL CRT, netplay
