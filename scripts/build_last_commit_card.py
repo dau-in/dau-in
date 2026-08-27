@@ -7,6 +7,10 @@ than an absolute clock time, which would avoid the staleness problem
 entirely but leak a timezone/schedule pattern across enough commits that
 nothing else on this profile does.
 
+Also writes assets/last_commit_url.txt (the target commit's own GitHub
+page) -- build_readme.py reads it to link the card, since the URL changes
+every run and README.md's own template has no way to reach the API itself.
+
 No secrets needed -- GitHub's public events/commits/repo endpoints work
 unauthenticated for public data. Optionally uses GITHUB_TOKEN if set (GitHub
 Actions injects one automatically for every run, not something to create or
@@ -139,6 +143,7 @@ def fetch_data():
         'deletions': stats.get('deletions', 0),
         'committed_at': format_commit_time(commit['commit']['author']['date']),
         'avatar_url': f'https://avatars.githubusercontent.com/u/{push["actor"]["id"]}',
+        'commit_url': commit['html_url'],
     }
 
 
@@ -250,6 +255,15 @@ def main():
         out_path = HERE.parent / 'assets' / 'last_commit_card.png'
         render(html_path, tmp, out_path, find_chrome())
         print('written', out_path)
+
+        # sidecar file, not baked into the image: build_readme.py reads this
+        # to link the card to the actual commit instead of leaving it an
+        # unlinked image (which GitHub just opens as the raw file on click).
+        # A plain text file, not JSON -- it's a single value, and this way
+        # `cat`/opening it directly already shows the answer.
+        url_path = HERE.parent / 'assets' / 'last_commit_url.txt'
+        url_path.write_text(data['commit_url'], encoding='utf-8')
+        print('written', url_path)
 
 
 if __name__ == '__main__':
