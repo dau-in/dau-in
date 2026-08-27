@@ -117,7 +117,16 @@ readme = f'''<div align="center">
 
 {sep()}
 
-<table align="center"><tr>
+<!-- last-commit row lives in this SAME table as a colspan row, not its own
+     table below -- two separate tables of different natural widths read as
+     two unrelated floating boxes stacked on top of each other, not one
+     section. width="100%" on its image fills whatever this row actually
+     renders as (same trick used for passport/discord under the widgets
+     section) so it reads as the bottom of one cohesive block instead.
+     Rebuilt every few hours by .github/workflows/update-widgets.yml
+     (scripts/build_last_commit_card.py) -- never hand-edited. -->
+<table align="center">
+<tr>
 <td><img src="assets/section2_photos_v2.gif" width="180"/></td>
 <td valign="top">
 
@@ -128,17 +137,12 @@ NES emulator, browser-based — WebGL CRT, netplay
 Go TUI — Windows LTSB/LTSC ISOs, DISM internals
 
 </td>
-</tr></table>
+</tr>
+<tr><td colspan="2" align="center"><img src="assets/last_commit_card.png" width="100%"/></td></tr>
+</table>
 
 <!-- TODO: swap in real repo link + final name once Channel 3 is published -->
 <!-- TODO: add real repo link once Kintsugi has a demoable run -->
-
-<!-- lives next to the projects table, not down with steam/spotify/discord --
-     this is about what's actually shipped (a real git push), those are
-     about downtime activity. Rebuilt every few hours by
-     .github/workflows/update-widgets.yml (scripts/build_last_commit_card.py)
-     -- never hand-edited. -->
-<table align="center"><tr><td align="center"><img src="assets/last_commit_card.png" width="340"/></td></tr></table>
 
 {sep()}
 
