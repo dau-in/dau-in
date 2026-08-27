@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: '17 */4 * * *'   # every 4 hours, off the hour to avoid GitHub's cron rush
   workflow_dispatch: {}       # lets you trigger a run manually from the Actions tab
+  push:
+    branches: [main]         # so the last-commit card updates the moment a commit lands,
+                              # not up to 4h later -- the bot's own commit is [skip ci],
+                              # which GitHub Actions honors on push, so this doesn't loop
 
 permissions:
   contents: write
