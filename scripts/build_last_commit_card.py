@@ -121,10 +121,27 @@ def truncate(message, limit):
 
 
 def fetch_data():
-    events = github_api(f'/users/{USERNAME}/events/public')
-    push = next(e for e in events if e['type'] == 'PushEvent')
-    repo_name = push['repo']['name']
-    sha = push['payload']['head']
+    # The public events feed (/users/.../events/public) is what this always
+    # used to read from, but it's eventually-consistent -- it can lag a few
+    # minutes behind a push that just landed. That's invisible on a schedule
+    # trigger (plenty of real time has passed either way), but the whole
+    # point of the push trigger is to refresh the instant a commit lands, and
+    # the feed sometimes hasn't caught up by the time this script runs a few
+    # seconds later -- rendering the *previous* commit as if it were current.
+    # This workflow's push trigger only ever fires for a push to this exact
+    # repo, so on that trigger GITHUB_SHA/GITHUB_REPOSITORY (auto-injected by
+    # Actions) already name the authoritative commit with no lag at all.
+    # Schedule/manual runs have no such commit to anchor to -- those still
+    # need the events feed, since that's the only way to see a push made to
+    # any of Darwin's repos, not just this one.
+    if os.environ.get('GITHUB_EVENT_NAME') == 'push':
+        repo_name = os.environ['GITHUB_REPOSITORY']
+        sha = os.environ['GITHUB_SHA']
+    else:
+        events = github_api(f'/users/{USERNAME}/events/public')
+        push = next(e for e in events if e['type'] == 'PushEvent')
+        repo_name = push['repo']['name']
+        sha = push['payload']['head']
 
     commit = github_api(f'/repos/{repo_name}/commits/{sha}')
     repo = github_api(f'/repos/{repo_name}')
@@ -142,7 +159,7 @@ def fetch_data():
         'additions': stats.get('additions', 0),
         'deletions': stats.get('deletions', 0),
         'committed_at': format_commit_time(commit['commit']['author']['date']),
-        'avatar_url': f'https://avatars.githubusercontent.com/u/{push["actor"]["id"]}',
+        'avatar_url': f'https://avatars.githubusercontent.com/{USERNAME}',
         'commit_url': commit['html_url'],
     }
 
