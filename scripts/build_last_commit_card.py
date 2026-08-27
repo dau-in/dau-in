@@ -1,9 +1,11 @@
 """
 Builds assets/last_commit_card.png from Darwin's most recent public GitHub
 push: repo, primary language (icon/dot, matching GitHub's own language
-colors), commit message (truncated), short SHA, line diff stat, and an
-absolute UTC timestamp -- not "Xm/h/d ago", which only reads right at the
-moment of render and quietly goes stale until the next one.
+colors), commit message (truncated), short SHA, line diff stat, and how
+long ago -- coarse-grained (no raw minutes, see format_commit_time) rather
+than an absolute clock time, which would avoid the staleness problem
+entirely but leak a timezone/schedule pattern across enough commits that
+nothing else on this profile does.
 
 No secrets needed -- GitHub's public events/commits/repo endpoints work
 unauthenticated for public data. Optionally uses GITHUB_TOKEN if set (GitHub
@@ -48,16 +50,35 @@ DEVICON_URL = 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{slug}/
 
 
 def format_commit_time(iso_ts):
-    # Absolute timestamp, not "Xm/h/d ago" -- relative text is only ever as
-    # fresh as the last render (hourly cron, or instantly on a push), so a
-    # commit rendered as "1m ago" just sits there saying that for up to an
-    # hour, quietly turning into a lie. A fixed point in time never goes
-    # stale the same way: it's still exactly as true a week from now.
-    # %-d (no leading zero) is a GNU/Linux-only strftime extension -- doesn't
-    # work if this is ever run locally on Windows -- so just live with the
-    # leading zero (e.g. "Aug 07") instead of a platform-specific format code.
+    # Back to relative time, not an absolute UTC timestamp -- a fixed clock
+    # time never goes stale, but repeated across enough commits it reveals a
+    # pattern (roughly what hours someone's usually online) that nothing
+    # else on this profile does; everything else here is taste/interests,
+    # not a schedule. The actual problem with relative time wasn't the
+    # concept, it was showing single MINUTES when the render cadence (hourly
+    # cron, instant on a push) can't back up that precision -- "1m ago"
+    # sitting there for the next 59 real minutes is what read as a lie.
+    # Dropping minutes entirely for a coarse "just now" bucket removes that:
+    # nothing here claims more precision than the render schedule can honor.
     then = datetime.strptime(iso_ts, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
-    return then.strftime('%b %d · %H:%M UTC')
+    delta = datetime.now(timezone.utc) - then
+    minutes = delta.total_seconds() / 60
+    if minutes < 45:
+        return 'just now'
+    hours = minutes / 60
+    if hours < 24:
+        return f'{round(hours)}h ago'
+    days = hours / 24
+    if days < 7:
+        return f'{round(days)}d ago'
+    weeks = days / 7
+    if weeks < 4.35:
+        return f'{round(weeks)}w ago'
+    months = days / 30.44
+    if months < 12:
+        return f'{round(months)}mo ago'
+    years = days / 365.25
+    return f'{round(years)}y ago'
 
 
 def github_api(path):
