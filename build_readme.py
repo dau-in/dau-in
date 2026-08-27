@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from pathlib import Path
+
 import pyfiglet
 
 def box(title, groups):
@@ -62,6 +64,16 @@ whoami_box = box('whoami.txt', whoami_groups)
 discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
                '&idleMessage=bored%2C+for+now&showDisplayName=true')
+
+# written by scripts/build_last_commit_card.py alongside the card itself --
+# the actual commit URL changes every run, and this template has no way to
+# reach the GitHub API on its own to look it up. Falls back to the profile
+# page itself on a fresh checkout that hasn't run the card script yet.
+last_commit_url_path = Path('assets/last_commit_url.txt')
+last_commit_url = (
+    last_commit_url_path.read_text(encoding='utf-8').strip()
+    if last_commit_url_path.exists() else 'https://github.com/dau-in'
+)
 
 
 # typing_dark/light.png are self-built animated APNGs (scripts/build_typing_png.py),
@@ -138,7 +150,7 @@ Go TUI — Windows LTSB/LTSC ISOs, DISM internals
 
 </td>
 </tr>
-<tr><td colspan="2" align="center"><img src="assets/last_commit_card.png" width="100%"/></td></tr>
+<tr><td colspan="2" align="center"><a href="{last_commit_url}"><img src="assets/last_commit_card.png" width="100%"/></a></td></tr>
 </table>
 
 <!-- TODO: swap in real repo link + final name once Channel 3 is published -->

@@ -72,7 +72,7 @@ Go TUI — Windows LTSB/LTSC ISOs, DISM internals
 
 </td>
 </tr>
-<tr><td colspan="2" align="center"><img src="assets/last_commit_card.png" width="100%"/></td></tr>
+<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/dau-in/commit/ec5af67c5f8315dc5ea06e0ca606f0ef2223a02e"><img src="assets/last_commit_card.png" width="100%"/></a></td></tr>
 </table>
 
 <!-- TODO: swap in real repo link + final name once Channel 3 is published -->
