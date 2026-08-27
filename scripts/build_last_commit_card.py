@@ -1,8 +1,9 @@
 """
 Builds assets/last_commit_card.png from Darwin's most recent public GitHub
-push: repo, primary language (colored dot, matching GitHub's own language
-colors), commit message (truncated), short SHA, line diff stat, and how long
-ago.
+push: repo, primary language (icon/dot, matching GitHub's own language
+colors), commit message (truncated), short SHA, line diff stat, and an
+absolute UTC timestamp -- not "Xm/h/d ago", which only reads right at the
+moment of render and quietly goes stale until the next one.
 
 No secrets needed -- GitHub's public events/commits/repo endpoints work
 unauthenticated for public data. Optionally uses GITHUB_TOKEN if set (GitHub
@@ -46,17 +47,17 @@ LANGUAGE_ICON_SLUGS = json.loads((HERE / 'language_icon_slugs.json').read_text(e
 DEVICON_URL = 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{slug}/{slug}-original.svg'
 
 
-def time_ago(iso_ts):
+def format_commit_time(iso_ts):
+    # Absolute timestamp, not "Xm/h/d ago" -- relative text is only ever as
+    # fresh as the last render (hourly cron, or instantly on a push), so a
+    # commit rendered as "1m ago" just sits there saying that for up to an
+    # hour, quietly turning into a lie. A fixed point in time never goes
+    # stale the same way: it's still exactly as true a week from now.
+    # %-d (no leading zero) is a GNU/Linux-only strftime extension -- doesn't
+    # work if this is ever run locally on Windows -- so just live with the
+    # leading zero (e.g. "Aug 07") instead of a platform-specific format code.
     then = datetime.strptime(iso_ts, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
-    delta = datetime.now(timezone.utc) - then
-    minutes = delta.total_seconds() / 60
-    if minutes < 60:
-        return f'{max(round(minutes), 1)}m ago'
-    hours = minutes / 60
-    if hours < 24:
-        return f'{round(hours)}h ago'
-    days = hours / 24
-    return f'{round(days)}d ago'
+    return then.strftime('%b %d · %H:%M UTC')
 
 
 def github_api(path):
@@ -115,7 +116,7 @@ def fetch_data():
         'sha_short': commit['sha'][:7],
         'additions': stats.get('additions', 0),
         'deletions': stats.get('deletions', 0),
-        'time_ago': time_ago(commit['commit']['author']['date']),
+        'committed_at': format_commit_time(commit['commit']['author']['date']),
         'avatar_url': f'https://avatars.githubusercontent.com/u/{push["actor"]["id"]}',
     }
 
@@ -170,7 +171,7 @@ def build_html(data, avatar_b64):
 <div class="meta-row">
 <span class="sha-chip">{data['sha_short']}</span>
 <span class="diffstat"><span class="add">+{data['additions']}</span><span class="del">-{data['deletions']}</span></span>
-<span class="time">{data['time_ago']}</span>
+<span class="time">{data['committed_at']}</span>
 </div>
 <div class="brand"><img src="data:image/png;base64,{avatar_b64}"/>github.com/{USERNAME}</div>
 </div>
