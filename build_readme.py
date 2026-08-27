@@ -127,8 +127,8 @@ readme = f'''<div align="center">
      (scripts/build_last_commit_card.py) -- never hand-edited. -->
 <table align="center">
 <tr>
-<td><img src="assets/section2_photos_v2.gif" width="180"/></td>
-<td valign="top">
+<td width="190"><img src="assets/section2_photos_v2.gif" width="180"/></td>
+<td width="310" valign="top">
 
 **channel-3** &nbsp; <code>soon</code><br>
 NES emulator, browser-based — WebGL CRT, netplay
