@@ -138,8 +138,14 @@ def fetch_data():
         repo_name = os.environ['GITHUB_REPOSITORY']
         sha = os.environ['GITHUB_SHA']
     else:
+        # GitHub's own docs say this feed is "delivered on a best-effort
+        # basis" -- confirmed the hard way: a push from hours ago surfaced
+        # ahead of two pushes to the same repo made since, so the first
+        # PushEvent in the list isn't reliably the most recent one. Picking
+        # by max(created_at) instead of list order is the fix.
         events = github_api(f'/users/{USERNAME}/events/public')
-        push = next(e for e in events if e['type'] == 'PushEvent')
+        pushes = [e for e in events if e['type'] == 'PushEvent']
+        push = max(pushes, key=lambda e: e['created_at'])
         repo_name = push['repo']['name']
         sha = push['payload']['head']
 
