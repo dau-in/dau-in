@@ -2,9 +2,13 @@
 Builds assets/wakatime_card.png from WakaTime's Stats API: total coding time
 and top languages (by %) over the last 7 days.
 
-Requires WAKATIME_API_KEY in the environment (from
-https://wakatime.com/settings/api-key -- never commit it, only ever pass it
-as an env var / GitHub Actions secret, same as every other card here).
+Reads the API key from WAKATIME_API_KEY in the environment first (that's how
+GitHub Actions passes it as a secret -- there's no ~/.wakatime.cfg on a
+runner), falling back to ~/.wakatime.cfg's [settings] api_key (that's where
+every local plugin -- the Claude Code plugin, the Antigravity plugin, any
+IDE extension -- already keeps it, so local runs of this script don't need
+their own separate copy of the same key). Never commit the key itself
+either way, same as every other card here.
 
 NOT YET WIRED into build_readme.py or update-widgets.yml -- written against
 WakaTime's public API docs, not a real response, since no account/data
@@ -14,6 +18,7 @@ this standalone first and check the printed output before trusting the
 rendered card.
 """
 import base64
+import configparser
 import json
 import os
 import shutil
@@ -23,8 +28,24 @@ import urllib.request
 from pathlib import Path
 
 HERE = Path(__file__).parent
-API_KEY = os.environ['WAKATIME_API_KEY']
 RANGE = 'last_7_days'
+
+
+def load_api_key():
+    key = os.environ.get('WAKATIME_API_KEY')
+    if key:
+        return key
+    cfg_path = Path.home() / '.wakatime.cfg'
+    if cfg_path.exists():
+        cfg = configparser.ConfigParser()
+        cfg.read(cfg_path, encoding='utf-8')
+        key = cfg.get('settings', 'api_key', fallback=None)
+        if key:
+            return key
+    sys.exit('No WakaTime API key found -- set WAKATIME_API_KEY or add it to ~/.wakatime.cfg')
+
+
+API_KEY = load_api_key()
 
 # Same GitHub-linguist-derived colors as build_last_commit_card.py -- kept
 # as its own copy rather than a shared import since every card script here
@@ -93,7 +114,7 @@ body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Int
 .lang-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
 .lang-name { font-size:14px; color:#e5e5e5; font-weight:600; width:100px; flex-shrink:0; }
 .bar-track { flex:1; height:6px; background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden; }
-.bar-fill { height:100%; border-radius:999px; }
+.bar-fill { display:block; height:100%; border-radius:999px; }
 .lang-pct { font-size:12px; color:#a7a0a7; width:38px; text-align:right; flex-shrink:0; }
 .brand { display:flex; align-items:center; justify-content:flex-end; font-size:12px; color:#a7a0a7; margin-top:18px; }
 '''
