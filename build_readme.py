@@ -135,8 +135,9 @@ readme = f'''<div align="center">
      section. width="100%" on its image fills whatever this row actually
      renders as (same trick used for passport/discord under the widgets
      section) so it reads as the bottom of one cohesive block instead.
-     Rebuilt every few hours by .github/workflows/update-widgets.yml
-     (scripts/build_last_commit_card.py) -- never hand-edited. -->
+     Rebuilt every 30 min (cron-job.org pinging workflow_dispatch -- see
+     .github/workflows/update-widgets.yml) and instantly on every push to
+     this repo, by scripts/build_last_commit_card.py -- never hand-edited. -->
 <table align="center">
 <tr>
 <td width="170"><img src="assets/section2_photos_v2.gif" width="160"/></td>
@@ -187,9 +188,10 @@ Go TUI — Windows LTSB/LTSC ISOs, DISM internals
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="100%" alt="discord"/></a></td></tr>
 </table>
 
-<!-- steam_card.png and spotify_card.png are rebuilt every few hours by
-     .github/workflows/update-widgets.yml (scripts/build_steam_card.py and
-     scripts/build_spotify_card.py) -- never hand-edited. -->
+<!-- steam_card.png, spotify_card.png, and wakatime_card.png are rebuilt
+     every 30 min and on every push by .github/workflows/update-widgets.yml
+     (scripts/build_steam_card.py, build_spotify_card.py, build_wakatime_card.py)
+     -- never hand-edited. -->
 
 {sep()}
 
