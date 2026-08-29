@@ -72,9 +72,15 @@ Go TUI — Windows LTSB/LTSC ISOs, DISM internals
 
 </td>
 </tr>
-<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/dau-in/commit/ec5af67c5f8315dc5ea06e0ca606f0ef2223a02e"><img src="assets/last_commit_card.png" width="100%"/></a></td></tr>
+<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/dau-in/commit/b556693556262dc55fac82a696c36fd161ca9240"><img src="assets/last_commit_card.png" width="100%"/></a></td></tr>
+<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png" width="100%"/></td></tr>
 </table>
 
+<!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
+     here, there's nowhere real to send a click: this WakaTime account's
+     profile is private (no public username set either), so a link would
+     either 404 or point at a page that shows nothing. Rebuilt alongside the
+     other cards by update-widgets.yml (scripts/build_wakatime_card.py). -->
 <!-- TODO: swap in real repo link + final name once Channel 3 is published -->
 <!-- TODO: add real repo link once Kintsugi has a demoable run -->
 
@@ -112,4 +118,3 @@ Go TUI — Windows LTSB/LTSC ISOs, DISM internals
 <p align="center"><sub>◇ art by <a href="https://x.com/inoitoh">@inoitoh</a> on twt</sub></p>
 
 <!-- TODO: replace static passport card with a live embed once passportdex offers one -->
-<!-- TODO: stats section (WakaTime / github-readme-stats), once decided -->

@@ -55,11 +55,19 @@ jobs:
           CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: python scripts/build_last_commit_card.py
 
+      - name: Build WakaTime card
+        continue-on-error: true
+        env:
+          WAKATIME_API_KEY: ${{ secrets.WAKATIME_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: python scripts/build_wakatime_card.py
+
       - name: Commit if changed
         if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add assets/steam_card.png assets/spotify_card.png assets/last_commit_card.png assets/last_commit_url.txt
+          git add assets/steam_card.png assets/spotify_card.png assets/last_commit_card.png assets/last_commit_url.txt assets/wakatime_card.png
           git diff --staged --quiet || git commit -m "chore: refresh widget cards [skip ci]"
           git push
