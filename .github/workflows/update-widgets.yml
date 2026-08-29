@@ -1,21 +1,35 @@
 name: Update widget cards
 
 on:
-  schedule:
-    - cron: '17 * * * *'     # hourly, off the hour to avoid GitHub's cron rush -- was every
-                              # 4h, but the last-commit card's "Xh/m ago" text is only ever as
-                              # fresh as the last render: right after a push it's accurate, then
-                              # it just sits there getting more wrong until the next trigger.
-                              # Push events cover new commits instantly; this covers the long
-                              # quiet stretches between them.
-  workflow_dispatch: {}       # lets you trigger a run manually from the Actions tab
+  # No `schedule:` trigger anymore -- GitHub's own cron for this repo proved
+  # unreliable (confirmed directly: it sat idle for 10+ hours at a stretch,
+  # a known "best-effort, no SLA" platform limitation, not something fixable
+  # from this file). Reliable periodic refresh now comes from an external
+  # pinger (cron-job.org) hitting this same workflow via workflow_dispatch
+  # every 30 minutes -- keeping GitHub's schedule alongside that would just
+  # be a second, uncontrolled trigger source with no benefit and a real risk
+  # of two runs landing close together (see concurrency: below for why that
+  # matters).
+  workflow_dispatch: {}       # cron-job.org calls this externally; also lets you trigger a run manually from the Actions tab
   push:
     branches: [main]         # so the last-commit card updates the moment a commit lands,
-                              # not up to 4h later -- the bot's own commit is [skip ci],
+                              # not up to 30 min later -- the bot's own commit is [skip ci],
                               # which GitHub Actions honors on push, so this doesn't loop
 
 permissions:
   contents: write
+
+# Without this, a push-triggered run and a workflow_dispatch run (from the
+# external cron, or triggered by hand) landing close together would both try
+# to build cards and `git push` around the same time -- whichever finishes
+# second would get a non-fast-forward rejection, since the "Commit if
+# changed" step below has no pull/rebase/retry logic. cancel-in-progress:
+# false queues the second run to start only once the first finishes,
+# instead of cancelling it or letting both race -- every triggering event
+# still gets its own complete run, just not run in parallel.
+concurrency:
+  group: update-widgets
+  cancel-in-progress: false
 
 jobs:
   update:
@@ -69,5 +83,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add assets/steam_card.png assets/spotify_card.png assets/last_commit_card.png assets/last_commit_url.txt assets/wakatime_card.png
-          git diff --staged --quiet || git commit -m "chore: refresh widget cards [skip ci]"
+          git diff --staged --quiet && exit 0
+          git commit -m "chore: refresh widget cards [skip ci]"
+          # concurrency: above already keeps two runs of this workflow from
+          # overlapping, but this stays as a second line of defense against
+          # any push that lands on main between checkout and here (from
+          # local work, not this workflow) -- rebase onto it instead of
+          # failing outright on a plain rejected push.
+          git pull --rebase
           git push
