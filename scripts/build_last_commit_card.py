@@ -62,13 +62,17 @@ def format_commit_time(iso_ts):
     # concept, it was showing single MINUTES when the render cadence (hourly
     # cron, instant on a push) can't back up that precision -- "1m ago"
     # sitting there for the next 59 real minutes is what read as a lie.
-    # Dropping minutes entirely for a coarse "just now" bucket removes that:
-    # nothing here claims more precision than the render schedule can honor.
+    # Dropping minutes entirely for a coarse bucket removes that -- but even
+    # that bucket used to say "just now", which is its own small lie: GitHub's
+    # schedule trigger is best-effort and has sat idle for 10+ hours at a
+    # stretch, so this exact bucket can end up on screen far longer than 45
+    # real minutes. "recently" doesn't claim a freshness the render cadence
+    # can't actually back up.
     then = datetime.strptime(iso_ts, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
     delta = datetime.now(timezone.utc) - then
     minutes = delta.total_seconds() / 60
     if minutes < 45:
-        return 'just now'
+        return 'recently'
     hours = minutes / 60
     if hours < 24:
         return f'{round(hours)}h ago'
