@@ -1,7 +1,21 @@
 # -*- coding: utf-8 -*-
+import os
+import time
 from pathlib import Path
 
 import pyfiglet
+
+# raw.githubusercontent.com (what a relative <img src> in a README actually
+# resolves to) caches by URL -- the asset's bytes on disk can be fully
+# updated and viewers still get a stale copy for a while, because the path
+# never changes between renders. A query string that changes every run
+# forces a fresh fetch instead of a cache hit. GITHUB_RUN_ID (auto-injected
+# by Actions), not GITHUB_SHA -- most refreshes are the cards' own data
+# changing (WakaTime, last commit) with no new commit to this repo at all,
+# so the SHA would stay identical run to run and never bust anything for
+# the case that matters most. update-widgets.yml only re-runs this script
+# when a card actually changed, so this still doesn't churn on no-op runs.
+CACHE_BUST = os.environ.get('GITHUB_RUN_ID', str(int(time.time())))
 
 def box(title, groups):
     lines = [l for g in groups for l in g]
@@ -143,7 +157,7 @@ readme = f'''<div align="center">
 <td width="170"><img src="assets/section2_photos_v2.gif" width="160"/></td>
 <td width="280" valign="top">
 
-**channel-3** &nbsp; <code>soon</code><br>
+<img src="assets/channel3_icon.png" width="16" valign="middle"/> **[channel-3](https://channelthree.vercel.app)** &nbsp; <code>live</code><br>
 NES emulator, browser-based — WebGL CRT, netplay
 
 **kintsugi** &nbsp; <code>wip</code><br>
@@ -151,8 +165,8 @@ Go TUI — Windows LTSB/LTSC ISOs, DISM internals
 
 </td>
 </tr>
-<tr><td colspan="2" align="center"><a href="{last_commit_url}"><img src="assets/last_commit_card.png" width="100%"/></a></td></tr>
-<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png" width="100%"/></td></tr>
+<tr><td colspan="2" align="center"><a href="{last_commit_url}"><img src="assets/last_commit_card.png?v={CACHE_BUST}" width="100%"/></a></td></tr>
+<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v={CACHE_BUST}" width="100%"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -160,7 +174,6 @@ Go TUI — Windows LTSB/LTSC ISOs, DISM internals
      profile is private (no public username set either), so a link would
      either 404 or point at a page that shows nothing. Rebuilt alongside the
      other cards by update-widgets.yml (scripts/build_wakatime_card.py). -->
-<!-- TODO: swap in real repo link + final name once Channel 3 is published -->
 <!-- TODO: add real repo link once Kintsugi has a demoable run -->
 
 {sep()}
@@ -182,8 +195,8 @@ Go TUI — Windows LTSB/LTSC ISOs, DISM internals
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
 <tr>
-<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="220"/></a></td>
-<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="220"/></a></td>
+<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v={CACHE_BUST}" width="220"/></a></td>
+<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v={CACHE_BUST}" width="220"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="100%" alt="discord"/></a></td></tr>
 </table>

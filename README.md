@@ -65,7 +65,7 @@
 <td width="170"><img src="assets/section2_photos_v2.gif" width="160"/></td>
 <td width="280" valign="top">
 
-**channel-3** &nbsp; <code>soon</code><br>
+<img src="assets/channel3_icon.png" width="16" valign="middle"/> **[channel-3](https://channelthree.vercel.app)** &nbsp; <code>live</code><br>
 NES emulator, browser-based — WebGL CRT, netplay
 
 **kintsugi** &nbsp; <code>wip</code><br>
@@ -73,8 +73,8 @@ Go TUI — Windows LTSB/LTSC ISOs, DISM internals
 
 </td>
 </tr>
-<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/dau-in/commit/51165835509274085f151d512971e80c505e2c8e"><img src="assets/last_commit_card.png" width="100%"/></a></td></tr>
-<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png" width="100%"/></td></tr>
+<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/channel-3/commit/68090b93fefa8cc74a0f12ba054fe13b422ec148"><img src="assets/last_commit_card.png?v=1788074683" width="100%"/></a></td></tr>
+<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v=1788074683" width="100%"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -82,7 +82,6 @@ Go TUI — Windows LTSB/LTSC ISOs, DISM internals
      profile is private (no public username set either), so a link would
      either 404 or point at a page that shows nothing. Rebuilt alongside the
      other cards by update-widgets.yml (scripts/build_wakatime_card.py). -->
-<!-- TODO: swap in real repo link + final name once Channel 3 is published -->
 <!-- TODO: add real repo link once Kintsugi has a demoable run -->
 
 <hr>
@@ -104,8 +103,8 @@ Go TUI — Windows LTSB/LTSC ISOs, DISM internals
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
 <tr>
-<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png" width="220"/></a></td>
-<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png" width="220"/></a></td>
+<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=1788074683" width="220"/></a></td>
+<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=1788074683" width="220"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="100%" alt="discord"/></a></td></tr>
 </table>

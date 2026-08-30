@@ -84,6 +84,17 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add assets/steam_card.png assets/spotify_card.png assets/last_commit_card.png assets/last_commit_url.txt assets/wakatime_card.png
           git diff --staged --quiet && exit 0
+          # Only regenerate README.md (which rotates the cache-busting query
+          # param on each auto-rebuilt card's <img src>, see build_readme.py)
+          # when a card actually changed -- otherwise every 30-min run would
+          # force a commit purely to rotate a cache-buster nothing needed,
+          # drowning the repo's real history in bot noise. This is also why
+          # raw.githubusercontent.com serving a stale card for a while isn't
+          # solved by rebuilding the PNG alone: the README's <img> URL has to
+          # change too, or viewers' browsers/GitHub's CDN just keep re-using
+          # their cached copy of the old URL.
+          python build_readme.py
+          git add README.md
           git commit -m "chore: refresh widget cards [skip ci]"
           # concurrency: above already keeps two runs of this workflow from
           # overlapping, but this stays as a second line of defense against
