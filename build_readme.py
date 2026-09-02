@@ -18,20 +18,27 @@ import pyfiglet
 CACHE_BUST = os.environ.get('GITHUB_RUN_ID', str(int(time.time())))
 
 def build_terminal_box(command, lines, prompt='[dauin@cachyos ~]$ '):
-    header = f'┌─ {prompt}'
+    # Plain ASCII border (+/-/|), not the Unicode box-drawing block (was
+    # ┌─│└┘) -- confirmed on the GitHub mobile app: that block falls back to
+    # a different, poorly-hinted font there, and the vertical bar renders as
+    # a dashed line instead of solid once the box is scrolled horizontally
+    # (screenshots from the user). Same reasoning as the ASCII-only content
+    # below: a glyph outside plain ASCII has no guaranteed consistent shape
+    # across monospace fonts.
+    header = f'+- {prompt}'
     body_lines = [f'$ {command}', ''] + lines + ['', f'{prompt}_']
-    
+
     max_len = max(len(l) for l in body_lines)
     width = max_len + 6
-    
-    top = header + '─' * (width - len(header) - 1) + '┐'
-    bot = '└' + '─' * (width - 2) + '┘'
-    
+
+    top = header + '-' * (width - len(header) - 1) + '+'
+    bot = '+' + '-' * (width - 2) + '+'
+
     body = []
     for l in body_lines:
         pad = width - 4 - len(l)
-        body.append('│ ' + l + ' ' * max(pad, 0) + ' │')
-    
+        body.append('| ' + l + ' ' * max(pad, 0) + ' |')
+
     return '\n'.join([top] + body + [bot])
 
 def strip_blank_lines(s):
