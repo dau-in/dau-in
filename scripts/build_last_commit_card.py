@@ -124,23 +124,35 @@ def truncate(message, limit):
     return first_line[:limit - 1].rstrip() + '\u2026'
 
 
+# Sidecar state, not shown anywhere -- just the timestamp this script last
+# trusted its chosen commit under, so the events-feed fallback below can
+# tell "genuinely newer" from "the feed just hasn't caught up yet" instead
+# of re-trusting it blind on every 30-min cron tick.
+LAST_COMMIT_META_PATH = HERE.parent / 'assets' / 'last_commit_meta.json'
+
+
 def fetch_data():
     # The public events feed (/users/.../events/public) is what this always
-    # used to read from, but it's eventually-consistent -- it can lag a few
-    # minutes behind a push that just landed. That's invisible on a schedule
-    # trigger (plenty of real time has passed either way), but the whole
-    # point of the push trigger is to refresh the instant a commit lands, and
-    # the feed sometimes hasn't caught up by the time this script runs a few
-    # seconds later -- rendering the *previous* commit as if it were current.
+    # used to read from, but it's eventually-consistent -- it can lag behind
+    # a push that just landed by an amount that isn't bounded to "a few
+    # minutes": confirmed a run picking up a push from hours earlier as
+    # "latest" well after a genuinely newer push had already updated this
+    # file correctly (via the push trigger below). That's the dangerous part
+    # -- this fallback also runs on every 30-min cron tick, not just once, so
+    # blindly trusting it each time would silently regress the card back to
+    # that stale commit on the very next tick, undoing a correct update.
     # This workflow's push trigger only ever fires for a push to this exact
     # repo, so on that trigger GITHUB_SHA/GITHUB_REPOSITORY (auto-injected by
-    # Actions) already name the authoritative commit with no lag at all.
+    # Actions) already name the authoritative commit with no lag at all --
+    # and since it just happened, "now" is a safe freshness anchor for it.
     # Schedule/manual runs have no such commit to anchor to -- those still
     # need the events feed, since that's the only way to see a push made to
-    # any of Darwin's repos, not just this one.
+    # any of Darwin's repos, not just this one -- but only ever move forward
+    # from whatever freshness anchor was last recorded, never back.
     if os.environ.get('GITHUB_EVENT_NAME') == 'push':
         repo_name = os.environ['GITHUB_REPOSITORY']
         sha = os.environ['GITHUB_SHA']
+        source_time = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
     else:
         # GitHub's own docs say this feed is "delivered on a best-effort
         # basis" -- confirmed the hard way: a push from hours ago surfaced
@@ -152,12 +164,23 @@ def fetch_data():
         push = max(pushes, key=lambda e: e['created_at'])
         repo_name = push['repo']['name']
         sha = push['payload']['head']
+        source_time = push['created_at']
+
+        if LAST_COMMIT_META_PATH.exists():
+            previous = json.loads(LAST_COMMIT_META_PATH.read_text(encoding='utf-8'))
+            if source_time <= previous['source_time']:
+                repo_name, sha, source_time = previous['repo_name'], previous['sha'], previous['source_time']
 
     commit = github_api(f'/repos/{repo_name}/commits/{sha}')
     repo = github_api(f'/repos/{repo_name}')
 
     stats = commit.get('stats', {})
     language = repo.get('language')
+
+    LAST_COMMIT_META_PATH.write_text(
+        json.dumps({'repo_name': repo_name, 'sha': sha, 'source_time': source_time}),
+        encoding='utf-8',
+    )
 
     return {
         'repo_name': repo_name,
