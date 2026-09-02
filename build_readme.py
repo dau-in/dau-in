@@ -17,25 +17,21 @@ import pyfiglet
 # when a card actually changed, so this still doesn't churn on no-op runs.
 CACHE_BUST = os.environ.get('GITHUB_RUN_ID', str(int(time.time())))
 
-def box(title, groups):
-    lines = [l for g in groups for l in g]
-    width = max([len(l) for l in lines] + [len(title) + 4]) + 6
-    # top line was 1 char longer than every other line ('┌─ title ─┐' == width+1,
-    # while body/bottom lines == width) -- that's why '┐' never lined up with the
-    # '│' column below it, even though '┘' (computed the same way as the body) did.
-    top = '┌─ ' + title + ' ' + '─' * (width - len(title) - 5) + '┐'
+def build_terminal_box(command, lines, prompt='[dauin@cachyos ~]$ '):
+    header = f'┌─ {prompt}'
+    body_lines = [f'$ {command}', ''] + lines + ['', f'{prompt}_']
+    
+    max_len = max(len(l) for l in body_lines)
+    width = max_len + 6
+    
+    top = header + '─' * (width - len(header) - 1) + '┐'
     bot = '└' + '─' * (width - 2) + '┘'
-    mid = '├' + '─' * (width - 2) + '┤'
-
-    def row(l):
-        pad = width - 2 - len(l)
-        return '│ ' + l + ' ' * max(pad - 1, 0) + '│'
-
+    
     body = []
-    for i, g in enumerate(groups):
-        if i > 0:
-            body.append(mid)
-        body.extend(row(l) for l in g)
+    for l in body_lines:
+        pad = width - 4 - len(l)
+        body.append('│ ' + l + ' ' * max(pad, 0) + ' │')
+    
     return '\n'.join([top] + body + [bot])
 
 def strip_blank_lines(s):
@@ -54,26 +50,28 @@ def sep():
 
 name_banner = strip_blank_lines(pyfiglet.figlet_format('DAUIN', font='thin'))
 
-# pure ASCII icons -- guaranteed identical width on every monospace font, on every OS.
-# no more unicode glyphs in box-drawn content: this is what was breaking alignment on
-# Darwin's own machine (different fallback font than the one this was tested against).
-whoami_groups = [
- [
-  '*  Computer Engineer',
-  '>  Into agentic programming — building with AI, not just using it',
-  '-  Full-stack + IT support + networking, all in one',
-  '^  Eternal student — always hungry for more to learn',
-  '=  Hardware enthusiast at heart',
-  '+  Just for fun, I think...',
- ],
- [
-  '~  I live in the terminal — and in the windows too (CachyOS main, though)',
-  '<  Clauding my way forward, step by step.',
-  '#  "Everything that lives is designed to end"... meanwhile, I leave proof',
-  '   of my existence on my passport ↓',
- ],
+# pure ASCII icons and standard single-column box drawing to guarantee
+# identical width on every monospace font and mobile OS without wrapping breaks.
+whoami_cpp_lines = [
+    'namespace dauin {',
+    '    constexpr auto role     = "Computer Engineer.";',
+    '    constexpr auto ai       = "\\"Why is AI so addictive?\\" "',
+    '                              "-- because architecting autonomy is fun.";',
+    '    constexpr auto stack    = { "full-stack dev", "IT support", "network" };',
+    '    constexpr auto mindset  = "Perpetual student with endless curiosity "',
+    '                              "for how things tick.";',
+    '    constexpr auto hardware = "Hardware lover at the core.";',
+    '    constexpr auto vibe     = "Just for fun, I guess...";',
+    '    constexpr auto habitat  = "Living in the terminal (CachyOS enjoyer), "',
+    '                              "but Windows is my cozy fallback.";',
+    '    constexpr auto loop     = "Clauding my way forward, step by step.";',
+    '}',
+    '',
+    '// -- [ Memory Log ] ----------------------------------------------------',
+    '// "Everything that lives is designed to end"...',
+    '// meanwhile, I leave proof of my existence on my passport ↓',
 ]
-whoami_box = box('whoami.txt', whoami_groups)
+whoami_box = build_terminal_box('cat whoami.cpp', whoami_cpp_lines)
 
 discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
