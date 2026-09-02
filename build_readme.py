@@ -55,14 +55,7 @@ def sep():
     # between two <hr>s it can't look unfinished/disconnected. plain and boring on purpose.
     return '<hr>'
 
-# 'thin' used to draw curves out of backtick/apostrophe/comma -- those don't
-# have a consistent visual width or shape across monospace fonts, so on
-# fonts other than the one this was tested against (confirmed on the GitHub
-# mobile app) the strokes fell out of alignment and the wordmark read as
-# noise instead of "DAUIN". 'small' draws every letter from underscore,
-# pipe, slash and backslash -- glyphs whose shape is identical in every
-# monospace font there is, same reasoning as the ASCII-only whoami box below.
-name_banner = strip_blank_lines(pyfiglet.figlet_format('DAUIN', font='small'))
+name_banner = strip_blank_lines(pyfiglet.figlet_format('DAUIN', font='thin'))
 
 # pure ASCII icons and standard single-column box drawing to guarantee
 # identical width on every monospace font and mobile OS without wrapping breaks.
