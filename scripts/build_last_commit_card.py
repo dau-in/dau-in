@@ -125,46 +125,50 @@ def truncate(message, limit):
 
 
 # Sidecar state, not shown anywhere -- just the timestamp this script last
-# trusted its chosen commit under, so the events-feed fallback below can
-# tell "genuinely newer" from "the feed just hasn't caught up yet" instead
-# of re-trusting it blind on every 30-min cron tick.
+# trusted its chosen commit under, so the fallback below can tell
+# "genuinely newer" from "not caught up yet" instead of re-trusting its
+# source blind on every 30-min cron tick.
 LAST_COMMIT_META_PATH = HERE.parent / 'assets' / 'last_commit_meta.json'
 
 
 def fetch_data():
-    # The public events feed (/users/.../events/public) is what this always
-    # used to read from, but it's eventually-consistent -- it can lag behind
-    # a push that just landed by an amount that isn't bounded to "a few
-    # minutes": confirmed a run picking up a push from hours earlier as
-    # "latest" well after a genuinely newer push had already updated this
-    # file correctly (via the push trigger below). That's the dangerous part
-    # -- this fallback also runs on every 30-min cron tick, not just once, so
-    # blindly trusting it each time would silently regress the card back to
-    # that stale commit on the very next tick, undoing a correct update.
+    # This used to fall back to the public events feed (/users/.../events/
+    # public) on non-push runs, but that feed turned out to be worse than
+    # merely laggy: confirmed a repo that had just gone public that same
+    # morning never generated a single PushEvent for it at all, hours and
+    # several real commits later, while every other repo kept reporting
+    # normally through the same feed. It's a notification stream, not
+    # authoritative state, and apparently some repos can fall through its
+    # cracks entirely, not just get delayed.
+    #
+    # A repo's own `pushed_at` (from the repo list, not the activity feed)
+    # is core metadata GitHub updates synchronously on every push -- reading
+    # which of Darwin's public repos was pushed to most recently there, then
+    # asking that repo directly for its own latest commit, sidesteps the
+    # feed's reliability problem entirely instead of trying to out-guess it.
+    #
     # This workflow's push trigger only ever fires for a push to this exact
     # repo, so on that trigger GITHUB_SHA/GITHUB_REPOSITORY (auto-injected by
     # Actions) already name the authoritative commit with no lag at all --
     # and since it just happened, "now" is a safe freshness anchor for it.
-    # Schedule/manual runs have no such commit to anchor to -- those still
-    # need the events feed, since that's the only way to see a push made to
-    # any of Darwin's repos, not just this one -- but only ever move forward
-    # from whatever freshness anchor was last recorded, never back.
+    # Schedule/manual runs have no such commit to anchor to, so they still
+    # need to look across all of Darwin's repos -- but only ever move
+    # forward from whatever freshness anchor was last recorded, never back,
+    # in case the chosen source is itself still catching up.
     if os.environ.get('GITHUB_EVENT_NAME') == 'push':
         repo_name = os.environ['GITHUB_REPOSITORY']
         sha = os.environ['GITHUB_SHA']
         source_time = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
     else:
-        # GitHub's own docs say this feed is "delivered on a best-effort
-        # basis" -- confirmed the hard way: a push from hours ago surfaced
-        # ahead of two pushes to the same repo made since, so the first
-        # PushEvent in the list isn't reliably the most recent one. Picking
-        # by max(created_at) instead of list order is the fix.
-        events = github_api(f'/users/{USERNAME}/events/public')
-        pushes = [e for e in events if e['type'] == 'PushEvent']
-        push = max(pushes, key=lambda e: e['created_at'])
-        repo_name = push['repo']['name']
-        sha = push['payload']['head']
-        source_time = push['created_at']
+        repos = github_api(f'/users/{USERNAME}/repos?sort=pushed&direction=desc&per_page=10')
+        # skips this repo itself -- its own 30-min bot refresh commits would
+        # otherwise make this profile repo permanently look like Darwin's
+        # own most recent push, the same reason the push trigger above only
+        # trusts GITHUB_SHA on an actual push event, never this branch.
+        candidate = next(r for r in repos if r['full_name'] != f'{USERNAME}/{USERNAME}')
+        repo_name = candidate['full_name']
+        sha = candidate['default_branch']
+        source_time = candidate['pushed_at']
 
         if LAST_COMMIT_META_PATH.exists():
             previous = json.loads(LAST_COMMIT_META_PATH.read_text(encoding='utf-8'))
