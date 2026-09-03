@@ -168,6 +168,9 @@ NES emulator, browser-based — WebGL CRT, netplay
 **kintsugi** &nbsp; <code>wip</code><br>
 Go TUI — Windows LTSB/LTSC ISOs, DISM internals
 
+**fakalab** &nbsp; <code>wip</code><br>
+CS 1.6 knife skins, browser-based — palette rewrite, live 3D preview
+
 </td>
 </tr>
 <tr><td colspan="2" align="center"><a href="{last_commit_url}"><img src="assets/last_commit_card.png?v={CACHE_BUST}" width="100%"/></a></td></tr>
