@@ -92,12 +92,23 @@ PROJECTS = [
     ('fakalab', 'wip', 'CS 1.6 knife skins, browser-based — palette rewrite, live 3D preview'),
 ]
 
-def build_projects_list(projects):
+def build_projects_block(projects, header='$ ls ~/projects', prompt='[dauin@cachyos ~]$ _'):
+    # Padding every line (including the header/prompt) to the same total
+    # width, not just left-justifying them, for the same reason
+    # build_terminal_box does it for whoami_box: confirmed on the GitHub
+    # mobile app that this block's own uniform width is what was masking a
+    # real bug, not incidental -- variable-width lines wider than the
+    # viewport each end up centered independently instead of sharing one
+    # left edge, visibly misaligned. A border made every whoami_box line
+    # identical width as a side effect; this has no border, so it has to
+    # pad on purpose instead.
     name_w = max(len(name) for name, _, _ in projects) + 2
-    lines = [f'{name:<{name_w}}{"[" + status + "]":<7}{desc}' for name, status, desc in projects]
-    return '\n'.join(lines)
+    proj_lines = [f'{name:<{name_w}}{"[" + status + "]":<7}{desc}' for name, status, desc in projects]
+    all_lines = [header, ''] + proj_lines + ['', prompt]
+    width = max(len(l) for l in all_lines)
+    return '\n'.join(l.ljust(width) for l in all_lines)
 
-projects_list = build_projects_list(PROJECTS)
+projects_block = build_projects_block(PROJECTS)
 
 discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
@@ -187,10 +198,7 @@ $ chafa section2.gif
 <img src="assets/section2_photos_v2.gif" width="128"/>
 
 ```
-$ ls ~/projects
-{projects_list}
-
-[dauin@cachyos ~]$ _
+{projects_block}
 ```
 
 </td></tr></table>
