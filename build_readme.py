@@ -89,28 +89,18 @@ PROJECTS = [
     ('fakalab', None, None, 'wip', 'CS 1.6 knife skins, browser-based — palette rewrite, live 3D preview'),
 ]
 
-# Real color on the status tag -- not a devicon logo (rejected: no two of
-# these projects would read as distinct by language alone) and not a
-# rendered PNG (rejected: already too many glossy cards on this page) --
-# just an inline-styled <span>. That only works because this lives in plain
-# markdown/HTML, not a ```code fence``` like whoami_box: a fence is
-# genuinely monochrome, no per-character color possible, but a <span> with
-# its own style= renders real color same as any other inline HTML here.
-STATUS_STYLE = {
-    'live': ('#7ee787', 'rgba(63,185,80,0.12)', 'rgba(63,185,80,0.3)'),
-    'wip': ('#e3b341', 'rgba(227,179,65,0.1)', 'rgba(227,179,65,0.3)'),
-}
-
-def status_pill(status):
-    color, bg, border = STATUS_STYLE[status]
-    return (f'<span style="display:inline-block; font-family:ui-monospace,monospace; font-size:11px; '
-            f'font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:{color}; '
-            f'background:{bg}; border:1px solid {border}; border-radius:999px; padding:2px 9px;">{status}</span>')
-
+# Plain <code> tag, not a colored <span> -- tried inline style= for a real
+# green/amber pill first, but GitHub's markdown sanitizer strips the whole
+# style attribute from raw HTML in a README (confirmed on the live page:
+# <span style="...">live</span> came back as bare <span>live</span>, no
+# color, no background). Real per-character color in a README is only
+# possible through an actual image (an SVG/PNG's own pixels aren't
+# sanitized), which is exactly the "another glossy card" tradeoff this was
+# chosen to avoid -- so plain and monochrome it stays.
 def build_project_entry(name, url, icon, status, desc):
     icon_tag = f'<img src="{icon}" width="16" valign="middle"/> ' if icon else ''
     name_tag = f'**[{name}]({url})**' if url else f'**{name}**'
-    return f'{icon_tag}{name_tag} &nbsp; {status_pill(status)}<br>\n{desc}'
+    return f'{icon_tag}{name_tag} &nbsp; <code>{status}</code><br>\n{desc}'
 
 projects_html = '\n\n'.join(build_project_entry(*p) for p in PROJECTS)
 

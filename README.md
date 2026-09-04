@@ -75,19 +75,19 @@
 <td width="170"><img src="assets/section2_photos_v2.gif" width="160"/></td>
 <td width="280" valign="top">
 
-<img src="assets/channel3_icon.png" width="16" valign="middle"/> **[channel-3](https://channelthree.vercel.app)** &nbsp; <span style="display:inline-block; font-family:ui-monospace,monospace; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:#7ee787; background:rgba(63,185,80,0.12); border:1px solid rgba(63,185,80,0.3); border-radius:999px; padding:2px 9px;">live</span><br>
+<img src="assets/channel3_icon.png" width="16" valign="middle"/> **[channel-3](https://channelthree.vercel.app)** &nbsp; <code>live</code><br>
 NES emulator, browser-based — WebGL CRT, netplay
 
-**kintsugi** &nbsp; <span style="display:inline-block; font-family:ui-monospace,monospace; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:#e3b341; background:rgba(227,179,65,0.1); border:1px solid rgba(227,179,65,0.3); border-radius:999px; padding:2px 9px;">wip</span><br>
+**kintsugi** &nbsp; <code>wip</code><br>
 Go TUI — Windows LTSB/LTSC ISOs, DISM internals
 
-**fakalab** &nbsp; <span style="display:inline-block; font-family:ui-monospace,monospace; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:#e3b341; background:rgba(227,179,65,0.1); border:1px solid rgba(227,179,65,0.3); border-radius:999px; padding:2px 9px;">wip</span><br>
+**fakalab** &nbsp; <code>wip</code><br>
 CS 1.6 knife skins, browser-based — palette rewrite, live 3D preview
 
 </td>
 </tr>
-<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/dau-in/commit/bba6d2d8e6c7193efe4eb46b72bbe184757781f1"><img src="assets/last_commit_card.png?v=33868347652" width="100%"/></a></td></tr>
-<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v=33868347652" width="100%"/></td></tr>
+<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/dau-in/commit/bba6d2d8e6c7193efe4eb46b72bbe184757781f1"><img src="assets/last_commit_card.png?v=1788521591" width="100%"/></a></td></tr>
+<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v=1788521591" width="100%"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -116,8 +116,8 @@ CS 1.6 knife skins, browser-based — palette rewrite, live 3D preview
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
 <tr>
-<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=33868347652" width="220"/></a></td>
-<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=33868347652" width="220"/></a></td>
+<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=1788521591" width="220"/></a></td>
+<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=1788521591" width="220"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="100%" alt="discord"/></a></td></tr>
 </table>
