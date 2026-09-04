@@ -72,22 +72,28 @@
      this repo, by scripts/build_last_commit_card.py -- never hand-edited. -->
 <table align="center">
 <tr>
-<td width="170"><img src="assets/section2_photos_v2.gif" width="160"/></td>
-<td width="280" valign="top">
+<td width="170" align="center" valign="middle"><img src="assets/section2_photos_v2.gif" width="160"/></td>
+<td width="360" valign="middle">
 
-<img src="assets/channel3_icon.png" width="16" valign="middle"/> **[channel-3](https://channelthree.vercel.app)** &nbsp; <code>live</code><br>
-NES emulator, browser-based — WebGL CRT, netplay
-
-**kintsugi** &nbsp; <code>wip</code><br>
-Go TUI — Windows LTSB/LTSC ISOs, DISM internals
-
-**fakalab** &nbsp; <code>wip</code><br>
-CS 1.6 knife skins, browser-based — palette rewrite, live 3D preview
+```
++- [dauin@cachyos ~]$ -------------------------------+
+| $ tree ~/projects                                  |
+|                                                    |
+| |-- channel-3 [live]                               |
+| |   `-- WebGL NES emulator, CRT shaders, netplay   |
+| |-- kintsugi  [wip]                                |
+| |   `-- Go TUI for Windows DISM and ISO tooling    |
+| `-- fakalab   [wip]                                |
+|     `-- CS 1.6 knife skin studio and 3D preview    |
+|                                                    |
+| [dauin@cachyos ~]$ _                               |
++----------------------------------------------------+
+```
 
 </td>
 </tr>
-<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/fakalab/commit/b92a7bc3a70270d269f5013e09d8fa6472f65dea"><img src="assets/last_commit_card.png?v=33892666043" width="100%"/></a></td></tr>
-<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v=33892666043" width="100%"/></td></tr>
+<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/fakalab/commit/b92a7bc3a70270d269f5013e09d8fa6472f65dea"><img src="assets/last_commit_card.png?v=1788538938" width="100%"/></a></td></tr>
+<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v=1788538938" width="100%"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -116,8 +122,8 @@ CS 1.6 knife skins, browser-based — palette rewrite, live 3D preview
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
 <tr>
-<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=33892666043" width="220"/></a></td>
-<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=33892666043" width="220"/></a></td>
+<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=1788538938" width="220"/></a></td>
+<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=1788538938" width="220"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="100%" alt="discord"/></a></td></tr>
 </table>
