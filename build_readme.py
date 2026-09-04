@@ -80,6 +80,25 @@ whoami_cpp_lines = [
 ]
 whoami_box = build_terminal_box('cat whoami.cpp', whoami_cpp_lines)
 
+# (name, status, one-line description) -- plain text, not a rendered image,
+# so it's editable here directly instead of through a build script. status
+# stays plain [live]/[wip] text (no color) since a markdown code fence can't
+# selectively color characters -- coloring it would mean rendering this as
+# a PNG like the other cards, which is exactly the "another glossy card"
+# look this was chosen over.
+PROJECTS = [
+    ('channel-3', 'live', 'NES emulator, browser-based — WebGL CRT, netplay'),
+    ('kintsugi', 'wip', 'Go TUI — Windows LTSB/LTSC ISOs, DISM internals'),
+    ('fakalab', 'wip', 'CS 1.6 knife skins, browser-based — palette rewrite, live 3D preview'),
+]
+
+def build_projects_list(projects):
+    name_w = max(len(name) for name, _, _ in projects) + 2
+    lines = [f'{name:<{name_w}}{"[" + status + "]":<7}{desc}' for name, status, desc in projects]
+    return '\n'.join(lines)
+
+projects_list = build_projects_list(PROJECTS)
+
 discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
                '&idleMessage=bored%2C+for+now&showDisplayName=true')
@@ -148,33 +167,47 @@ readme = f'''<div align="center">
 
 {sep()}
 
-<!-- last-commit row lives in this SAME table as a colspan row, not its own
-     table below -- two separate tables of different natural widths read as
-     two unrelated floating boxes stacked on top of each other, not one
-     section. width="100%" on its image fills whatever this row actually
-     renders as (same trick used for passport/discord under the widgets
-     section) so it reads as the bottom of one cohesive block instead.
-     Rebuilt every 30 min (cron-job.org pinging workflow_dispatch -- see
+<!-- Continues the same terminal session as whoami.cpp above, not a new
+     widget: chafa is a real Linux/CachyOS CLI image viewer, so the photo
+     sits under a command that actually applies to an image instead of
+     `ls` pretending to have produced it. Own <table><td> wrapper for the
+     same overflow-x reason as whoami_box (unwrappable monospace content
+     needs a definite-width ancestor to scroll inside on mobile) -- kept as
+     its own table rather than merged into the cards table below, since
+     nesting a table inside a table cell is the exact pattern that silently
+     drops images on the GitHub mobile app (confirmed elsewhere in this
+     file). Plain text/ASCII on purpose, not a rendered PNG like the other
+     cards -- edit PROJECTS above directly, no script/secrets involved. -->
+<table align="center"><tr><td align="center">
+
+```
+$ chafa section2.gif
+```
+
+<img src="assets/section2_photos_v2.gif" width="128"/>
+
+```
+$ ls ~/projects
+{projects_list}
+
+[dauin@cachyos ~]$ _
+```
+
+</td></tr></table>
+
+{sep()}
+
+<!-- Own table, not merged with the block above -- same reasoning: no
+     nested tables. width="100%" on each image fills whatever the row
+     actually renders as (same trick used for passport/discord under the
+     widgets section) so back-to-back tables still read as one section
+     instead of two unrelated floating boxes. Rebuilt every 30 min
+     (cron-job.org pinging workflow_dispatch -- see
      .github/workflows/update-widgets.yml) and instantly on every push to
      this repo, by scripts/build_last_commit_card.py -- never hand-edited. -->
 <table align="center">
-<tr>
-<td width="170"><img src="assets/section2_photos_v2.gif" width="160"/></td>
-<td width="280" valign="top">
-
-<img src="assets/channel3_icon.png" width="16" valign="middle"/> **[channel-3](https://channelthree.vercel.app)** &nbsp; <code>live</code><br>
-NES emulator, browser-based — WebGL CRT, netplay
-
-**kintsugi** &nbsp; <code>wip</code><br>
-Go TUI — Windows LTSB/LTSC ISOs, DISM internals
-
-**fakalab** &nbsp; <code>wip</code><br>
-CS 1.6 knife skins, browser-based — palette rewrite, live 3D preview
-
-</td>
-</tr>
-<tr><td colspan="2" align="center"><a href="{last_commit_url}"><img src="assets/last_commit_card.png?v={CACHE_BUST}" width="100%"/></a></td></tr>
-<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v={CACHE_BUST}" width="100%"/></td></tr>
+<tr><td align="center"><a href="{last_commit_url}"><img src="assets/last_commit_card.png?v={CACHE_BUST}" width="100%"/></a></td></tr>
+<tr><td align="center"><img src="assets/wakatime_card.png?v={CACHE_BUST}" width="100%"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
