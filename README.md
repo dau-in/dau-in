@@ -103,8 +103,8 @@ fakalab    [wip]  CS 1.6 knife skins, browser-based — palette rewrite, live 3D
      .github/workflows/update-widgets.yml) and instantly on every push to
      this repo, by scripts/build_last_commit_card.py -- never hand-edited. -->
 <table align="center">
-<tr><td align="center"><a href="https://github.com/dau-in/dau-in/commit/26248143409580683cf2e05cd361c24e1ee31b84"><img src="assets/last_commit_card.png?v=1788520794" width="100%"/></a></td></tr>
-<tr><td align="center"><img src="assets/wakatime_card.png?v=1788520794" width="100%"/></td></tr>
+<tr><td align="center"><a href="https://github.com/dau-in/dau-in/commit/b47fdc431f036c848e8af74944ac60e0686f4d5c"><img src="assets/last_commit_card.png?v=33867448823" width="100%"/></a></td></tr>
+<tr><td align="center"><img src="assets/wakatime_card.png?v=33867448823" width="100%"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -133,8 +133,8 @@ fakalab    [wip]  CS 1.6 knife skins, browser-based — palette rewrite, live 3D
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
 <tr>
-<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=1788520794" width="220"/></a></td>
-<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=1788520794" width="220"/></a></td>
+<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=33867448823" width="220"/></a></td>
+<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=33867448823" width="220"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="100%" alt="discord"/></a></td></tr>
 </table>
