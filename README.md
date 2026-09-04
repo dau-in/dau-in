@@ -92,8 +92,8 @@
 
 </td>
 </tr>
-<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/dau-in/commit/45abdd5749ad595c1118b1a2b55e4a66b22ecc9b"><img src="assets/last_commit_card.png?v=33894787815" width="100%"/></a></td></tr>
-<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v=33894787815" width="100%"/></td></tr>
+<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/dau-in/commit/45abdd5749ad595c1118b1a2b55e4a66b22ecc9b"><img src="assets/last_commit_card.png?v=33895485659" width="100%"/></a></td></tr>
+<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v=33895485659" width="100%"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -122,8 +122,8 @@
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
 <tr>
-<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=33894787815" width="220"/></a></td>
-<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=33894787815" width="220"/></a></td>
+<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=33895485659" width="220"/></a></td>
+<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=33895485659" width="220"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="100%" alt="discord"/></a></td></tr>
 </table>
