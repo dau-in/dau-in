@@ -86,8 +86,8 @@ CS 1.6 knife skins, browser-based — palette rewrite, live 3D preview
 
 </td>
 </tr>
-<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/dau-in/commit/b47fdc431f036c848e8af74944ac60e0686f4d5c"><img src="assets/last_commit_card.png?v=1788521473" width="100%"/></a></td></tr>
-<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v=1788521473" width="100%"/></td></tr>
+<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/dau-in/commit/bba6d2d8e6c7193efe4eb46b72bbe184757781f1"><img src="assets/last_commit_card.png?v=33868347652" width="100%"/></a></td></tr>
+<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v=33868347652" width="100%"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -116,8 +116,8 @@ CS 1.6 knife skins, browser-based — palette rewrite, live 3D preview
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
 <tr>
-<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=1788521473" width="220"/></a></td>
-<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=1788521473" width="220"/></a></td>
+<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=33868347652" width="220"/></a></td>
+<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=33868347652" width="220"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="100%" alt="discord"/></a></td></tr>
 </table>
