@@ -80,35 +80,39 @@ whoami_cpp_lines = [
 ]
 whoami_box = build_terminal_box('cat whoami.cpp', whoami_cpp_lines)
 
-# (name, status, one-line description) -- plain text, not a rendered image,
-# so it's editable here directly instead of through a build script. status
-# stays plain [live]/[wip] text (no color) since a markdown code fence can't
-# selectively color characters -- coloring it would mean rendering this as
-# a PNG like the other cards, which is exactly the "another glossy card"
-# look this was chosen over.
+# (name, url or None, icon path or None, status, one-line description) --
+# plain data, not a rendered image, so it's editable here directly instead
+# of through a build script.
 PROJECTS = [
-    ('channel-3', 'live', 'NES emulator, browser-based — WebGL CRT, netplay'),
-    ('kintsugi', 'wip', 'Go TUI — Windows LTSB/LTSC ISOs, DISM internals'),
-    ('fakalab', 'wip', 'CS 1.6 knife skins, browser-based — palette rewrite, live 3D preview'),
+    ('channel-3', 'https://channelthree.vercel.app', 'assets/channel3_icon.png', 'live', 'NES emulator, browser-based — WebGL CRT, netplay'),
+    ('kintsugi', None, None, 'wip', 'Go TUI — Windows LTSB/LTSC ISOs, DISM internals'),
+    ('fakalab', None, None, 'wip', 'CS 1.6 knife skins, browser-based — palette rewrite, live 3D preview'),
 ]
 
-def build_projects_block(projects, header='$ ls ~/projects', prompt='[dauin@cachyos ~]$ _'):
-    # Padding every line (including the header/prompt) to the same total
-    # width, not just left-justifying them, for the same reason
-    # build_terminal_box does it for whoami_box: confirmed on the GitHub
-    # mobile app that this block's own uniform width is what was masking a
-    # real bug, not incidental -- variable-width lines wider than the
-    # viewport each end up centered independently instead of sharing one
-    # left edge, visibly misaligned. A border made every whoami_box line
-    # identical width as a side effect; this has no border, so it has to
-    # pad on purpose instead.
-    name_w = max(len(name) for name, _, _ in projects) + 2
-    proj_lines = [f'{name:<{name_w}}{"[" + status + "]":<7}{desc}' for name, status, desc in projects]
-    all_lines = [header, ''] + proj_lines + ['', prompt]
-    width = max(len(l) for l in all_lines)
-    return '\n'.join(l.ljust(width) for l in all_lines)
+# Real color on the status tag -- not a devicon logo (rejected: no two of
+# these projects would read as distinct by language alone) and not a
+# rendered PNG (rejected: already too many glossy cards on this page) --
+# just an inline-styled <span>. That only works because this lives in plain
+# markdown/HTML, not a ```code fence``` like whoami_box: a fence is
+# genuinely monochrome, no per-character color possible, but a <span> with
+# its own style= renders real color same as any other inline HTML here.
+STATUS_STYLE = {
+    'live': ('#7ee787', 'rgba(63,185,80,0.12)', 'rgba(63,185,80,0.3)'),
+    'wip': ('#e3b341', 'rgba(227,179,65,0.1)', 'rgba(227,179,65,0.3)'),
+}
 
-projects_block = build_projects_block(PROJECTS)
+def status_pill(status):
+    color, bg, border = STATUS_STYLE[status]
+    return (f'<span style="display:inline-block; font-family:ui-monospace,monospace; font-size:11px; '
+            f'font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:{color}; '
+            f'background:{bg}; border:1px solid {border}; border-radius:999px; padding:2px 9px;">{status}</span>')
+
+def build_project_entry(name, url, icon, status, desc):
+    icon_tag = f'<img src="{icon}" width="16" valign="middle"/> ' if icon else ''
+    name_tag = f'**[{name}]({url})**' if url else f'**{name}**'
+    return f'{icon_tag}{name_tag} &nbsp; {status_pill(status)}<br>\n{desc}'
+
+projects_html = '\n\n'.join(build_project_entry(*p) for p in PROJECTS)
 
 discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
@@ -178,44 +182,26 @@ readme = f'''<div align="center">
 
 {sep()}
 
-<!-- Continues the same terminal session as whoami.cpp above, not a new
-     widget: chafa is a real Linux/CachyOS CLI image viewer, so the photo
-     sits under a command that actually applies to an image instead of
-     `ls` pretending to have produced it. Own <table><td> wrapper for the
-     same overflow-x reason as whoami_box (unwrappable monospace content
-     needs a definite-width ancestor to scroll inside on mobile) -- kept as
-     its own table rather than merged into the cards table below, since
-     nesting a table inside a table cell is the exact pattern that silently
-     drops images on the GitHub mobile app (confirmed elsewhere in this
-     file). Plain text/ASCII on purpose, not a rendered PNG like the other
-     cards -- edit PROJECTS above directly, no script/secrets involved. -->
-<table align="center"><tr><td align="center">
-
-```
-$ chafa section2.gif
-```
-
-<img src="assets/section2_photos_v2.gif" width="128"/>
-
-```
-{projects_block}
-```
-
-</td></tr></table>
-
-{sep()}
-
-<!-- Own table, not merged with the block above -- same reasoning: no
-     nested tables. width="100%" on each image fills whatever the row
-     actually renders as (same trick used for passport/discord under the
-     widgets section) so back-to-back tables still read as one section
-     instead of two unrelated floating boxes. Rebuilt every 30 min
-     (cron-job.org pinging workflow_dispatch -- see
+<!-- last-commit row lives in this SAME table as a colspan row, not its own
+     table below -- two separate tables of different natural widths read as
+     two unrelated floating boxes stacked on top of each other, not one
+     section. width="100%" on its image fills whatever this row actually
+     renders as (same trick used for passport/discord under the widgets
+     section) so it reads as the bottom of one cohesive block instead.
+     Rebuilt every 30 min (cron-job.org pinging workflow_dispatch -- see
      .github/workflows/update-widgets.yml) and instantly on every push to
      this repo, by scripts/build_last_commit_card.py -- never hand-edited. -->
 <table align="center">
-<tr><td align="center"><a href="{last_commit_url}"><img src="assets/last_commit_card.png?v={CACHE_BUST}" width="100%"/></a></td></tr>
-<tr><td align="center"><img src="assets/wakatime_card.png?v={CACHE_BUST}" width="100%"/></td></tr>
+<tr>
+<td width="170"><img src="assets/section2_photos_v2.gif" width="160"/></td>
+<td width="280" valign="top">
+
+{projects_html}
+
+</td>
+</tr>
+<tr><td colspan="2" align="center"><a href="{last_commit_url}"><img src="assets/last_commit_card.png?v={CACHE_BUST}" width="100%"/></a></td></tr>
+<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v={CACHE_BUST}" width="100%"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
