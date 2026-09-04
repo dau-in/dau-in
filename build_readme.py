@@ -80,29 +80,33 @@ whoami_cpp_lines = [
 ]
 whoami_box = build_terminal_box('cat whoami.cpp', whoami_cpp_lines)
 
-# (name, url or None, icon path or None, status, one-line description) --
-# plain data, not a rendered image, so it's editable here directly instead
-# of through a build script.
-PROJECTS = [
-    ('channel-3', 'https://channelthree.vercel.app', 'assets/channel3_icon.png', 'live', 'NES emulator, browser-based — WebGL CRT, netplay'),
-    ('kintsugi', None, None, 'wip', 'Go TUI — Windows LTSB/LTSC ISOs, DISM internals'),
-    ('fakalab', None, None, 'wip', 'CS 1.6 knife skins, browser-based — palette rewrite, live 3D preview'),
+# Active choice: Option 1 (tree ~/projects) with natural phrasing.
+# ASCII connectors (|--/`--), not the Unicode box-drawing block (├── │ └─)
+# real `tree` draws by default -- same reasoning as build_terminal_box's own
+# border: confirmed on the GitHub mobile app that block falls back to a
+# different, poorly-hinted font and renders broken. This is also just what
+# `tree --charset=ascii` actually outputs, not an invented compromise.
+projects_tree_lines = [
+    '|-- channel-3 [live]',
+    '|   `-- WebGL NES emulator, CRT shaders, netplay',
+    '|-- kintsugi  [wip]',
+    '|   `-- Go TUI for Windows DISM and ISO tooling',
+    '`-- fakalab   [wip]',
+    '    `-- CS 1.6 knife skin studio and 3D preview',
 ]
 
-# Plain <code> tag, not a colored <span> -- tried inline style= for a real
-# green/amber pill first, but GitHub's markdown sanitizer strips the whole
-# style attribute from raw HTML in a README (confirmed on the live page:
-# <span style="...">live</span> came back as bare <span>live</span>, no
-# color, no background). Real per-character color in a README is only
-# possible through an actual image (an SVG/PNG's own pixels aren't
-# sanitized), which is exactly the "another glossy card" tradeoff this was
-# chosen to avoid -- so plain and monochrome it stays.
-def build_project_entry(name, url, icon, status, desc):
-    icon_tag = f'<img src="{icon}" width="16" valign="middle"/> ' if icon else ''
-    name_tag = f'**[{name}]({url})**' if url else f'**{name}**'
-    return f'{icon_tag}{name_tag} &nbsp; <code>{status}</code><br>\n{desc}'
+# Alternative Option 2: Active process monitor ($ ps)
+# Saved in case you want to switch to it later:
+projects_ps_lines = [
+    'PID  STAT  PROJECT     DETAILS',
+    '001  RUN   channel-3   NES emulator (WebGL CRT)',
+    '002  DEV   kintsugi    Go TUI / Windows DISM',
+    '003  DEV   fakalab     CS 1.6 knife skin studio',
+]
 
-projects_html = '\n\n'.join(build_project_entry(*p) for p in PROJECTS)
+projects_box = build_terminal_box('tree ~/projects', projects_tree_lines)
+# To switch to Option 2 in the future, simply change to:
+# projects_box = build_terminal_box('ps -o pid,stat,command -C projects', projects_ps_lines)
 
 discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
@@ -183,10 +187,12 @@ readme = f'''<div align="center">
      this repo, by scripts/build_last_commit_card.py -- never hand-edited. -->
 <table align="center">
 <tr>
-<td width="170"><img src="assets/section2_photos_v2.gif" width="160"/></td>
-<td width="280" valign="top">
+<td width="170" align="center" valign="middle"><img src="assets/section2_photos_v2.gif" width="160"/></td>
+<td width="360" valign="middle">
 
-{projects_html}
+```
+{projects_box}
+```
 
 </td>
 </tr>
