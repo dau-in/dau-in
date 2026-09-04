@@ -80,12 +80,19 @@ whoami_cpp_lines = [
 ]
 whoami_box = build_terminal_box('cat whoami.cpp', whoami_cpp_lines)
 
-# Active choice: Option 1 (tree ~/projects) with natural phrasing.
-# ASCII connectors (|--/`--), not the Unicode box-drawing block (├── │ └─)
-# real `tree` draws by default -- same reasoning as build_terminal_box's own
-# border: confirmed on the GitHub mobile app that block falls back to a
-# different, poorly-hinted font and renders broken. This is also just what
-# `tree --charset=ascii` actually outputs, not an invented compromise.
+# Active choice: process-monitor style ($ ps) -- one line per project,
+# columns aligned (PID/STAT/PROJECT/DETAILS). The tree ~/projects version
+# tried before this read worse: two uneven lines per project (a short
+# name+tag line, then a long indented description line) zigzags instead of
+# lining up, where this is a clean table.
+projects_ps_lines = [
+    'PID  STAT  PROJECT     DETAILS',
+    '001  RUN   channel-3   NES emulator (WebGL CRT)',
+    '002  DEV   kintsugi    Go TUI / Windows DISM',
+    '003  DEV   fakalab     CS 1.6 knife skin studio',
+]
+
+# Saved in case you want to switch back to it later:
 projects_tree_lines = [
     '|-- channel-3 [live]',
     '|   `-- WebGL NES emulator, CRT shaders, netplay',
@@ -95,18 +102,9 @@ projects_tree_lines = [
     '    `-- CS 1.6 knife skin studio and 3D preview',
 ]
 
-# Alternative Option 2: Active process monitor ($ ps)
-# Saved in case you want to switch to it later:
-projects_ps_lines = [
-    'PID  STAT  PROJECT     DETAILS',
-    '001  RUN   channel-3   NES emulator (WebGL CRT)',
-    '002  DEV   kintsugi    Go TUI / Windows DISM',
-    '003  DEV   fakalab     CS 1.6 knife skin studio',
-]
-
-projects_box = build_terminal_box('tree ~/projects', projects_tree_lines)
-# To switch to Option 2 in the future, simply change to:
-# projects_box = build_terminal_box('ps -o pid,stat,command -C projects', projects_ps_lines)
+projects_box = build_terminal_box('ps -o pid,stat,command -C projects', projects_ps_lines)
+# To switch back to the tree version, simply change to:
+# projects_box = build_terminal_box('tree ~/projects', projects_tree_lines)
 
 discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
