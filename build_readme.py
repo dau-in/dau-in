@@ -89,17 +89,14 @@ projects_ps_lines = [
     'PID  STAT  PROJECT     DETAILS',
     '001  RUN   channel-3   NES emulator (WebGL CRT)',
     '002  DEV   kintsugi    Go TUI / Windows DISM',
-    '003  DEV   fakalab     CS 1.6 knife skin studio',
 ]
 
 # Saved in case you want to switch back to it later:
 projects_tree_lines = [
     '|-- channel-3 [live]',
     '|   `-- WebGL NES emulator, CRT shaders, netplay',
-    '|-- kintsugi  [wip]',
-    '|   `-- Go TUI for Windows DISM and ISO tooling',
-    '`-- fakalab   [wip]',
-    '    `-- CS 1.6 knife skin studio and 3D preview',
+    '`-- kintsugi  [wip]',
+    '    `-- Go TUI for Windows DISM and ISO tooling',
 ]
 
 projects_box = build_terminal_box('ps -o pid,stat,command -C projects', projects_ps_lines)
