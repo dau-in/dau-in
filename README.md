@@ -35,24 +35,18 @@
 +- [dauin@cachyos ~]$ -----------------------------------------------------------+
 | $ cat whoami.cpp                                                               |
 |                                                                                |
-| #include <array>                                                               |
-|                                                                                |
 | namespace dauin {                                                              |
-|     constexpr auto role    = "Computer Engineer.";                             |
-|     constexpr auto stack   = std::to_array({ "full-stack dev",                 |
-|                                              "IT support", "network" });       |
-|                                                                                |
-|     constexpr auto mindset = "Perpetual student with endless curiosity "       |
-|                              "for how things tick.";                           |
-|     constexpr auto passion = "Loved hardware since I was small. Still the "    |
-|                              "closest thing I have to a reason why.";          |
-|     constexpr auto dilemma = "Hooked on the leverage, wary of the "            |
-|                              "dependency. I can't work without it anymore.";   |
-|                                                                                |
-|     constexpr auto habitat = "Living in the terminal (CachyOS enjoyer), "      |
-|                              "but Windows is my cozy fallback.";               |
-|     constexpr auto vibe    = "Just for fun, I guess...";                       |
-|     constexpr auto loop    = "Clauding my way forward, step by step.";         |
+|     constexpr auto role     = "Computer Engineer.";                            |
+|     constexpr auto ai       = "\"Why is AI so addictive?\" "                   |
+|                               "-- because architecting autonomy is fun.";      |
+|     constexpr auto stack    = { "full-stack dev", "IT support", "network" };   |
+|     constexpr auto mindset  = "Perpetual student with endless curiosity "      |
+|                               "for how things tick.";                          |
+|     constexpr auto hardware = "Hardware lover at the core.";                   |
+|     constexpr auto vibe     = "Just for fun, I guess...";                      |
+|     constexpr auto habitat  = "Living in the terminal (CachyOS enjoyer), "     |
+|                               "but Windows is my cozy fallback.";              |
+|     constexpr auto loop     = "Clauding my way forward, step by step.";        |
 | }                                                                              |
 |                                                                                |
 | // -- [ Memory Log ] ----------------------------------------------------      |
@@ -95,8 +89,8 @@
 
 </td>
 </tr>
-<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/dau-in/commit/62f6086f82fbd1add1655b621b5e54a165b88941"><img src="assets/last_commit_card.png?v=34401410648" width="100%"/></a></td></tr>
-<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v=34401410648" width="100%"/></td></tr>
+<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/dau-in/commit/424d10167c54b078859cdb2a8156bfdd61df12bb"><img src="assets/last_commit_card.png?v=34406495613" width="100%"/></a></td></tr>
+<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v=34406495613" width="100%"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -125,8 +119,8 @@
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
 <tr>
-<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=34401410648" width="220"/></a></td>
-<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=34401410648" width="220"/></a></td>
+<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=34406495613" width="220"/></a></td>
+<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=34406495613" width="220"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="100%" alt="discord"/></a></td></tr>
 </table>
