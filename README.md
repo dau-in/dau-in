@@ -35,18 +35,24 @@
 +- [dauin@cachyos ~]$ -----------------------------------------------------------+
 | $ cat whoami.cpp                                                               |
 |                                                                                |
+| #include <array>                                                               |
+|                                                                                |
 | namespace dauin {                                                              |
-|     constexpr auto role     = "Computer Engineer.";                            |
-|     constexpr auto ai       = "\"Why is AI so addictive?\" "                   |
-|                               "-- because architecting autonomy is fun.";      |
-|     constexpr auto stack    = { "full-stack dev", "IT support", "network" };   |
-|     constexpr auto mindset  = "Perpetual student with endless curiosity "      |
-|                               "for how things tick.";                          |
-|     constexpr auto hardware = "Hardware lover at the core.";                   |
-|     constexpr auto vibe     = "Just for fun, I guess...";                      |
-|     constexpr auto habitat  = "Living in the terminal (CachyOS enjoyer), "     |
-|                               "but Windows is my cozy fallback.";              |
-|     constexpr auto loop     = "Clauding my way forward, step by step.";        |
+|     constexpr auto role    = "Computer Engineer.";                             |
+|     constexpr auto stack   = std::to_array({ "full-stack dev",                 |
+|                                              "IT support", "network" });       |
+|                                                                                |
+|     constexpr auto mindset = "Perpetual student with endless curiosity "       |
+|                              "for how things tick.";                           |
+|     constexpr auto passion = "Loved hardware since I was small. Still the "    |
+|                              "closest thing I have to a reason why.";          |
+|     constexpr auto dilemma = "Hooked on the leverage, wary of the "            |
+|                              "dependency. I can't work without it anymore.";   |
+|                                                                                |
+|     constexpr auto habitat = "Living in the terminal (CachyOS enjoyer), "      |
+|                              "but Windows is my cozy fallback.";               |
+|     constexpr auto vibe    = "Just for fun, I guess...";                       |
+|     constexpr auto loop    = "Clauding my way forward, step by step.";         |
 | }                                                                              |
 |                                                                                |
 | // -- [ Memory Log ] ----------------------------------------------------      |
