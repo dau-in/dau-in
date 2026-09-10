@@ -112,10 +112,13 @@ app before assuming a fix works, desktop rendering hides all of these)
    without it the run shares the image's line and the column's *max*-content
    grows to image+spacer, widening the desktop layout. The name-banner row
    up top is the same shape but survives untouched because its code block is
-   only ~196px wide, so leftovers remain. Side effect to accept: the photo
-   column is real width now, so this section's horizontal scroll extent grows
-   (434px → 587px at 375px viewport) — on the mobile app that's invisible,
-   since a `<table>` there is forced to `width:100%` regardless.
+   only ~196px wide, so leftovers remain. Side effect: the photo column is
+   real width now, so the projects table's scroll extent grew from 434px to
+   587px. That's fine for the box itself (a wide terminal box scrolls
+   sideways on a phone by design), but it dragged the last-commit and
+   wakatime cards along, since a `colspan` cell is as wide as its table —
+   they had to be scrolled to be seen whole, unlike every other card. Fixed
+   by moving those two into their own table, see below.
 
 ## Design decisions already made (don't re-propose these — they were tried
 and explicitly rejected in favor of what's live now)
@@ -143,7 +146,17 @@ wakatime cards) went through a lot of iteration. Rejected, in order:
 
 **Current state**: side-by-side table (photo left, `ps`-style terminal box
 right, see `projects_box` / `projects_ps_lines` in `build_readme.py`), no
-color, no icons, no border. `fakalab` is suspended (commented out of the
+color, no icons, no border. The last-commit and wakatime cards are a
+**separate top-level table** right below it, at a fixed pixel width
+(`CARD_WIDTH`), not `colspan` rows of it and not `width="100%"`. They were
+colspan rows once, so both halves would read as one block; that made their
+width a hostage of the projects box's, and they overflowed a phone screen.
+Split out, they shrink to the viewport, and on desktop both tables still
+render 587px wide at the same left edge, so the section still reads as one
+(only a 16px table margin between them now). A percentage width does *not*
+work in the split table: it resolves against a table that is itself sizing
+to its contents, collapsing the whole thing to 28px (measured). Re-measure
+`CARD_WIDTH` if the projects box ever changes width. `fakalab` is suspended (commented out of the
 project lists, not deleted) — `kintsugi` has no public repo yet either.
 
 ## Website / portfolio work does NOT belong in this repo or this thread
