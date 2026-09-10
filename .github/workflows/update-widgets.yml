@@ -47,6 +47,7 @@ jobs:
         id: setup-chrome
 
       - name: Build Steam card
+        id: steam
         continue-on-error: true
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
@@ -54,6 +55,7 @@ jobs:
         run: python scripts/build_steam_card.py
 
       - name: Build Spotify card
+        id: spotify
         continue-on-error: true
         env:
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
@@ -63,6 +65,7 @@ jobs:
         run: python scripts/build_spotify_card.py
 
       - name: Build last-commit card
+        id: last_commit
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -70,6 +73,7 @@ jobs:
         run: python scripts/build_last_commit_card.py
 
       - name: Build WakaTime card
+        id: wakatime
         continue-on-error: true
         env:
           WAKATIME_API_KEY: ${{ secrets.WAKATIME_API_KEY }}
@@ -103,3 +107,34 @@ jobs:
           # failing outright on a plain rejected push.
           git pull --rebase
           git push
+
+      # Every build step above is continue-on-error, so one dead API (a
+      # revoked Steam key, an expired Spotify refresh token, a rotated
+      # WakaTime key) leaves the other three cards building normally and the
+      # commit going through -- which is the point, one broken widget
+      # shouldn't take the whole profile down with it. The cost is that
+      # nothing surfaces the breakage: the job goes green, the card just
+      # keeps showing whatever it last rendered, forever, and the only trace
+      # is a yellow annotation nobody opens the Actions tab to see.
+      # This step re-reads those outcomes at the end and fails the run if any
+      # of them failed, which is what actually triggers GitHub's own
+      # "workflow failed" email. Deliberately NOT a staleness check on the
+      # asset files -- a card can legitimately render byte-identical for
+      # hours (nothing played, no commits), so file age would cry wolf.
+      - name: Report card failures
+        if: always()
+        run: |
+          failed=""
+          for entry in "steam:${{ steps.steam.outcome }}"                        "spotify:${{ steps.spotify.outcome }}"                        "last-commit:${{ steps.last_commit.outcome }}"                        "wakatime:${{ steps.wakatime.outcome }}"; do
+            name="${entry%%:*}"
+            outcome="${entry##*:}"
+            if [ "$outcome" = "failure" ]; then
+              echo "::error title=Card build failed::$name -- its card is now frozen at whatever it last rendered"
+              failed="$failed $name"
+            fi
+          done
+          if [ -n "$failed" ]; then
+            echo "Failed card builds:$failed" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          echo "All four cards built." >> "$GITHUB_STEP_SUMMARY"
