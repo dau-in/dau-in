@@ -61,15 +61,12 @@
 
 <hr>
 
-<!-- last-commit row lives in this SAME table as a colspan row, not its own
-     table below -- two separate tables of different natural widths read as
-     two unrelated floating boxes stacked on top of each other, not one
-     section. width="100%" on its image fills whatever this row actually
-     renders as (same trick used for passport/discord under the widgets
-     section) so it reads as the bottom of one cohesive block instead.
-     Rebuilt every 30 min (cron-job.org pinging workflow_dispatch -- see
-     .github/workflows/update-widgets.yml) and instantly on every push to
-     this repo, by scripts/build_last_commit_card.py -- never hand-edited. -->
+<!-- photo + projects box only. The last-commit and wakatime cards used to
+     be colspan rows of this same table, so both halves would read as one
+     block; they were split into the table below once that turned out to
+     drag the cards' own width along with this row's (see the note there).
+     Matching widths and align="center" on both keep them reading as one
+     section anyway. -->
 <table align="center">
 <tr>
 <td width="170" align="center" valign="middle"><img src="assets/section2_photos_v2.gif" width="160"/><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
@@ -89,8 +86,24 @@
 
 </td>
 </tr>
-<tr><td colspan="2" align="center"><a href="https://github.com/dau-in/dau-in/commit/b5a187986a197b3cb541d4e7d9030d2cfac3a27a"><img src="assets/last_commit_card.png?v=34499291107" width="100%"/></a></td></tr>
-<tr><td colspan="2" align="center"><img src="assets/wakatime_card.png?v=34499291107" width="100%"/></td></tr>
+</table>
+
+<!-- the two cards sit in their OWN table, not as colspan rows of the one
+     above. They used to live there so both halves read as one block, but a
+     colspan cell is as wide as its table, and that table is as wide as the
+     photo column plus the (unwrappable, 406px) projects box -- 587px, which
+     on a phone means the cards themselves had to be scrolled sideways to be
+     seen whole, unlike every other card on the page. Split out, this table
+     has nothing forcing it wide, so it shrinks to the viewport and the cards
+     land complete. They still line up with the box above on desktop: 559 +
+     28px of td padding is exactly the 587 that table renders at. width= here
+     is a pixel count, NOT width="100%" -- a percentage resolves against a
+     table that is itself sizing to its contents, which collapses the whole
+     thing to 28px (measured). Re-measure CARD_WIDTH if the projects box ever
+     changes width. -->
+<table align="center">
+<tr><td align="center"><a href="https://github.com/dau-in/dau-in/commit/b5a187986a197b3cb541d4e7d9030d2cfac3a27a"><img src="assets/last_commit_card.png?v=1789056141" width="559"/></a></td></tr>
+<tr><td align="center"><img src="assets/wakatime_card.png?v=1789056141" width="559"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -119,8 +132,8 @@
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
 <tr>
-<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=34499291107" width="220"/></a></td>
-<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=34499291107" width="220"/></a></td>
+<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=1789056141" width="220"/></a></td>
+<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=1789056141" width="220"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="100%" alt="discord"/></a></td></tr>
 </table>
