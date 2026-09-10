@@ -103,6 +103,25 @@ projects_box = build_terminal_box('ps -o pid,stat,command -C projects', projects
 # To switch back to the tree version, simply change to:
 # projects_box = build_terminal_box('tree ~/projects', projects_tree_lines)
 
+# GitHub injects style="max-width:100%" into every <img> it renders, which
+# makes an image contribute *zero* min-content width to the table column it
+# sits in -- the column only ever gets whatever width is left over after its
+# siblings. Measured on the live rendered profile at a 375px viewport: the
+# projects row's code-block column demands 406px inside a 293px container,
+# so auto table layout hands it everything and the photo column collapses to
+# 27px (td padding alone). The photo then renders at 0x0 -- present in the
+# DOM, invisible on screen. That's the whole bug ("the second photo doesn't
+# show up in the GitHub mobile app"), and it's why the same row survives up
+# top: that table's code block is only ~196px wide, so leftovers remain.
+# A 1x1 spacer *image* does not fix it -- zero min-content for exactly the
+# same reason, verified. Non-breaking spaces are real text, so they do claim
+# min-content and hold the column open: 40 of them measure ~153px, close to
+# the photo's own 160px and still under the <td width="170"> the desktop
+# layout already uses, so desktop rendering is untouched (170px -> 173px).
+# The <br> is load-bearing: without it the run shares the image's line, the
+# column's *max*-content becomes 160+153, and desktop widens to match.
+PHOTO_COL_SPACER = '<br>' + '&nbsp;' * 40
+
 discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
                '&idleMessage=bored%2C+for+now&showDisplayName=true')
@@ -182,7 +201,7 @@ readme = f'''<div align="center">
      this repo, by scripts/build_last_commit_card.py -- never hand-edited. -->
 <table align="center">
 <tr>
-<td width="170" align="center" valign="middle"><img src="assets/section2_photos_v2.gif" width="160"/></td>
+<td width="170" align="center" valign="middle"><img src="assets/section2_photos_v2.gif" width="160"/>{PHOTO_COL_SPACER}</td>
 <td width="360" valign="middle">
 
 ```

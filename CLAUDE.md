@@ -97,6 +97,26 @@ app before assuming a fix works, desktop rendering hides all of these)
    anchor behind whatever's currently shown, so a stale non-push run can't
    regress the card backward once a fresher commit has been recorded.
 
+7. **An `<img>` can never claim table-column width.** GitHub injects
+   `style="max-width:100%"` into every image it renders, so an image
+   contributes *zero* min-content width: its column only gets what's left
+   after its siblings are satisfied. Put an image cell next to a cell
+   holding a fenced code block wider than the viewport and the image column
+   collapses to 27px (td padding alone) and the image renders 0x0 — in the
+   DOM, invisible on screen. Measured on the live profile at a 375px
+   viewport: the projects row's code column demands 406px inside a 293px
+   container. A 1x1 spacer *image* does not fix it (zero min-content for the
+   same reason). Only real text claims min-content, so the photo cell holds
+   its column open with `<br>` + a run of `&nbsp;` (`PHOTO_COL_SPACER` in
+   `build_readme.py`, 40 of them ≈ 153px). The `<br>` is load-bearing —
+   without it the run shares the image's line and the column's *max*-content
+   grows to image+spacer, widening the desktop layout. The name-banner row
+   up top is the same shape but survives untouched because its code block is
+   only ~196px wide, so leftovers remain. Side effect to accept: the photo
+   column is real width now, so this section's horizontal scroll extent grows
+   (434px → 587px at 375px viewport) — on the mobile app that's invisible,
+   since a `<table>` there is forced to `width:100%` regardless.
+
 ## Design decisions already made (don't re-propose these — they were tried
 and explicitly rejected in favor of what's live now)
 
