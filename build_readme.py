@@ -121,20 +121,23 @@ projects_box = build_terminal_box('ps -o pid,stat,command -C projects', projects
 # The <br> is load-bearing: without it the run shares the image's line, the
 # column's *max*-content becomes 160+153, and desktop widens to match.
 #
-# Used on BOTH photo cells, and both <img> carry the same width=160, so the
-# two GIFs render at the same size instead of each getting whatever its own
-# row had left over (the top one was landing at 69px against the bottom's
-# 153px -- visibly a different photo size on a phone). On the web the width
-# attribute is ignored for a GIF anyway (GitHub wraps animated images in
-# <animated-image> and forces the inner img to width:100%), so the column
-# is what decides; in the mobile app there's no such wrapper and the
-# attribute is what decides. Matching both covers either renderer.
-# Cost: the top row now needs 180 + 196 = 376px, so on a narrow viewport it
-# scrolls sideways like the terminal boxes do. How much depends on the
-# renderer's content width -- 85px of it on GitHub's own mobile web, where
-# the article column is only 293px, and far less in the app, which is
-# closer to the full screen width.
-PHOTO_COL_SPACER = '<br>' + '&nbsp;' * 40
+# Sized to 69px (18 of them), which is what the *top* photo renders at, not
+# to the 160px the image would like. The top one is deliberately left with
+# no spacer at all: its column takes whatever the name banner leaves over,
+# which is exactly why that row still fits a phone screen with nothing to
+# scroll. Pinning it wider was tried and reverted -- it pushed the row to
+# 376px, so the name needed a sideways drag, and the spacer's own line adds
+# ~24px under the image, which showed up as a gap on desktop because
+# nothing else in that row is tall enough to absorb it. Down here the ps
+# box is ~190px tall, so the same line costs nothing.
+# Both <img> carry width=160 so desktop renders them identically; on the web
+# that attribute is ignored for a GIF anyway (GitHub wraps animated images
+# in <animated-image> and forces the inner img to width:100%, so the column
+# decides), but the mobile app has no such wrapper and goes by the
+# attribute. The two can only match exactly at one container width, since
+# the top one is elastic and this one is pinned -- 69px matches what
+# GitHub's mobile web gives the top photo in its 293px article column.
+PHOTO_COL_SPACER = '<br>' + '&nbsp;' * 18
 
 # Rendered width of the last-commit / wakatime cards, in px. Measured, not
 # guessed: it's what those two rendered at while they were still colspan
@@ -182,7 +185,7 @@ readme = f'''<div align="center">
 </div>
 
 <table align="center"><tr>
-<td align="center" valign="middle"><img width="160" src="assets/section1_photos.gif"/>{PHOTO_COL_SPACER}</td>
+<td><img width="160" src="assets/section1_photos.gif"/></td>
 <td align="center" valign="middle">
 
 ```
