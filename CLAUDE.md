@@ -129,6 +129,18 @@ app before assuming a fix works, desktop rendering hides all of these)
    they had to be scrolled to be seen whole, unlike every other card. Fixed
    by moving those two into their own table, see below.
 
+8. **The name banner's code block is padded to 9 lines on purpose** (2 blank
+   lines above the glyphs, 3 below, in `name_block`). Don't "clean up" those
+   blank lines. At its natural 6 lines that box rendered 118px tall next to
+   a 180px photo, a 60px gap that read as plainly misaligned. At 9 it comes
+   out 187px, the same height as the projects box, so both rows put the
+   photo in an identical relationship to the block beside it — measured on
+   the live profile, the photo starts 9px below the box's top edge and ends
+   2px past its bottom, in both. That 7px of overhang is the closest an
+   integer number of lines gets to 180 (8 lines is 170, 10 is 205). Blank
+   lines add height without width, so the header table stays as wide as it
+   was and that row still fits a phone with nothing to scroll.
+
 ## Design decisions already made (don't re-propose these — they were tried
 and explicitly rejected in favor of what's live now)
 
