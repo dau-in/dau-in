@@ -140,7 +140,14 @@ projects_box = build_terminal_box('ps -o pid,stat,command -C projects', projects
 # attribute. The two can only match exactly at one container width, since
 # the top one is elastic and this one is pinned -- 69px matches what
 # GitHub's mobile web gives the top photo in its 293px article column.
-PHOTO_COL_SPACER = '<br>' + '&nbsp;' * 18
+_SPACER_LINE = '&nbsp;' * 18
+# One run above the image and one below, not just below: a single run leaves
+# the image sitting high in its cell (measured 7px of air above it against
+# 33px below, since valign centers image+run as one block). Two runs cost a
+# second line of height but put the image back on the cell's centre line.
+# Both runs are the same width, so the column's min-content is unchanged.
+PHOTO_COL_SPACER_TOP = _SPACER_LINE + '<br>'
+PHOTO_COL_SPACER_BOTTOM = '<br>' + _SPACER_LINE
 
 # Rendered width of the last-commit / wakatime cards, in px. Measured, not
 # guessed: the table above renders at photo column 207 + projects box 406 +
@@ -226,7 +233,7 @@ readme = f'''<div align="center">
      section anyway. -->
 <table align="center">
 <tr>
-<td width="207" align="center" valign="middle"><img src="assets/section2_photos_v2.gif" width="180"/>{PHOTO_COL_SPACER}</td>
+<td width="207" align="center" valign="middle">{PHOTO_COL_SPACER_TOP}<img src="assets/section2_photos_v2.gif" width="180"/>{PHOTO_COL_SPACER_BOTTOM}</td>
 <td width="360" valign="middle">
 
 ```
