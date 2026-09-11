@@ -97,49 +97,55 @@ app before assuming a fix works, desktop rendering hides all of these)
    anchor behind whatever's currently shown, so a stale non-push run can't
    regress the card backward once a fresher commit has been recorded.
 
-7. **An `<img>` can never claim table-column width.** GitHub injects
-   `style="max-width:100%"` into every image it renders, so an image
-   contributes *zero* min-content width: its column only gets what's left
-   after its siblings are satisfied. Put an image cell next to a cell
-   holding a fenced code block wider than the viewport and the image column
-   collapses to 27px (td padding alone) and the image renders 0x0 — in the
-   DOM, invisible on screen. Measured on the live profile at a 375px
-   viewport: the projects row's code column demands 406px inside a 293px
-   container. A 1x1 spacer *image* does not fix it (zero min-content for the
-   same reason). Only real text claims min-content, so the photo cell holds
-   its column open with `<br>` + a run of `&nbsp;` (`PHOTO_COL_SPACER` in
-   `build_readme.py`, 18 of them ≈ 69px). The `<br>` is load-bearing —
-   without it the run shares the image's line and the column's *max*-content
-   grows to image+spacer, widening the desktop layout. The name-banner row
-   up top is the same shape but survives untouched because its code block is
-   only ~196px wide, so leftovers remain — **leave that one spacer-free**.
-   Pinning it was tried and reverted: it pushed that row to 376px, so the
-   name itself needed a sideways drag on a phone, and the spacer's own line
-   adds ~24px under the image, which read as a gap on desktop because
-   nothing else in that row is tall enough to absorb it. Down in the
-   projects row the ps box is ~190px tall and absorbs it for free. That is
-   also why the spacer is sized to 69px, what the top photo renders at,
-   rather than the image's own 160px: the two GIFs then read as the same
-   photo size. They can only match at one container width, since the top one
-   is elastic and this one is pinned. Side effect: the photo column is
-   real width now, so the projects table's scroll extent grew from 434px to
-   502px. That's fine for the box itself (a wide terminal box scrolls
+7. **An `<img>` can never claim table-column width, and its `width=` may not
+   even reach it.** GitHub injects `style="max-width:100%"` into every image
+   it renders, so an image contributes *zero* min-content width: its column
+   only gets what's left after its siblings are satisfied. Put an image cell
+   next to a cell holding a fenced code block wider than the viewport and
+   the image column collapses to 27px (td padding alone) and the image
+   renders 0x0 — in the DOM, invisible on screen. That was the projects
+   photo's bug: measured at a 375px viewport, its code column demands 406px
+   inside a 293px container. A 1x1 spacer *image* does not fix it (zero
+   min-content for the same reason). Only real text claims min-content, so
+   that cell holds its column open with `<br>` + a run of `&nbsp;`
+   (`_SPACER_LINE` in `build_readme.py`), one run above the image and one
+   below so the photo stays on the cell's centre line.
+   Separately: an animated GIF gets wrapped in `<animated-image>` on the
+   web, and the inner img then renders at its **natural** size clamped by
+   `max-width:100%` — the `width=` attribute is ignored. So on the web the
+   only way to size a GIF is to size its column; `width=` still matters in
+   the mobile app, which has no such wrapper, so set both to agree. Both
+   photo cells are `width="197"`, which clamps both GIFs to 170px.
+   **Leave the name-banner cell spacer-free.** Its column takes what the
+   banner leaves over, which is exactly why that row fits a phone with
+   nothing to scroll; pinning it was tried and reverted, since it pushed the
+   row past the viewport and the name itself needed a sideways drag. The
+   consequence is that the top photo is elastic (container width minus
+   223px) while the projects one is pinned by its spacer, so **the two can
+   only match at one container width** — the spacer is tuned to ~127px,
+   which matches a ~350px content column. Retune that one number if they
+   look different on a real phone.
+   Side effect of the spacer: the projects table's scroll extent grew from
+   434px to 560px. Fine for the box itself (a wide terminal box scrolls
    sideways on a phone by design), but it dragged the last-commit and
    wakatime cards along, since a `colspan` cell is as wide as its table —
    they had to be scrolled to be seen whole, unlike every other card. Fixed
    by moving those two into their own table, see below.
 
-8. **The name banner's code block is padded to 9 lines on purpose** (2 blank
-   lines above the glyphs, 3 below, in `name_block`). Don't "clean up" those
-   blank lines. At its natural 6 lines that box rendered 118px tall next to
-   a 180px photo, a 60px gap that read as plainly misaligned. At 9 it comes
-   out 187px, the same height as the projects box, so both rows put the
-   photo in an identical relationship to the block beside it — measured on
-   the live profile, the photo starts 9px below the box's top edge and ends
-   2px past its bottom, in both. That 7px of overhang is the closest an
-   integer number of lines gets to 180 (8 lines is 170, 10 is 205). Blank
-   lines add height without width, so the header table stays as wide as it
-   was and that row still fits a phone with nothing to scroll.
+8. **Both terminal boxes beside a photo are padded to exactly 8 lines**, so
+   they render 170px tall and match the photo next to them edge for edge.
+   Don't "clean up" what looks like filler: the banner block carries 2 blank
+   lines above the glyphs and 2 below (`name_block`), and the projects box
+   passes `blank_before_prompt=False` to `build_terminal_box` to drop the
+   blank line above its prompt. A code block only grows a whole line at a
+   time — the two heights available around 180px are 170 and 187 — so 170
+   with the photo clamped down to meet it is the only exact match that
+   doesn't upscale the source. Blank lines add height without width, so the
+   header table stays as wide as it was and that row still fits a phone.
+   A residual **5px** remains, the photo sitting that much low against the
+   box, and it is the floor without CSS: GitHub's own margin under a code
+   block counts as cell content, and one line of spacer shifts by 11px, so
+   the choice is 5px low or 5px high.
 
 ## Design decisions already made (don't re-propose these — they were tried
 and explicitly rejected in favor of what's live now)
@@ -173,7 +179,7 @@ color, no icons, no border. The last-commit and wakatime cards are a
 colspan rows once, so both halves would read as one block; that made their
 width a hostage of the projects box's, and they overflowed a phone screen.
 Split out, they shrink to the viewport, and on desktop both tables still
-render 587px wide at the same left edge, so the section still reads as one
+render 604px wide at the same left edge, so the section still reads as one
 (only a 16px table margin between them now). A percentage width does *not*
 work in the split table: it resolves against a table that is itself sizing
 to its contents, collapsing the whole thing to 28px (measured). Re-measure
