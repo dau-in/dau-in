@@ -130,7 +130,10 @@ projects_box = build_terminal_box('ps -o pid,stat,command -C projects', projects
 # ~24px under the image, which showed up as a gap on desktop because
 # nothing else in that row is tall enough to absorb it. Down here the ps
 # box is ~190px tall, so the same line costs nothing.
-# Both <img> carry width=160 so desktop renders them identically; on the web
+# Both <img> carry width=180 -- the GIFs' own native size, so desktop draws
+# them 1:1 with no scaling at all -- and the <td> here is 207 (180 + the
+# 27px GitHub puts on every cell) so this column actually hands over those
+# 180. On the web
 # that attribute is ignored for a GIF anyway (GitHub wraps animated images
 # in <animated-image> and forces the inner img to width:100%, so the column
 # decides), but the mobile app has no such wrapper and goes by the
@@ -140,12 +143,12 @@ projects_box = build_terminal_box('ps -o pid,stat,command -C projects', projects
 PHOTO_COL_SPACER = '<br>' + '&nbsp;' * 18
 
 # Rendered width of the last-commit / wakatime cards, in px. Measured, not
-# guessed: it's what those two rendered at while they were still colspan
-# rows of the projects table (photo column 180 + projects box 406 + borders
-# = 587 table, minus 28px of td padding), so desktop looks exactly as it did
-# before they were split into their own table. max-width:100% still shrinks
-# them to fit a phone.
-CARD_WIDTH = 559
+# guessed: the table above renders at photo column 207 + projects box 406 +
+# 1px of border = 614, and a card's own table comes out at CARD_WIDTH + 28,
+# so 586 puts the two tables at exactly the same width and the section reads
+# as one block. Re-measure both whenever either column changes.
+# max-width:100% still shrinks the cards to fit a phone.
+CARD_WIDTH = 586
 
 discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
@@ -185,7 +188,7 @@ readme = f'''<div align="center">
 </div>
 
 <table align="center"><tr>
-<td><img width="160" src="assets/section1_photos.gif"/></td>
+<td><img width="180" src="assets/section1_photos.gif"/></td>
 <td align="center" valign="middle">
 
 ```
@@ -223,7 +226,7 @@ readme = f'''<div align="center">
      section anyway. -->
 <table align="center">
 <tr>
-<td width="170" align="center" valign="middle"><img src="assets/section2_photos_v2.gif" width="160"/>{PHOTO_COL_SPACER}</td>
+<td width="207" align="center" valign="middle"><img src="assets/section2_photos_v2.gif" width="180"/>{PHOTO_COL_SPACER}</td>
 <td width="360" valign="middle">
 
 ```
