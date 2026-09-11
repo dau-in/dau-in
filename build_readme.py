@@ -160,7 +160,7 @@ projects_box = build_terminal_box('ps -o pid,stat,command -C projects', projects
 # attribute. The two can only match exactly at one container width, since
 # the top one is elastic and this one is pinned -- 69px matches what
 # GitHub's mobile web gives the top photo in its 293px article column.
-_SPACER_LINE = '&nbsp;' * 18
+_SPACER_LINE = '&nbsp;' * 33
 # One run above the image and one below, not just below: a single run leaves
 # the image sitting high in its cell (measured 7px of air above it against
 # 33px below, since valign centers image+run as one block). Two runs cost a
@@ -175,7 +175,7 @@ PHOTO_COL_SPACER_BOTTOM = '<br>' + _SPACER_LINE
 # so 586 puts the two tables at exactly the same width and the section reads
 # as one block. Re-measure both whenever either column changes.
 # max-width:100% still shrinks the cards to fit a phone.
-CARD_WIDTH = 586
+CARD_WIDTH = 593
 
 discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
@@ -215,7 +215,7 @@ readme = f'''<div align="center">
 </div>
 
 <table align="center"><tr>
-<td><img width="180" src="assets/section1_photos.gif"/></td>
+<td align="center" valign="middle"><img width="187" src="assets/section1_photos.gif"/></td>
 <td align="center" valign="middle">
 
 ```
@@ -251,7 +251,7 @@ readme = f'''<div align="center">
      section anyway. -->
 <table align="center">
 <tr>
-<td width="207" align="center" valign="middle">{PHOTO_COL_SPACER_TOP}<img src="assets/section2_photos_v2.gif" width="180"/>{PHOTO_COL_SPACER_BOTTOM}</td>
+<td width="214" align="center" valign="middle">{PHOTO_COL_SPACER_TOP}<img src="assets/section2_photos_v2.gif" width="187"/>{PHOTO_COL_SPACER_BOTTOM}</td>
 <td width="360" valign="middle">
 
 ```
