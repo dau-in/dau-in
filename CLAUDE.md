@@ -108,13 +108,22 @@ app before assuming a fix works, desktop rendering hides all of these)
    container. A 1x1 spacer *image* does not fix it (zero min-content for the
    same reason). Only real text claims min-content, so the photo cell holds
    its column open with `<br>` + a run of `&nbsp;` (`PHOTO_COL_SPACER` in
-   `build_readme.py`, 40 of them ≈ 153px). The `<br>` is load-bearing —
+   `build_readme.py`, 18 of them ≈ 69px). The `<br>` is load-bearing —
    without it the run shares the image's line and the column's *max*-content
    grows to image+spacer, widening the desktop layout. The name-banner row
    up top is the same shape but survives untouched because its code block is
-   only ~196px wide, so leftovers remain. Side effect: the photo column is
+   only ~196px wide, so leftovers remain — **leave that one spacer-free**.
+   Pinning it was tried and reverted: it pushed that row to 376px, so the
+   name itself needed a sideways drag on a phone, and the spacer's own line
+   adds ~24px under the image, which read as a gap on desktop because
+   nothing else in that row is tall enough to absorb it. Down in the
+   projects row the ps box is ~190px tall and absorbs it for free. That is
+   also why the spacer is sized to 69px, what the top photo renders at,
+   rather than the image's own 160px: the two GIFs then read as the same
+   photo size. They can only match at one container width, since the top one
+   is elastic and this one is pinned. Side effect: the photo column is
    real width now, so the projects table's scroll extent grew from 434px to
-   587px. That's fine for the box itself (a wide terminal box scrolls
+   502px. That's fine for the box itself (a wide terminal box scrolls
    sideways on a phone by design), but it dragged the last-commit and
    wakatime cards along, since a `colspan` cell is as wide as its table —
    they had to be scrolled to be seen whole, unlike every other card. Fixed
