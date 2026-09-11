@@ -57,6 +57,26 @@ def sep():
 
 name_banner = strip_blank_lines(pyfiglet.figlet_format('DAUIN', font='thin'))
 
+# The banner box is padded out to 9 lines -- 2 blank above the glyphs, 3
+# below -- so it renders 187px tall, the same height as the projects box
+# further down, which puts both photos in exactly the same relationship to
+# the block beside them (measured on the live profile: the photo starts 9px
+# below the box's top edge and ends 2px past its bottom, in both rows). At
+# its natural 6 lines this box came out 118px against a 180px photo, a 60px
+# difference that read as plainly misaligned. Blank lines add height without
+# adding width, so the header table's width -- and with it the fact that
+# this row fits a phone screen without scrolling -- is untouched. They're
+# padded with spaces rather than left empty, per the equal-width rule for
+# monospace blocks.
+_NL = chr(10)
+_banner_lines = name_banner.split(_NL)
+_banner_w = max(len(l) for l in _banner_lines)
+name_block = _NL.join(
+    [' ' * _banner_w] * 2
+    + [l.ljust(_banner_w) for l in _banner_lines]
+    + [' ' * _banner_w] * 3
+)
+
 # pure ASCII icons and standard single-column box drawing to guarantee
 # identical width on every monospace font and mobile OS without wrapping breaks.
 whoami_cpp_lines = [
@@ -199,9 +219,7 @@ readme = f'''<div align="center">
 <td align="center" valign="middle">
 
 ```
-
-{name_banner}
-
+{name_block}
 ```
 
 </td>
