@@ -17,7 +17,7 @@ import pyfiglet
 # when a card actually changed, so this still doesn't churn on no-op runs.
 CACHE_BUST = os.environ.get('GITHUB_RUN_ID', str(int(time.time())))
 
-def build_terminal_box(command, lines, prompt='[dauin@cachyos ~]$ '):
+def build_terminal_box(command, lines, prompt='[dauin@cachyos ~]$ ', blank_before_prompt=True):
     # Plain ASCII border (+/-/|), not the Unicode box-drawing block (was
     # ┌─│└┘) -- confirmed on the GitHub mobile app: that block falls back to
     # a different, poorly-hinted font there, and the vertical bar renders as
@@ -26,7 +26,11 @@ def build_terminal_box(command, lines, prompt='[dauin@cachyos ~]$ '):
     # below: a glyph outside plain ASCII has no guaranteed consistent shape
     # across monospace fonts.
     header = f'+- {prompt}'
-    body_lines = [f'$ {command}', ''] + lines + ['', f'{prompt}_']
+    # blank_before_prompt=False drops one line from the box's height. Only
+    # the projects box uses it, to land at exactly 170px -- the height its
+    # photo gets clamped to, see the note on PHOTO_COL_SPACER.
+    tail = ['', f'{prompt}_'] if blank_before_prompt else [f'{prompt}_']
+    body_lines = [f'$ {command}', ''] + lines + tail
 
     max_len = max(len(l) for l in body_lines)
     width = max_len + 6
@@ -74,7 +78,7 @@ _banner_w = max(len(l) for l in _banner_lines)
 name_block = _NL.join(
     [' ' * _banner_w] * 2
     + [l.ljust(_banner_w) for l in _banner_lines]
-    + [' ' * _banner_w] * 3
+    + [' ' * _banner_w] * 2
 )
 
 # pure ASCII icons and standard single-column box drawing to guarantee
@@ -119,7 +123,8 @@ projects_tree_lines = [
     '    `-- Go TUI for Windows DISM and ISO tooling',
 ]
 
-projects_box = build_terminal_box('ps -o pid,stat,command -C projects', projects_ps_lines)
+projects_box = build_terminal_box('ps -o pid,stat,command -C projects', projects_ps_lines,
+                                  blank_before_prompt=False)
 # To switch back to the tree version, simply change to:
 # projects_box = build_terminal_box('tree ~/projects', projects_tree_lines)
 
@@ -175,7 +180,7 @@ PHOTO_COL_SPACER_BOTTOM = '<br>' + _SPACER_LINE
 # so 586 puts the two tables at exactly the same width and the section reads
 # as one block. Re-measure both whenever either column changes.
 # max-width:100% still shrinks the cards to fit a phone.
-CARD_WIDTH = 593
+CARD_WIDTH = 576
 
 discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
@@ -215,7 +220,7 @@ readme = f'''<div align="center">
 </div>
 
 <table align="center"><tr>
-<td align="center" valign="middle"><img width="187" src="assets/section1_photos.gif"/></td>
+<td width="197" align="center" valign="middle"><img width="170" src="assets/section1_photos.gif"/></td>
 <td align="center" valign="middle">
 
 ```
@@ -251,7 +256,7 @@ readme = f'''<div align="center">
      section anyway. -->
 <table align="center">
 <tr>
-<td width="214" align="center" valign="middle">{PHOTO_COL_SPACER_TOP}<img src="assets/section2_photos_v2.gif" width="187"/>{PHOTO_COL_SPACER_BOTTOM}</td>
+<td width="197" align="center" valign="middle">{PHOTO_COL_SPACER_TOP}<img src="assets/section2_photos_v2.gif" width="170"/>{PHOTO_COL_SPACER_BOTTOM}</td>
 <td width="360" valign="middle">
 
 ```

@@ -6,7 +6,7 @@
 </div>
 
 <table align="center"><tr>
-<td align="center" valign="middle"><img width="187" src="assets/section1_photos.gif"/></td>
+<td width="197" align="center" valign="middle"><img width="170" src="assets/section1_photos.gif"/></td>
 <td align="center" valign="middle">
 
 ```
@@ -16,7 +16,6 @@
 |   ||---||   |||\  |
 |   ||   ||   ||| \ |
 `--' `   '`---'``  `'
-                     
                      
                      
 ```
@@ -72,7 +71,7 @@
      section anyway. -->
 <table align="center">
 <tr>
-<td width="214" align="center" valign="middle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br><img src="assets/section2_photos_v2.gif" width="187"/><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td width="197" align="center" valign="middle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br><img src="assets/section2_photos_v2.gif" width="170"/><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 <td width="360" valign="middle">
 
 ```
@@ -82,7 +81,6 @@
 | PID  STAT  PROJECT     DETAILS                    |
 | 001  RUN   channel-3   NES emulator (WebGL CRT)   |
 | 002  DEV   kintsugi    Go TUI / Windows DISM      |
-|                                                   |
 | [dauin@cachyos ~]$ _                              |
 +---------------------------------------------------+
 ```
@@ -105,8 +103,8 @@
      thing to 28px (measured). Re-measure CARD_WIDTH if the projects box ever
      changes width. -->
 <table align="center">
-<tr><td align="center"><a href="https://github.com/dau-in/dau-in/commit/ddfb8c69bef15484389ea7ce008e4a460b040594"><img src="assets/last_commit_card.png?v=34557443532" width="593"/></a></td></tr>
-<tr><td align="center"><img src="assets/wakatime_card.png?v=34557443532" width="593"/></td></tr>
+<tr><td align="center"><a href="https://github.com/dau-in/dau-in/commit/ddfb8c69bef15484389ea7ce008e4a460b040594"><img src="assets/last_commit_card.png?v=1789096310" width="576"/></a></td></tr>
+<tr><td align="center"><img src="assets/wakatime_card.png?v=1789096310" width="576"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -135,8 +133,8 @@
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
 <tr>
-<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=34557443532" width="220"/></a></td>
-<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=34557443532" width="220"/></a></td>
+<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=1789096310" width="220"/></a></td>
+<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=1789096310" width="220"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="100%" alt="discord"/></a></td></tr>
 </table>
