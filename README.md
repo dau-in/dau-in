@@ -103,8 +103,8 @@
      thing to 28px (measured). Re-measure CARD_WIDTH if the projects box ever
      changes width. -->
 <table align="center">
-<tr><td align="center"><a href="https://github.com/dau-in/dau-in/commit/5d62a16de48b1c1ea2ca861dab6a6d2fe26e0b2f"><img src="assets/last_commit_card.png?v=34665002478" width="576"/></a></td></tr>
-<tr><td align="center"><img src="assets/wakatime_card.png?v=34665002478" width="576"/></td></tr>
+<tr><td align="center"><a href="https://github.com/dau-in/dau-in/commit/5d62a16de48b1c1ea2ca861dab6a6d2fe26e0b2f"><img src="assets/last_commit_card.png?v=34666432220" width="576"/></a></td></tr>
+<tr><td align="center"><img src="assets/wakatime_card.png?v=34666432220" width="576"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -133,8 +133,8 @@
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
 <tr>
-<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=34665002478" width="220"/></a></td>
-<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=34665002478" width="220"/></a></td>
+<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=34666432220" width="220"/></a></td>
+<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=34666432220" width="220"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="100%" alt="discord"/></a></td></tr>
 </table>
