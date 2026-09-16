@@ -103,8 +103,8 @@
      thing to 28px (measured). Re-measure CARD_WIDTH if the projects box ever
      changes width. -->
 <table align="center">
-<tr><td align="center"><a href="https://github.com/dau-in/dau-in/commit/fd39be14a66939ac70c360e2c3b4d2efb218248b"><img src="assets/last_commit_card.png?v=1789531013" width="576"/></a></td></tr>
-<tr><td align="center"><img src="assets/wakatime_card.png?v=1789531013" width="576"/></td></tr>
+<tr><td align="center"><a href="https://github.com/dau-in/dau-in/commit/8adaeb757d68fe391024eb2a85ffda61a905fa9e"><img src="assets/last_commit_card.png?v=1789531991" width="576"/></a></td></tr>
+<tr><td align="center"><img src="assets/wakatime_card.png?v=1789531991" width="576"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -125,18 +125,23 @@
      narrower than that forced width (dead space that should've centered
      just... didn't, in the app specifically -- fine on web and Chrome
      mobile). Small standalone tables made that visible; one wide table
-     doesn't leave enough dead space for it to be noticeable. width="100%"
-     on the passport/discord cells fills whatever the row actually renders
-     as; pinning width= on the steam/spotify <td>s (their own natural size,
-     +27 for GitHub's fixed td padding/border) keeps that column from being
-     inflated by the wider colspan cells. -->
+     doesn't leave enough dead space for it to be noticeable.
+     Every width here is a pixel count now, and they add up on purpose: the
+     passport/discord rows carry CARD_WIDTH, and the steam/spotify <td>s are
+     302 each, so both rows come to the same 604 the projects box and the
+     cards above render at. The steam and spotify images went from 220 to
+     275 in the same pass. Those two are drawn at 414 CSS px wide and were
+     being shown at 220 -- 53% -- which put their 13px body text on screen
+     at about 7px, and that is what reads as "blurry": not the source, the
+     downscale. 275 is the widest they can be without this table growing
+     past the others. -->
 <table align="center">
-<tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
+<tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="576"/></a></td></tr>
 <tr>
-<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=1789531013" width="220"/></a></td>
-<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=1789531013" width="220"/></a></td>
+<td width="302" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=1789531991" width="275"/></a></td>
+<td width="302" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=1789531991" width="275"/></a></td>
 </tr>
-<tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="100%" alt="discord"/></a></td></tr>
+<tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="576" alt="discord"/></a></td></tr>
 </table>
 
 <!-- steam_card.png, spotify_card.png, and wakatime_card.png are rebuilt

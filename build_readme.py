@@ -303,18 +303,23 @@ readme = f'''<div align="center">
      narrower than that forced width (dead space that should've centered
      just... didn't, in the app specifically -- fine on web and Chrome
      mobile). Small standalone tables made that visible; one wide table
-     doesn't leave enough dead space for it to be noticeable. width="100%"
-     on the passport/discord cells fills whatever the row actually renders
-     as; pinning width= on the steam/spotify <td>s (their own natural size,
-     +27 for GitHub's fixed td padding/border) keeps that column from being
-     inflated by the wider colspan cells. -->
+     doesn't leave enough dead space for it to be noticeable.
+     Every width here is a pixel count now, and they add up on purpose: the
+     passport/discord rows carry CARD_WIDTH, and the steam/spotify <td>s are
+     302 each, so both rows come to the same 604 the projects box and the
+     cards above render at. The steam and spotify images went from 220 to
+     275 in the same pass. Those two are drawn at 414 CSS px wide and were
+     being shown at 220 -- 53% -- which put their 13px body text on screen
+     at about 7px, and that is what reads as "blurry": not the source, the
+     downscale. 275 is the widest they can be without this table growing
+     past the others. -->
 <table align="center">
-<tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="100%"/></a></td></tr>
+<tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="{CARD_WIDTH}"/></a></td></tr>
 <tr>
-<td width="247" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v={CACHE_BUST}" width="220"/></a></td>
-<td width="247" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v={CACHE_BUST}" width="220"/></a></td>
+<td width="302" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v={CACHE_BUST}" width="275"/></a></td>
+<td width="302" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v={CACHE_BUST}" width="275"/></a></td>
 </tr>
-<tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="100%" alt="discord"/></a></td></tr>
+<tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="{CARD_WIDTH}" alt="discord"/></a></td></tr>
 </table>
 
 <!-- steam_card.png, spotify_card.png, and wakatime_card.png are rebuilt
