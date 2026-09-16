@@ -17,6 +17,21 @@ import pyfiglet
 # when a card actually changed, so this still doesn't churn on no-op runs.
 CACHE_BUST = os.environ.get('GITHUB_RUN_ID', str(int(time.time())))
 
+# The four rebuilt-every-30-min cards don't live on main any more. They sit
+# on the `cards` branch, which the workflow force-pushes as a single
+# parentless commit each refresh, so its history never accumulates. Main was
+# carrying ~450KB of new PNG blobs per refresh and git keeps every version
+# forever: 91 of the repo's 92 MiB of history was old copies of these four
+# images. A README edit is a couple of KB instead.
+# raw.githubusercontent.com and not a relative path, because a relative one
+# can only ever resolve against the branch the README itself is on. Checked
+# that GitHub does NOT route this through its camo image proxy (it trusts
+# its own hosts), so these still refresh as promptly as the relative paths
+# did -- camo would have added a caching layer we can't flush.
+# The static assets (photos, typing banner) and the hand-built passport card
+# stay on main: they don't churn, so they cost nothing to keep.
+CARDS_URL = 'https://raw.githubusercontent.com/dau-in/dau-in/cards'
+
 def build_terminal_box(command, lines, prompt='[dauin@cachyos ~]$ ', blank_before_prompt=True):
     # Plain ASCII border (+/-/|), not the Unicode box-drawing block (was
     # ┌─│└┘) -- confirmed on the GitHub mobile app: that block falls back to
@@ -281,8 +296,8 @@ readme = f'''<div align="center">
      thing to 28px (measured). Re-measure CARD_WIDTH if the projects box ever
      changes width. -->
 <table align="center">
-<tr><td align="center"><a href="{last_commit_url}"><img src="assets/last_commit_card.png?v={CACHE_BUST}" width="{CARD_WIDTH}"/></a></td></tr>
-<tr><td align="center"><img src="assets/wakatime_card.png?v={CACHE_BUST}" width="{CARD_WIDTH}"/></td></tr>
+<tr><td align="center"><a href="{last_commit_url}"><img src="{CARDS_URL}/last_commit_card.png?v={CACHE_BUST}" width="{CARD_WIDTH}"/></a></td></tr>
+<tr><td align="center"><img src="{CARDS_URL}/wakatime_card.png?v={CACHE_BUST}" width="{CARD_WIDTH}"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -321,8 +336,8 @@ readme = f'''<div align="center">
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="{CARD_WIDTH}"/></a></td></tr>
 <tr>
-<td width="301" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v={CACHE_BUST}" width="275"/></a></td>
-<td width="302" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v={CACHE_BUST}" width="275"/></a></td>
+<td width="301" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="{CARDS_URL}/steam_card.png?v={CACHE_BUST}" width="275"/></a></td>
+<td width="302" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="{CARDS_URL}/spotify_card.png?v={CACHE_BUST}" width="275"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="{CARD_WIDTH}" alt="discord"/></a></td></tr>
 </table>

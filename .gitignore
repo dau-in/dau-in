@@ -2,3 +2,12 @@ __pycache__/
 *.pyc
 scripts/_render_cache/
 design-assets/
+
+# The four cards the workflow rebuilds every 30 min live on the `cards`
+# branch, not here -- see build_readme.py's CARDS_URL. They're still
+# written into assets/ locally when a builder runs; they just don't
+# belong to main any more.
+assets/steam_card.png
+assets/spotify_card.png
+assets/last_commit_card.png
+assets/wakatime_card.png
