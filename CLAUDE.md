@@ -16,13 +16,30 @@ mobile app, not theory.
   string with headless Chrome, then cropping to content (steam, spotify,
   last-commit, wakatime, typing name banner). They need Chrome
   (`CHROME_PATH` env var or a few common install paths) and Pillow.
+  `build_passport_card.py` is the odd one out: same shape, but **not run by
+  CI** — passportdex has no API and blocks automated fetches, so its facts
+  are transcribed by hand from the live profile and it's re-run manually.
+  Its cover art is still fetched at build time from the IGDB/TMDB URLs the
+  profile itself renders, so only the text needs transcribing.
+- `scripts/http_retry.py` wraps every outbound request the builders make.
+  Transient failures (dropped connection, 429, 5xx) get three quick tries;
+  anything the server answered on purpose (401/403/404) is raised
+  immediately, because those are exactly what the failure alert exists to
+  catch. Added after a single `Connection reset by peer` on the Spotify API
+  failed a whole run.
 - `scripts/build_language_colors.py` / `build_language_icons.py` are one-off
   tools, not run by CI — re-run manually and occasionally to refresh
   `scripts/language_colors.json` / `language_icon_slugs.json` from
   GitHub linguist / devicon upstream.
 - `.github/workflows/update-widgets.yml` runs all four dynamic cards
   (steam/spotify/last-commit/wakatime), then `build_readme.py`, then commits
-  if anything changed. Triggers: `push` to main (instant refresh, and the
+  if anything changed, and finally **fails the run if any card build
+  failed**. That last step matters: every build step is
+  `continue-on-error`, so one dead API doesn't take the other three cards
+  down — but without the check the run went green and the broken card just
+  kept showing whatever it last rendered, forever, with no notification.
+  The step reads each build step's `outcome` (the real result) rather than
+  its `conclusion` (which `continue-on-error` rewrites to success). Triggers: `push` to main (instant refresh, and the
   only trigger where the last-commit card can trust `GITHUB_SHA` directly),
   and `workflow_dispatch` fired externally every 30 min by **cron-job.org**
   (GitHub's own `schedule:` trigger was tried first and dropped — confirmed
