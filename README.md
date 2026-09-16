@@ -103,8 +103,8 @@
      thing to 28px (measured). Re-measure CARD_WIDTH if the projects box ever
      changes width. -->
 <table align="center">
-<tr><td align="center"><a href="https://github.com/dau-in/dau-in/commit/8adaeb757d68fe391024eb2a85ffda61a905fa9e"><img src="assets/last_commit_card.png?v=1789531991" width="576"/></a></td></tr>
-<tr><td align="center"><img src="assets/wakatime_card.png?v=1789531991" width="576"/></td></tr>
+<tr><td align="center"><a href="https://github.com/dau-in/dau-in/commit/146dec9382ffb4d79ddfb699eff4f33b25f5bb9d"><img src="assets/last_commit_card.png?v=1789532042" width="576"/></a></td></tr>
+<tr><td align="center"><img src="assets/wakatime_card.png?v=1789532042" width="576"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -128,8 +128,11 @@
      doesn't leave enough dead space for it to be noticeable.
      Every width here is a pixel count now, and they add up on purpose: the
      passport/discord rows carry CARD_WIDTH, and the steam/spotify <td>s are
-     302 each, so both rows come to the same 604 the projects box and the
-     cards above render at. The steam and spotify images went from 220 to
+     301 each. 301 and not 302 on purpose: at 302 that row totalled 605 and
+     became the widest in the table, making this section a pixel wider than
+     the 604 the projects box and the cards above render at. At 301 the
+     colspan row is the widest, the table settles on 604, and the two cells
+     get half of it each anyway. The steam and spotify images went from 220 to
      275 in the same pass. Those two are drawn at 414 CSS px wide and were
      being shown at 220 -- 53% -- which put their 13px body text on screen
      at about 7px, and that is what reads as "blurry": not the source, the
@@ -138,8 +141,8 @@
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="576"/></a></td></tr>
 <tr>
-<td width="302" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=1789531991" width="275"/></a></td>
-<td width="302" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=1789531991" width="275"/></a></td>
+<td width="301" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v=1789532042" width="275"/></a></td>
+<td width="301" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v=1789532042" width="275"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="576" alt="discord"/></a></td></tr>
 </table>

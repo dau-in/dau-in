@@ -306,8 +306,11 @@ readme = f'''<div align="center">
      doesn't leave enough dead space for it to be noticeable.
      Every width here is a pixel count now, and they add up on purpose: the
      passport/discord rows carry CARD_WIDTH, and the steam/spotify <td>s are
-     302 each, so both rows come to the same 604 the projects box and the
-     cards above render at. The steam and spotify images went from 220 to
+     301 each. 301 and not 302 on purpose: at 302 that row totalled 605 and
+     became the widest in the table, making this section a pixel wider than
+     the 604 the projects box and the cards above render at. At 301 the
+     colspan row is the widest, the table settles on 604, and the two cells
+     get half of it each anyway. The steam and spotify images went from 220 to
      275 in the same pass. Those two are drawn at 414 CSS px wide and were
      being shown at 220 -- 53% -- which put their 13px body text on screen
      at about 7px, and that is what reads as "blurry": not the source, the
@@ -316,8 +319,8 @@ readme = f'''<div align="center">
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="{CARD_WIDTH}"/></a></td></tr>
 <tr>
-<td width="302" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v={CACHE_BUST}" width="275"/></a></td>
-<td width="302" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v={CACHE_BUST}" width="275"/></a></td>
+<td width="301" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v={CACHE_BUST}" width="275"/></a></td>
+<td width="301" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v={CACHE_BUST}" width="275"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="{CARD_WIDTH}" alt="discord"/></a></td></tr>
 </table>
