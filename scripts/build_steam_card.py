@@ -99,29 +99,36 @@ STEAM_LOGO = '''<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-
 
 CSS = '''
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+/* Type here runs a size up from what a 340px card would normally take.
+ * The README shows this card at 275px against the 414 it is drawn at, so
+ * everything on it lands at about two thirds of its nominal size -- 13px
+ * body copy was reaching the screen at under 9px. The card can't simply be
+ * displayed bigger: it sits beside the spotify one and the pair has to fit
+ * the same 604px the rest of the page uses. So the type grew instead.
+ * The bullet that separated status from game count is gone with the rest of
+ * the dot separators; the gap in .meta-row does that job now. */
 body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
 .card { width:340px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 22px; }
 .row { display:flex; align-items:center; gap:13px; }
 .avatar { width:68px; height:68px; border-radius:50%; flex-shrink:0; }
 .name { font-weight:700; font-size:24px; color:#fff; line-height:1.15; display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
-.level { font-size:11px; font-weight:700; color:#a7a0a7; border:1px solid rgba(255,255,255,0.15); border-radius:999px; padding:2px 8px; }
-.meta-row { display:flex; align-items:center; gap:7px; margin-top:3px; }
-.games { font-size:13px; color:#a7a0a7; }
-.dot { font-size:8px; color:#444; }
-.status { font-size:13px; color:#e5e5e5; }
+.level { font-size:12px; font-weight:700; color:#a7a0a7; border:1px solid rgba(255,255,255,0.15); border-radius:999px; padding:2px 8px; }
+.meta-row { display:flex; align-items:center; gap:13px; margin-top:3px; }
+.games { font-size:15px; color:#a7a0a7; }
+.status { font-size:15px; color:#e5e5e5; }
 .status-dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px; vertical-align:middle; }
 .divider { height:1px; background:rgba(255,255,255,0.08); margin:18px 0; }
 .hero { display:flex; align-items:baseline; gap:9px; }
 .hero-num { font-size:42px; font-weight:800; color:#fff; line-height:1; }
-.hero-unit { font-size:18px; color:#a7a0a7; }
-.hero-label { font-size:12px; color:#a7a0a7; margin-top:2px; }
-.stat-label { font-size:11px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:9px; }
+.hero-unit { font-size:20px; color:#a7a0a7; }
+.hero-label { font-size:14px; color:#a7a0a7; margin-top:2px; }
+.stat-label { font-size:12.5px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:9px; }
 .stat-row { display:flex; align-items:center; gap:11px; }
 .stat-row + .stat-row { margin-top:12px; }
 .stat-img { width:50px; height:50px; border-radius:6px; flex-shrink:0; }
-.stat-name { font-size:15px; color:#e5e5e5; font-weight:600; line-height:1.25; }
-.stat-sub { font-size:12px; color:#a7a0a7; margin-top:2px; }
-.brand { display:flex; align-items:center; justify-content:flex-end; font-size:12px; color:#a7a0a7; margin-top:16px; }
+.stat-name { font-size:17px; color:#e5e5e5; font-weight:600; line-height:1.25; }
+.stat-sub { font-size:14px; color:#a7a0a7; margin-top:2px; }
+.brand { display:flex; align-items:center; justify-content:flex-end; font-size:13.5px; color:#a7a0a7; margin-top:16px; }
 .brand svg { width:14px; height:14px; }
 '''
 
@@ -169,7 +176,6 @@ def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
 <div class="name">𝓓` <span class="level">Lv. {data['level']}</span></div>
 <div class="meta-row">
 <span class="status"><span class="status-dot" style="background:{data['status_color']}"></span>{data['status_text']}</span>
-<span class="dot">&bull;</span>
 <span class="games">{data['games_count']} games</span>
 </div>
 </div>
