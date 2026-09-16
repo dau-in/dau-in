@@ -1,15 +1,14 @@
 """
 Builds assets/wakatime_card.png from WakaTime's Stats API (coding time, top
-languages, peak day, editors) plus real lines-shipped totals pulled straight
+languages, peak day) plus real lines-shipped totals pulled straight
 from GitHub's commit diffs (see fetch_lines_shipped) instead of WakaTime's
 own line counter, which turned out to be unreliable for this account.
 
 Every figure on the card comes from /summaries, computed fresh per request,
 so nothing here can disagree with anything else on it. Two things this card
-got wrong before and now can't: the editor was a hardcoded "VS Code" chip
-(the real heartbeats come from the Claude Code and Antigravity plugins),
-and the header claimed "last week" for what is a rolling 7 days ending
-today.
+used to get wrong: it claimed "VS Code" as the editor (see the note above
+EDITOR -- nothing here has ever reported VS Code), and the header said
+"last week" for what is a rolling 7 days ending today.
 
 Reads the API key from WAKATIME_API_KEY in the environment first (that's how
 GitHub Actions passes it as a secret -- there's no ~/.wakatime.cfg on a
@@ -61,18 +60,15 @@ DEFAULT_LANGUAGE_COLOR = '#8b8b8b'
 LANGUAGE_ICON_SLUGS = json.loads((HERE / 'language_icon_slugs.json').read_text(encoding='utf-8'))
 DEVICON_URL = 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{slug}/{slug}-original.svg'
 
-# Editors get the card's own pink/peach duo rather than a brand icon: the
-# two this account actually reports -- Claude Code and Antigravity Desktop
-# -- have no devicon entry, and inventing logos for them would be worse than
-# a clean swatch. Anything past the second falls back to a muted grey.
-EDITOR_SWATCHES = ['#f472a0', '#ffab91', '#8a8a8a']
-
-# WakaTime reports this one with a platform suffix it doesn't need here --
-# the product is Antigravity, 'Desktop' is just which build sent the
-# heartbeat, and the full string overflows the name column. Renaming is
-# kept to an explicit map rather than a generic suffix strip, so a future
-# editor can't get silently relabelled.
-EDITOR_DISPLAY_NAMES = {'Antigravity Desktop': 'Antigravity'}
+# EDITOR: no editor/IDE breakdown on this card, deliberately. WakaTime only sees
+# what has its plugin installed, and here that's the Claude Code and
+# Antigravity harnesses -- not VS Code, which is where the actual editing
+# happens but has no WakaTime extension on this machine. So the API's
+# "editors" field names harnesses, and any section built on it would be
+# telling people the wrong thing about how this profile's owner works. The
+# card used to paper over that with a hardcoded "VS Code" chip, which was
+# worse: a flat claim the data never supported. Showing nothing is the
+# honest option until the IDE itself reports.
 
 # A subtle pink+peach duo instead of a single flat tone -- used for the top
 # accent bar, the peak-day flame, and the stat-label tint, so the whole
@@ -286,25 +282,6 @@ def fetch_data():
         weekday = datetime.strptime(best_day['range']['date'], '%Y-%m-%d').weekday()
         peak_day = {'weekday': WEEKDAY_NAMES[weekday], 'duration': best_day['grand_total']['text']}
 
-    # The editor chip used to be a hardcoded "VS Code" with a devicon logo,
-    # which was simply false: this account's heartbeats come from the Claude
-    # Code and Antigravity Desktop plugins, and haven't mentioned VS Code at
-    # all. Read from the same summaries the rest of the card is built from,
-    # so it can never drift from reality again.
-    editor_seconds = {}
-    for day in summaries:
-        for editor in day.get('editors', []):
-            editor_seconds[editor['name']] = editor_seconds.get(editor['name'], 0) + editor['total_seconds']
-    editor_total = sum(editor_seconds.values()) or 1
-    editors = [
-        {
-            'name': EDITOR_DISPLAY_NAMES.get(name, name),
-            'percent': seconds / editor_total * 100,
-            'color': EDITOR_SWATCHES[min(i, len(EDITOR_SWATCHES) - 1)],
-        }
-        for i, (name, seconds) in enumerate(sorted(editor_seconds.items(), key=lambda kv: -kv[1])[:3])
-    ]
-
     lines_shipped = fetch_lines_shipped()
 
     return {
@@ -318,7 +295,6 @@ def fetch_data():
         'daily_average': format_duration(total_seconds / active_days),
         'languages': languages,
         'peak_day': peak_day,
-        'editors': editors,
         'lines_shipped': lines_shipped,
     }
 
@@ -331,7 +307,6 @@ body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Int
 .stat-label { font-size:11px; color:#ffab91cc; text-transform:uppercase; letter-spacing:0.08em; font-weight:700; }
 .label-row { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px; }
 .range-tag { font-size:10px; color:#6f6a6f; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; }
-.swatch { width:14px; height:14px; border-radius:4px; flex-shrink:0; }
 .hero { display:flex; align-items:baseline; gap:9px; }
 .hero-num { font-family:"JetBrains Mono",monospace; font-size:36px; font-weight:700; color:#fff; line-height:1; }
 .hero-sub, .tagline { display:flex; align-items:center; gap:7px; font-size:12.5px; color:#a7a0a7; margin-top:7px; }
@@ -356,16 +331,10 @@ body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Int
 '''
 
 
-def bar_rows(items, name_key='name', swatch=False):
-    # swatch=True is for rows whose subject has no real logo to show (the
-    # editors) -- a rounded square in the card's own palette, deliberately a
-    # different shape from the round fallback the language rows use, so the
-    # two sections don't look like they're claiming the same kind of marker.
+def bar_rows(items, name_key='name'):
     rows = []
     for item in items:
-        if swatch:
-            marker = f'<span class="swatch" style="background:{item["color"]};"></span>'
-        elif item.get('icon_b64'):
+        if item.get('icon_b64'):
             marker = f'<img class="bar-icon" src="data:image/svg+xml;base64,{item["icon_b64"]}"/>'
         else:
             marker = f'<span class="bar-dot" style="background:{item["color"]}; box-shadow:0 0 8px {item["color"]}aa;"></span>'
@@ -422,12 +391,6 @@ def build_html(data):
                      f'<span class="mono-num">{data["peak_day"]["duration"]}</span>'
                      f' on {data["peak_day"]["weekday"]}, the peak of the week</span></div>')
 
-    editors_block = ''
-    if data['editors']:
-        editors_block = (f'<div class="divider"></div>{NEWLINE}'
-                         f'{label_row("editors")}{NEWLINE}'
-                         f'{bar_rows(data["editors"], swatch=True)}')
-
     return f"""<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body>
 <div class="card">
 <div class="accent" style="background:{ACCENT_GRADIENT};"></div>
@@ -439,7 +402,6 @@ def build_html(data):
 <div class="divider"></div>
 {label_row('top languages')}
 {bar_rows(data['languages'])}
-{editors_block}
 <div class="source">{WAKATIME_MARK}wakatime.com</div>
 </div>
 </body></html>"""
@@ -485,7 +447,7 @@ def main():
     if data['is_empty']:
         debug_data = dict(data)
     else:
-        debug_data = {k: v for k, v in data.items() if k not in ('languages', 'editors')}
+        debug_data = {k: v for k, v in data.items() if k != 'languages'}
         debug_data['languages'] = [{kk: vv for kk, vv in l.items() if kk != 'icon_b64'} for l in data['languages']]
     print(json.dumps(debug_data, indent=2, ensure_ascii=False))  # sanity-check the shape before trusting the render
 
