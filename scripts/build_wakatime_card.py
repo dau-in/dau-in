@@ -1,6 +1,7 @@
 """
 Builds assets/wakatime_card.png from WakaTime's Stats API (coding time, top
-languages, peak day) plus real lines-shipped totals pulled straight
+languages, and a bar per day of the window) plus real lines-shipped
+totals pulled straight
 from GitHub's commit diffs (see fetch_lines_shipped) instead of WakaTime's
 own line counter, which turned out to be unreliable for this account.
 
@@ -71,8 +72,8 @@ DEVICON_URL = 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{slug}/
 # honest option until the IDE itself reports.
 
 # A subtle pink+peach duo instead of a single flat tone -- used for the top
-# accent bar, the peak-day flame, and the stat-label tint, so the whole
-# card's warmth reads as one deliberate combo rather than one plain color.
+# accent bar, the peak day's bar in the chart, and the stat-label tint,
+# so the whole card's warmth reads as one deliberate combo rather than one
 PINK = '#f472a0'
 PEACH = '#ffab91'
 ACCENT_COLOR = PEACH  # kept for anything still expecting a single accent
@@ -85,19 +86,6 @@ WAKATIME_MARK = '''<svg class="brand-icon" viewBox="0 0 16 16" fill="none" xmlns
 <rect x="5.1" y="2.5" width="2.4" height="11" rx="1.2" fill="currentColor"/>
 <rect x="9.2" y="5" width="2.4" height="6" rx="1.2" fill="currentColor"/>
 <rect x="13.3" y="7" width="2.4" height="2" rx="1" fill="currentColor"/>
-</svg>'''
-
-# Mountain peak for "peak day" -- literal reading of "peak", and its
-# triangular silhouette naturally bleeds edge-to-edge in a 16x16 box (unlike
-# the flame, which stayed narrow no matter how it was rescaled, or turned
-# squashed-looking when forced wider to compensate). Two overlapping peaks
-# in the pink/peach pair, plus a small white snow-cap for detail at this size.
-PEAK_ICON = f'''<svg class="peak-icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-<g transform="translate(0,-2.4) scale(1,1.3)">
-<path d="M1 13 6 4l2 3.2L10.5 3 15 13z" fill="{PINK}"/>
-<path d="M9 8.5 10.5 6 15 13H10z" fill="{PEACH}"/>
-<path d="M5 8l1.5 2.5L8 8l1 1.5-1 1H5.5z" fill="#fff" opacity="0.85"/>
-</g>
 </svg>'''
 
 # Small inline glyphs for the two lines under the hero number -- a clock for
@@ -276,11 +264,25 @@ def fetch_data():
         for name, seconds in sorted(lang_seconds.items(), key=lambda kv: -kv[1])[:5]
     ]
 
-    best_day = max(summaries, key=lambda day: day['grand_total']['total_seconds'], default=None)
-    peak_day = None
-    if best_day and best_day['grand_total']['total_seconds'] > 0:
-        weekday = datetime.strptime(best_day['range']['date'], '%Y-%m-%d').weekday()
-        peak_day = {'weekday': WEEKDAY_NAMES[weekday], 'duration': best_day['grand_total']['text']}
+    # One entry per day in the window, in order, for the bar chart. The peak
+    # used to be a sentence ("14 hrs 56 mins on Friday, the peak of the
+    # week"); the tallest bar says that by itself, and the other six days --
+    # which that sentence threw away -- come along for free. It also makes
+    # the rolling window legible: the initials start on whatever day is six
+    # back from today, so they visibly shift along by one every day instead
+    # of looking like a Monday-to-Sunday week that never resets.
+    peak_seconds = max((day['grand_total']['total_seconds'] for day in summaries), default=0)
+    day_bars = []
+    for day in summaries:
+        seconds = day['grand_total']['total_seconds']
+        weekday = datetime.strptime(day['range']['date'], '%Y-%m-%d').weekday()
+        day_bars.append({
+            'initial': WEEKDAY_NAMES[weekday][0],
+            'date': day['range']['date'],
+            'seconds': seconds,
+            'is_peak': seconds > 0 and seconds == peak_seconds,
+            'label': f'{round(seconds / 3600)}h' if seconds >= 1800 else '',
+        })
 
     lines_shipped = fetch_lines_shipped()
 
@@ -294,7 +296,7 @@ def fetch_data():
         # "average", which is the opposite of what this number should show.
         'daily_average': format_duration(total_seconds / active_days),
         'languages': languages,
-        'peak_day': peak_day,
+        'day_bars': day_bars,
         'lines_shipped': lines_shipped,
     }
 
@@ -314,10 +316,17 @@ body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Int
 .mono-num { font-family:"JetBrains Mono",monospace; font-weight:700; color:#d8d8d8; }
 .empty-note { font-size:14px; color:#a7a0a7; margin-top:14px; line-height:1.5; }
 .divider { height:1px; background:rgba(255,255,255,0.08); margin:16px 0; }
+.days { display:flex; align-items:flex-end; gap:10px; margin-top:18px; }
+.day { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; }
+.day-bar { width:13px; border-radius:7px; background:rgba(255,255,255,0.10); }
+.day-bar.peak { background:linear-gradient(180deg, #f472a0, #ffab91); box-shadow:0 0 12px #f472a055; }
+.day-name { font-family:"JetBrains Mono",monospace; font-size:10px; font-weight:700; color:#5f5a5f; }
+.day.is-peak .day-name { color:#ffab91; }
+.day-hours { font-family:"JetBrains Mono",monospace; font-size:10px; font-weight:700; color:#5f5a5f; height:13px; }
+.day.is-peak .day-hours { color:#ffab91; }
 .bar-row { display:flex; align-items:center; gap:10px; }
 .bar-row + .bar-row { margin-top:12px; }
-.bar-icon, .peak-icon, .brand-icon { width:16px; height:16px; flex-shrink:0; }
-.peak-icon { width:15px; height:15px; opacity:0.95; }
+.bar-icon, .brand-icon { width:16px; height:16px; flex-shrink:0; }
 .bar-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
 .bar-name { font-size:14px; color:#e5e5e5; font-weight:600; width:110px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .bar-track { flex:1; height:8px; background:rgba(255,255,255,0.06); border-radius:999px; overflow:hidden; }
@@ -385,11 +394,23 @@ def build_html(data):
     # at the bottom. That was the inconsistency down there: a stat section, a
     # (wrong) editor chip and a source credit all sharing one visual footing
     # with nothing saying which was data and which was attribution.
-    peak_line = ''
-    if data['peak_day']:
-        peak_line = (f'<div class="tagline">{PEAK_ICON}<span>'
-                     f'<span class="mono-num">{data["peak_day"]["duration"]}</span>'
-                     f' on {data["peak_day"]["weekday"]}, the peak of the week</span></div>')
+    # Heights are relative to the week's own peak, not to a fixed hour
+    # scale: the shape of the week is the point, and a fixed scale would
+    # flatten every bar to nothing on a quiet week. Days with no heartbeats
+    # keep a 4px stub so the row still reads as seven days rather than a
+    # chart with holes in it.
+    peak_seconds = max((d['seconds'] for d in data['day_bars']), default=0) or 1
+    bars = []
+    for day in data['day_bars']:
+        height = max(round(day['seconds'] / peak_seconds * 74), 4)
+        peak_class = ' peak' if day['is_peak'] else ''
+        bars.append(
+            f'<div class="day{" is-peak" if day["is_peak"] else ""}">'
+            f'<span class="day-hours">{day["label"]}</span>'
+            f'<span class="day-bar{peak_class}" style="height:{height}px"></span>'
+            f'<span class="day-name">{day["initial"]}</span></div>'
+        )
+    day_chart = '<div class="days">' + ''.join(bars) + '</div>'
 
     return f"""<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body>
 <div class="card">
@@ -397,7 +418,7 @@ def build_html(data):
 {label_row('coding time', 'last 7 days')}
 <div class="hero"><div class="hero-num">{data['human_readable_total']}</div></div>
 <div class="hero-sub">{CLOCK_ICON}<span><span class="mono-num">{data['daily_average']}</span> avg on active days</span></div>
-{peak_line}
+{day_chart}
 <div class="tagline">{CODE_ICON}<span><span class="mono-num">{data['lines_shipped']:,}</span> lines shipped this week</span></div>
 <div class="divider"></div>
 {label_row('top languages')}
