@@ -51,6 +51,12 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+# Shared retry wrapper -- see http_retry.py for what gets another go and
+# what is taken at its word. Imported by name because Python puts a
+# script's own directory on sys.path, and these are always run as
+# `python scripts/build_x.py`.
+from http_retry import urlopen_retry
+
 HERE = Path(__file__).parent
 RANGE = 'last_7_days'
 GH_USERNAME = 'dau-in'
@@ -134,8 +140,7 @@ def wakatime_api(path):
         f'https://wakatime.com/api/v1{path}',
         headers={'Authorization': f'Basic {auth}'},
     )
-    with urllib.request.urlopen(req, timeout=15) as r:
-        return json.loads(r.read())
+    return json.loads(urlopen_retry(req))
 
 
 def fetch_language_icon_b64(language):
@@ -143,8 +148,7 @@ def fetch_language_icon_b64(language):
     if not slug:
         return None
     try:
-        with urllib.request.urlopen(DEVICON_URL.format(slug=slug), timeout=10) as r:
-            return base64.b64encode(r.read()).decode()
+        return base64.b64encode(urlopen_retry(DEVICON_URL.format(slug=slug), timeout=10)).decode()
     except Exception:
         return None
 
@@ -155,8 +159,7 @@ def github_api(path):
     if token:
         headers['Authorization'] = f'Bearer {token}'
     req = urllib.request.Request(f'https://api.github.com{path}', headers=headers)
-    with urllib.request.urlopen(req, timeout=15) as r:
-        return json.loads(r.read())
+    return json.loads(urlopen_retry(req))
 
 
 def fetch_lines_shipped(days=7):

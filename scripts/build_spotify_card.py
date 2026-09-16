@@ -18,6 +18,12 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Shared retry wrapper -- see http_retry.py for what gets another go and
+# what is taken at its word. Imported by name because Python puts a
+# script's own directory on sys.path, and these are always run as
+# `python scripts/build_x.py`.
+from http_retry import urlopen_retry
+
 
 def time_ago(iso_ts):
     for fmt in ('%Y-%m-%dT%H:%M:%S.%fZ', '%Y-%m-%dT%H:%M:%SZ'):
@@ -54,8 +60,7 @@ def get_access_token():
             'Content-Type': 'application/x-www-form-urlencoded',
         },
     )
-    with urllib.request.urlopen(req, timeout=15) as r:
-        return json.loads(r.read())['access_token']
+    return json.loads(urlopen_retry(req))['access_token']
 
 
 def spotify_get(endpoint, token):
@@ -63,8 +68,7 @@ def spotify_get(endpoint, token):
         f'https://api.spotify.com/v1{endpoint}',
         headers={'Authorization': f'Bearer {token}'},
     )
-    with urllib.request.urlopen(req, timeout=15) as r:
-        return json.loads(r.read())
+    return json.loads(urlopen_retry(req))
 
 
 def fetch_data():
