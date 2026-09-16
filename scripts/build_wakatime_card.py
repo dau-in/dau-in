@@ -353,7 +353,7 @@ NEWLINE = chr(10)
 ACCENT_GRADIENT = f'linear-gradient(90deg, {PINK}, {PEACH} 55%, transparent)'
 
 
-EMPTY_NOTE = 'No heartbeats this week. Asleep, or just away from it.'
+EMPTY_NOTE = 'No heartbeats in seven days. Asleep, or just away from it.'
 
 
 def label_row(text, tag=''):
