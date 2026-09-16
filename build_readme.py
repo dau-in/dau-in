@@ -306,11 +306,13 @@ readme = f'''<div align="center">
      doesn't leave enough dead space for it to be noticeable.
      Every width here is a pixel count now, and they add up on purpose: the
      passport/discord rows carry CARD_WIDTH, and the steam/spotify <td>s are
-     301 each. 301 and not 302 on purpose: at 302 that row totalled 605 and
-     became the widest in the table, making this section a pixel wider than
-     the 604 the projects box and the cards above render at. At 301 the
-     colspan row is the widest, the table settles on 604, and the two cells
-     get half of it each anyway. The steam and spotify images went from 220 to
+     301 and 302, which is not a typo. This row is what sets the table's
+     width -- the passport/discord rows can't, because an image contributes
+     no min-content width (see CLAUDE.md constraint 7), so their cells never
+     claim anything. That leaves the total in 2px steps: 301+301 renders 603
+     and 302+302 renders 605, both off the 604 the projects box and the
+     cards above land on. One of each hits it exactly, and a pixel of
+     difference between two cells holding centred images is invisible. The steam and spotify images went from 220 to
      275 in the same pass. Those two are drawn at 414 CSS px wide and were
      being shown at 220 -- 53% -- which put their 13px body text on screen
      at about 7px, and that is what reads as "blurry": not the source, the
@@ -320,7 +322,7 @@ readme = f'''<div align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="{CARD_WIDTH}"/></a></td></tr>
 <tr>
 <td width="301" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="assets/steam_card.png?v={CACHE_BUST}" width="275"/></a></td>
-<td width="301" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v={CACHE_BUST}" width="275"/></a></td>
+<td width="302" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="assets/spotify_card.png?v={CACHE_BUST}" width="275"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="{CARD_WIDTH}" alt="discord"/></a></td></tr>
 </table>
