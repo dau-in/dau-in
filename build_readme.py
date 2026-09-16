@@ -165,7 +165,7 @@ projects_box = build_terminal_box('ps -o pid,stat,command -C projects', projects
 # attribute. The two can only match exactly at one container width, since
 # the top one is elastic and this one is pinned -- 69px matches what
 # GitHub's mobile web gives the top photo in its 293px article column.
-_SPACER_LINE = '&nbsp;' * 33
+_SPACER_LINE = '&nbsp;' * 29
 # One run above the image and one below, not just below: a single run leaves
 # the image sitting high in its cell (measured 7px of air above it against
 # 33px below, since valign centers image+run as one block). Two runs cost a
