@@ -25,6 +25,12 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+# Shared retry wrapper -- see http_retry.py for what gets another go and
+# what is taken at its word. Imported by name because Python puts a
+# script's own directory on sys.path, and these are always run as
+# `python scripts/build_x.py`.
+from http_retry import urlopen_retry
+
 HERE = Path(__file__).parent
 STEAM_API_KEY = os.environ['STEAM_API_KEY']
 STEAM_ID = '76561199194382282'
@@ -43,8 +49,7 @@ STATUS_MAP = {
 def steam_api(interface, method, version, **params):
     params['key'] = STEAM_API_KEY
     url = f'https://api.steampowered.com/{interface}/{method}/{version}/?' + urllib.parse.urlencode(params)
-    with urllib.request.urlopen(url, timeout=15) as r:
-        return json.loads(r.read())
+    return json.loads(urlopen_retry(url))
 
 
 def icon_url(game):

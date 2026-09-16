@@ -30,6 +30,12 @@ import tempfile
 import urllib.request
 from pathlib import Path
 
+# Shared retry wrapper -- see http_retry.py for what gets another go and
+# what is taken at its word. Imported by name because Python puts a
+# script's own directory on sys.path, and these are always run as
+# `python scripts/build_x.py`.
+from http_retry import urlopen_retry
+
 HERE = Path(__file__).parent
 OUT_PATH = HERE.parent / 'assets' / 'passport_card.png'
 
@@ -76,8 +82,7 @@ STAR_LOGO = '''<svg class="star" width="15" height="15" viewBox="0 0 100 100">
 
 def fetch(url):
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return r.read()
+    return urlopen_retry(req, timeout=30)
 
 
 def art_box(raw, width, height, circle=False):
