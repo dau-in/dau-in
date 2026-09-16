@@ -111,27 +111,45 @@ SPOTIFY_LOGO = '''<svg width="16" height="16" viewBox="0 0 24 24" style="vertica
 
 CSS = '''
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+/* Type here runs a size up, same reason as the steam card: the README shows
+ * this at 275px against the 414 it is drawn at, so everything lands at about
+ * two thirds of nominal and the small copy was reaching the screen under 9px.
+ * Displaying it bigger isn't available -- it's half of a side-by-side pair
+ * that has to fit the same 604px as the rest of the page. */
 body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
 .card { width:340px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 22px; }
 .row { display:flex; align-items:center; gap:12px; }
 .avatar { width:64px; height:64px; border-radius:50%; object-fit:cover; background:#222; flex-shrink:0; }
 .name { font-weight:700; font-size:22px; color:#fff; line-height:1.15; }
 .divider { height:1px; background:rgba(255,255,255,0.08); margin:16px 0; }
-.stat-label { font-size:11px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:9px; }
+.stat-label { font-size:12.5px; color:#666; text-transform:uppercase; letter-spacing:0.06em; }
+.label-row { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:9px; }
+.range-tag { font-size:11px; color:#5f5a5f; text-transform:uppercase; letter-spacing:0.06em; font-weight:600; }
+.grow { flex:1; min-width:0; }
+.ago { font-size:13px; color:#5f5a5f; white-space:nowrap; }
 .stat-row { display:flex; align-items:center; gap:11px; }
 .stat-row + .stat-row { margin-top:11px; }
 .stat-img { width:46px; height:46px; border-radius:6px; object-fit:cover; background:#222; flex-shrink:0; }
-.stat-name { font-size:14px; color:#e5e5e5; font-weight:600; line-height:1.25; }
-.stat-sub { font-size:12px; color:#a7a0a7; margin-top:2px; }
+.stat-name { font-size:16px; color:#e5e5e5; font-weight:600; line-height:1.25; }
+.stat-sub { font-size:14px; color:#a7a0a7; margin-top:2px; }
 .rank-row { display:flex; align-items:center; gap:10px; }
 .rank-row + .rank-row { margin-top:10px; }
-.rank-num { font-size:13px; color:#555; font-weight:700; width:16px; flex-shrink:0; text-align:center; }
+.rank-num { font-size:14px; color:#555; font-weight:700; width:16px; flex-shrink:0; text-align:center; }
 .rank-img { width:38px; height:38px; border-radius:5px; object-fit:cover; background:#222; flex-shrink:0; }
-.rank-name { font-size:13px; color:#e5e5e5; font-weight:600; line-height:1.2; }
-.rank-sub { font-size:11px; color:#777; line-height:1.2; margin-top:1px; }
-.brand { display:flex; align-items:center; justify-content:flex-end; font-size:12px; color:#a7a0a7; margin-top:16px; }
+.rank-name { font-size:15px; color:#e5e5e5; font-weight:600; line-height:1.2; }
+.rank-sub { font-size:12.5px; color:#777; line-height:1.2; margin-top:1px; }
+.brand { display:flex; align-items:center; justify-content:flex-end; font-size:13.5px; color:#a7a0a7; margin-top:16px; }
 .brand svg { width:14px; height:14px; }
 '''
+
+
+def label_row(text, tag=''):
+    # The two range labels read "top artist . 6 months" and "top 5 . this
+    # month", with a middot doing the joining. No dot separators anywhere on
+    # these cards now: the range moves to its own right-aligned tag, same
+    # pattern the wakatime card uses for "last 7 days".
+    tag_html = f'<span class="range-tag">{tag}</span>' if tag else ''
+    return f'<div class="label-row"><span class="stat-label">{text}</span>{tag_html}</div>'
 
 
 def build_html(data, avatar_b64, artist_img_b64, track_imgs_b64, last_img_b64):
@@ -141,7 +159,7 @@ def build_html(data, avatar_b64, artist_img_b64, track_imgs_b64, last_img_b64):
         sub = f'<div class="stat-sub">{data["genre"]}</div>' if data['genre'] else ''
         artist_block = f'''
 <div class="divider"></div>
-<div class="stat-label">top artist &middot; 6 months</div>
+{label_row('top artist', '6 months')}
 <div class="stat-row">
 {icon_tag}
 <div>
@@ -165,22 +183,23 @@ def build_html(data, avatar_b64, artist_img_b64, track_imgs_b64, last_img_b64):
 </div>''')
         tracks_block = f'''
 <div class="divider"></div>
-<div class="stat-label">top 5 &middot; this month</div>
+{label_row('top 5', 'this month')}
 ''' + '\n'.join(rows)
 
     last_block = ''
     if data['last_track_name']:
         icon_tag = f'<img class="stat-img" src="data:image/jpeg;base64,{last_img_b64}"/>' if last_img_b64 else '<div class="stat-img"></div>'
-        ago = f' &middot; {data["last_track_ago"]}' if data.get('last_track_ago') else ''
+        ago = f'<div class="ago">{data["last_track_ago"]}</div>' if data.get('last_track_ago') else ''
         last_block = f'''
 <div class="divider"></div>
-<div class="stat-label">last played</div>
+{label_row('last played')}
 <div class="stat-row">
 {icon_tag}
-<div>
+<div class="grow">
 <div class="stat-name">{data['last_track_name']}</div>
-<div class="stat-sub">{data['last_track_artist']}{ago}</div>
+<div class="stat-sub">{data['last_track_artist']}</div>
 </div>
+{ago}
 </div>'''
 
     return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body>
