@@ -46,6 +46,21 @@ mobile app, not theory.
   unreliable, sat idle 10+ hours at a stretch). The dispatch uses a
   fine-grained PAT scoped to this repo's Actions only, **expires
   2026-09-28 — renew it** or the cron silently stops working.
+- **The four rebuilt cards do not live on `main`.** They sit on the `cards`
+  branch, which the workflow force-pushes as a single *parentless* commit
+  every refresh, so that branch's history never accumulates. `main` only
+  sees the README edit that rotates their cache-busting query. The reason:
+  each refresh added ~450KB of new PNG blobs and git keeps every version
+  forever — measured at 91 of the repo's 92 MiB of history being old copies
+  of these four images. They're referenced by absolute
+  `raw.githubusercontent.com` URL (`CARDS_URL` in `build_readme.py`), since
+  a relative path can only resolve against the branch the README is on.
+  Verified GitHub does **not** route those through its camo image proxy — it
+  trusts its own hosts — so they refresh as promptly as relative paths did.
+  They're gitignored on main, and the workflow seeds them from the `cards`
+  branch before building so a card whose build fails keeps its last good
+  image instead of vanishing. The static assets (photos, typing banner) and
+  the hand-built passport card stay on main: they don't churn.
 - `design-assets/` is old profile-design scratch/iteration (mockup HTML/PNGs,
   layout catalogs, glyph tests) kept for reference, not tracked
   (`.gitignore`) and not part of the build.
