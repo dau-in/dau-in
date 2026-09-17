@@ -11,3 +11,8 @@ assets/steam_card.png
 assets/spotify_card.png
 assets/last_commit_card.png
 assets/wakatime_card.png
+
+# The last-commit card's freshness anchor lives on the `cards` branch with
+# the images, so the workflow never has to commit to main.
+assets/last_commit_meta.json
+assets/last_commit_url.txt

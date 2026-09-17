@@ -13,8 +13,8 @@ on:
   workflow_dispatch: {}       # cron-job.org calls this externally; also lets you trigger a run manually from the Actions tab
   push:
     branches: [main]         # so the last-commit card updates the moment a commit lands,
-                              # not up to 30 min later -- the bot's own commit is [skip ci],
-                              # which GitHub Actions honors on push, so this doesn't loop
+                              # not up to 30 min later -- the bot only ever pushes to the
+                              # `cards` branch, which this trigger ignores, so this doesn't loop
 
 permissions:
   contents: write
@@ -42,12 +42,14 @@ jobs:
         # doesn't have them. Restore whatever is currently published before
         # building: any card whose build fails (every build step is
         # continue-on-error) then keeps its last good image instead of
-        # vanishing from the profile.
+        # vanishing from the profile. last_commit_meta.json comes along too:
+        # it's the last-commit card's memory of the freshest commit it has
+        # shown, so a laggy run can't regress the card backward.
         run: |
           mkdir -p assets
           git fetch -q origin cards || exit 0
-          for f in steam_card spotify_card last_commit_card wakatime_card; do
-            git show "FETCH_HEAD:$f.png" > "assets/$f.png" 2>/dev/null || rm -f "assets/$f.png"
+          for f in steam_card.png spotify_card.png last_commit_card.png wakatime_card.png last_commit_meta.json; do
+            git show "FETCH_HEAD:$f" > "assets/$f" 2>/dev/null || rm -f "assets/$f"
           done
 
       - uses: actions/setup-python@v5
@@ -94,24 +96,25 @@ jobs:
           CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: python scripts/build_wakatime_card.py
 
-      - name: Publish the cards and refresh the README
+      - name: Publish the cards
         if: always()
-        # The cards go to their own branch, rewritten as one parentless
-        # commit each time, so that history never accumulates. Main used to
-        # carry ~450KB of new PNG blobs per refresh and git keeps every
-        # version forever: 91 of the repo's 92 MiB of history was old copies
-        # of these four images. Main now only sees the README, a couple of KB.
+        # Everything this workflow produces goes to the `cards` branch,
+        # rewritten as one parentless commit each time, so that history never
+        # accumulates. Main is not touched at all: it holds only human commits.
+        # Main used to take a bot commit per refresh -- first ~450KB of PNGs
+        # (91 of the repo's 92 MiB of history was old copies of four images),
+        # then just a README edit to rotate a cache-busting query and update
+        # the last-commit link. Both are gone: raw.githubusercontent.com caps a
+        # stale card at 5 minutes on its own, and the card links somewhere
+        # fixed. See build_readme.py.
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
           idx="$RUNNER_TEMP/cards-index"
           rm -f "$idx"
           GIT_INDEX_FILE="$idx" git read-tree --empty
-          for f in steam_card spotify_card last_commit_card wakatime_card; do
-            [ -f "assets/$f.png" ] || continue
-            sha=$(git hash-object -w "assets/$f.png")
-            GIT_INDEX_FILE="$idx" git update-index --add --cacheinfo 100644,"$sha","$f.png"
+          for f in steam_card.png spotify_card.png last_commit_card.png wakatime_card.png last_commit_meta.json; do
+            [ -f "assets/$f" ] || continue
+            sha=$(git hash-object -w "assets/$f")
+            GIT_INDEX_FILE="$idx" git update-index --add --cacheinfo 100644,"$sha","$f"
           done
           tree=$(GIT_INDEX_FILE="$idx" git write-tree)
           rm -f "$idx"
@@ -119,31 +122,17 @@ jobs:
           git fetch -q origin cards || true
           old_tree=$(git rev-parse -q --verify FETCH_HEAD^{tree} || true)
           if [ "$tree" = "$old_tree" ]; then
-            echo "Every card is byte-identical to what is published; nothing to do."
+            echo "Nothing changed since the last publish."
             exit 0
           fi
 
           # No -p: each refresh replaces the branch rather than extending it,
           # which is the whole point -- an accumulating branch would just move
           # the weight problem instead of solving it.
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           commit=$(git commit-tree "$tree" -m "cards: refreshed $(date -u +%FT%TZ)")
           git push --force origin "$commit:refs/heads/cards"
-
-          # Only now regenerate the README, which rotates the cache-busting
-          # query on each card's URL (see build_readme.py). Doing it on every
-          # run regardless would force a commit purely to rotate a buster
-          # nothing needed, drowning the repo's real history in bot noise.
-          python build_readme.py
-          git add README.md assets/last_commit_url.txt assets/last_commit_meta.json
-          git diff --staged --quiet && exit 0
-          git commit -m "chore: refresh widget cards [skip ci]"
-          # concurrency: above already keeps two runs of this workflow from
-          # overlapping, but this stays as a second line of defense against
-          # any push that lands on main between checkout and here (from local
-          # work, not this workflow) -- rebase onto it instead of failing
-          # outright on a plain rejected push.
-          git pull --rebase
-          git push
 
       # Every build step above is continue-on-error, so one dead API (a
       # revoked Steam key, an expired Spotify refresh token, a rotated

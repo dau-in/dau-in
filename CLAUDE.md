@@ -48,8 +48,8 @@ mobile app, not theory.
   2026-09-28 — renew it** or the cron silently stops working.
 - **The four rebuilt cards do not live on `main`.** They sit on the `cards`
   branch, which the workflow force-pushes as a single *parentless* commit
-  every refresh, so that branch's history never accumulates. `main` only
-  sees the README edit that rotates their cache-busting query. The reason:
+  every refresh, so that branch's history never accumulates. **`main` takes
+  no bot commits at all** — it holds only human work. The reason:
   each refresh added ~450KB of new PNG blobs and git keeps every version
   forever — measured at 91 of the repo's 92 MiB of history being old copies
   of these four images. They're referenced by absolute
@@ -57,6 +57,16 @@ mobile app, not theory.
   a relative path can only resolve against the branch the README is on.
   Verified GitHub does **not** route those through its camo image proxy — it
   trusts its own hosts — so they refresh as promptly as relative paths did.
+  There is deliberately **no cache-busting query** on those URLs: one used to
+  rotate every refresh, which changed the README, which meant a bot commit on
+  main every refresh. raw.githubusercontent.com sends `Cache-Control:
+  max-age=300` plus an ETag, so a stale card lasts at most 5 minutes. The one
+  unverified risk is the GitHub mobile app, whose image cache may not honor
+  that — if the app shows stale cards for hours, that's why. For the same
+  reason the last-commit card links to `?tab=repositories` (sorted by last
+  update) instead of the exact commit: a per-commit URL in the README forced
+  a bot commit on every push anywhere. `last_commit_meta.json`, the card's
+  freshness anchor, lives on the `cards` branch alongside the images.
   They're gitignored on main, and the workflow seeds them from the `cards`
   branch before building so a card whose build fails keeps its last good
   image instead of vanishing. The static assets (photos, typing banner) and
