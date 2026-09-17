@@ -1,28 +1,14 @@
 # -*- coding: utf-8 -*-
-import os
-import time
 from pathlib import Path
 
 import pyfiglet
-
-# raw.githubusercontent.com (what a relative <img src> in a README actually
-# resolves to) caches by URL -- the asset's bytes on disk can be fully
-# updated and viewers still get a stale copy for a while, because the path
-# never changes between renders. A query string that changes every run
-# forces a fresh fetch instead of a cache hit. GITHUB_RUN_ID (auto-injected
-# by Actions), not GITHUB_SHA -- most refreshes are the cards' own data
-# changing (WakaTime, last commit) with no new commit to this repo at all,
-# so the SHA would stay identical run to run and never bust anything for
-# the case that matters most. update-widgets.yml only re-runs this script
-# when a card actually changed, so this still doesn't churn on no-op runs.
-CACHE_BUST = os.environ.get('GITHUB_RUN_ID', str(int(time.time())))
 
 # The four rebuilt-every-30-min cards don't live on main any more. They sit
 # on the `cards` branch, which the workflow force-pushes as a single
 # parentless commit each refresh, so its history never accumulates. Main was
 # carrying ~450KB of new PNG blobs per refresh and git keeps every version
 # forever: 91 of the repo's 92 MiB of history was old copies of these four
-# images. A README edit is a couple of KB instead.
+# images. Main now takes no bot commits at all.
 # raw.githubusercontent.com and not a relative path, because a relative one
 # can only ever resolve against the branch the README itself is on. Checked
 # that GitHub does NOT route this through its camo image proxy (it trusts
@@ -30,6 +16,14 @@ CACHE_BUST = os.environ.get('GITHUB_RUN_ID', str(int(time.time())))
 # did -- camo would have added a caching layer we can't flush.
 # The static assets (photos, typing banner) and the hand-built passport card
 # stay on main: they don't churn, so they cost nothing to keep.
+#
+# No cache-busting query on these URLs, deliberately. There used to be one
+# (?v=<run id>), rotated on every refresh so a stale copy couldn't hang
+# around -- which meant the README changed every refresh, which meant a bot
+# commit on main every refresh. raw.githubusercontent.com answers with
+# Cache-Control: max-age=300 plus an ETag (checked), so a stale card lives
+# at most five minutes against a 30-minute refresh cadence. That's what lets
+# main hold only human commits.
 CARDS_URL = 'https://raw.githubusercontent.com/dau-in/dau-in/cards'
 
 def build_terminal_box(command, lines, prompt='[dauin@cachyos ~]$ ', blank_before_prompt=True):
@@ -201,15 +195,13 @@ discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
                '?theme=dark&bg=000000&borderRadius=18px&animated=true'
                '&idleMessage=bored%2C+for+now&showDisplayName=true')
 
-# written by scripts/build_last_commit_card.py alongside the card itself --
-# the actual commit URL changes every run, and this template has no way to
-# reach the GitHub API on its own to look it up. Falls back to the profile
-# page itself on a fresh checkout that hasn't run the card script yet.
-last_commit_url_path = Path('assets/last_commit_url.txt')
-last_commit_url = (
-    last_commit_url_path.read_text(encoding='utf-8').strip()
-    if last_commit_url_path.exists() else 'https://github.com/dau-in'
-)
+# The last-commit card links to the repositories tab, which GitHub sorts by
+# last update, so the repo the card shows is the first one listed. It used to
+# link to the exact commit, via a URL the card script wrote into a sidecar
+# file -- but that URL lives in this README, so every new commit anywhere
+# forced a bot commit on main just to update a link. A fixed link keeps main
+# free of bot commits entirely; the commit itself is one click further on.
+last_commit_url = 'https://github.com/dau-in?tab=repositories'
 
 
 # typing_dark/light.png are self-built animated APNGs (scripts/build_typing_png.py),
@@ -296,8 +288,8 @@ readme = f'''<div align="center">
      thing to 28px (measured). Re-measure CARD_WIDTH if the projects box ever
      changes width. -->
 <table align="center">
-<tr><td align="center"><a href="{last_commit_url}"><img src="{CARDS_URL}/last_commit_card.png?v={CACHE_BUST}" width="{CARD_WIDTH}"/></a></td></tr>
-<tr><td align="center"><img src="{CARDS_URL}/wakatime_card.png?v={CACHE_BUST}" width="{CARD_WIDTH}"/></td></tr>
+<tr><td align="center"><a href="{last_commit_url}"><img src="{CARDS_URL}/last_commit_card.png" width="{CARD_WIDTH}"/></a></td></tr>
+<tr><td align="center"><img src="{CARDS_URL}/wakatime_card.png" width="{CARD_WIDTH}"/></td></tr>
 </table>
 
 <!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
@@ -336,8 +328,8 @@ readme = f'''<div align="center">
 <table align="center">
 <tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="{CARD_WIDTH}"/></a></td></tr>
 <tr>
-<td width="301" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="{CARDS_URL}/steam_card.png?v={CACHE_BUST}" width="275"/></a></td>
-<td width="302" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="{CARDS_URL}/spotify_card.png?v={CACHE_BUST}" width="275"/></a></td>
+<td width="301" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="{CARDS_URL}/steam_card.png" width="275"/></a></td>
+<td width="302" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="{CARDS_URL}/spotify_card.png" width="275"/></a></td>
 </tr>
 <tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="{CARD_WIDTH}" alt="discord"/></a></td></tr>
 </table>
