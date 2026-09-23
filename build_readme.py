@@ -227,7 +227,7 @@ readme = f'''<div align="center">
 </div>
 
 <table align="center"><tr>
-<td width="197" align="center" valign="middle"><img width="170" src="assets/section1_photos.gif"/></td>
+<td width="197" align="center" valign="middle"><a href="https://x.com/inoitoh"><img width="170" src="assets/section1_photos.gif"/></a></td>
 <td align="center" valign="middle">
 
 ```
@@ -263,7 +263,7 @@ readme = f'''<div align="center">
      section anyway. -->
 <table align="center">
 <tr>
-<td width="197" align="center" valign="middle">{PHOTO_COL_SPACER_TOP}<img src="assets/section2_photos_v2.gif" width="170"/>{PHOTO_COL_SPACER_BOTTOM}</td>
+<td width="197" align="center" valign="middle">{PHOTO_COL_SPACER_TOP}<a href="https://x.com/inoitoh"><img src="assets/section2_photos_v2.gif" width="170"/></a>{PHOTO_COL_SPACER_BOTTOM}</td>
 <td width="360" valign="middle">
 
 ```
@@ -289,13 +289,21 @@ readme = f'''<div align="center">
      changes width. -->
 <table align="center">
 <tr><td align="center"><a href="{last_commit_url}"><img src="{CARDS_URL}/last_commit_card.png" width="{CARD_WIDTH}"/></a></td></tr>
-<tr><td align="center"><img src="{CARDS_URL}/wakatime_card.png" width="{CARD_WIDTH}"/></td></tr>
+<tr><td align="center"><a href="https://github.com/dau-in?tab=repositories"><img src="{CARDS_URL}/wakatime_card.png" width="{CARD_WIDTH}"/></a></td></tr>
 </table>
 
-<!-- wakatime_card.png has no <a> wrapper -- unlike every other linked card
-     here, there's nowhere real to send a click: this WakaTime account's
-     profile is private (no public username set either), so a link would
-     either 404 or point at a page that shows nothing. Rebuilt alongside the
+<!-- Every image on this page is wrapped in an <a>, including the two photos
+     and this card, because GitHub links any unwrapped image to its own raw
+     file -- so a tap that looks like it should go somewhere just opens a
+     PNG. The photos go to the artist credited in the footer; that credit
+     line stays, since a link is invisible until someone taps it and is no
+     substitute for visible attribution. This card points at the repos tab
+     rather than wakatime.com/@dauin: that profile is private and 404s
+     (checked). Repoint it here if it's ever made public.
+     TODO: the typing name banner is the one image still unlinked -- it goes
+     to the personal site once that exists (dauin.dev). It can't take a plain
+     <a> wrapper, since the light/dark swap needs markdown image syntax;
+     use [![name](...#gh-dark-mode-only)](url) instead. Rebuilt alongside the
      other cards by update-widgets.yml (scripts/build_wakatime_card.py). -->
 <!-- TODO: add real repo link once Kintsugi has a demoable run -->
 
