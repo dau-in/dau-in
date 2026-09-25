@@ -191,9 +191,21 @@ PHOTO_COL_SPACER_BOTTOM = '<br>' + _SPACER_LINE
 # max-width:100% still shrinks the cards to fit a phone.
 CARD_WIDTH = 576
 
-discord_url = ('https://lanyard.cnrad.dev/api/780932598922084384'
-               '?theme=dark&bg=000000&borderRadius=18px&animated=true'
-               '&idleMessage=bored%2C+for+now&showDisplayName=true')
+# Every card comes in two files, x_card.png and x_card_light.png (see
+# scripts/card_skin.py), and <picture> hands GitHub's light theme the light
+# one. The dark file stays the plain <img> fallback, so any client that
+# ignores <picture> still gets exactly what it showed before. The typing
+# banner can't do this -- its swap uses the #gh-*-mode-only fragments, which
+# only work in markdown image syntax (see below) -- but a <picture> is plain
+# HTML and sits inside the <a>/<td> wrappers the cards need.
+# The Discord card is our own since 2026-09-25 (scripts/build_discord_card.py),
+# built from the Lanyard API; it replaced the lanyard.cnrad.dev widget, which
+# drew its own card and so could never match the rest.
+def card(src, width, alt=''):
+    base, ext = src.rsplit('.', 1)
+    alt_attr = f' alt="{alt}"' if alt else ''
+    return (f'<picture><source media="(prefers-color-scheme: light)" srcset="{base}_light.{ext}">'
+            f'<img src="{src}" width="{width}"{alt_attr}/></picture>')
 
 # The last-commit card links to the repositories tab, which GitHub sorts by
 # last update, so the repo the card shows is the first one listed. It used to
@@ -288,8 +300,8 @@ readme = f'''<div align="center">
      thing to 28px (measured). Re-measure CARD_WIDTH if the projects box ever
      changes width. -->
 <table align="center">
-<tr><td align="center"><a href="{last_commit_url}"><img src="{CARDS_URL}/last_commit_card.png" width="{CARD_WIDTH}"/></a></td></tr>
-<tr><td align="center"><a href="https://github.com/dau-in?tab=repositories"><img src="{CARDS_URL}/wakatime_card.png" width="{CARD_WIDTH}"/></a></td></tr>
+<tr><td align="center"><a href="{last_commit_url}">{card(f'{CARDS_URL}/last_commit_card.png', CARD_WIDTH)}</a></td></tr>
+<tr><td align="center"><a href="https://github.com/dau-in?tab=repositories">{card(f'{CARDS_URL}/wakatime_card.png', CARD_WIDTH)}</a></td></tr>
 </table>
 
 <!-- Every image on this page is wrapped in an <a>, including the two photos
@@ -334,18 +346,18 @@ readme = f'''<div align="center">
      downscale. 275 is the widest they can be without this table growing
      past the others. -->
 <table align="center">
-<tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="{CARD_WIDTH}"/></a></td></tr>
+<tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin">{card('assets/passport_card.png', CARD_WIDTH)}</a></td></tr>
 <tr>
-<td width="301" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="{CARDS_URL}/steam_card.png" width="275"/></a></td>
-<td width="302" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="{CARDS_URL}/spotify_card.png" width="275"/></a></td>
+<td width="301" align="center"><a href="https://steamcommunity.com/id/dauin">{card(f'{CARDS_URL}/steam_card.png', 275)}</a></td>
+<td width="302" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm">{card(f'{CARDS_URL}/spotify_card.png', 275)}</a></td>
 </tr>
-<tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="{discord_url}" width="{CARD_WIDTH}" alt="discord"/></a></td></tr>
+<tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384">{card(f'{CARDS_URL}/discord_card.png', CARD_WIDTH, 'discord')}</a></td></tr>
 </table>
 
-<!-- steam_card.png, spotify_card.png, and wakatime_card.png are rebuilt
-     every 30 min and on every push by .github/workflows/update-widgets.yml
-     (scripts/build_steam_card.py, build_spotify_card.py, build_wakatime_card.py)
-     -- never hand-edited. -->
+<!-- steam, spotify, last-commit, wakatime and discord cards (each with a
+     _light twin) are rebuilt every 30 min and on every push by
+     .github/workflows/update-widgets.yml (scripts/build_*_card.py) -- never
+     hand-edited. The passport pair is rebuilt by hand. -->
 
 {sep()}
 

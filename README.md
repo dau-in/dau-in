@@ -103,8 +103,8 @@
      thing to 28px (measured). Re-measure CARD_WIDTH if the projects box ever
      changes width. -->
 <table align="center">
-<tr><td align="center"><a href="https://github.com/dau-in?tab=repositories"><img src="https://raw.githubusercontent.com/dau-in/dau-in/cards/last_commit_card.png" width="576"/></a></td></tr>
-<tr><td align="center"><a href="https://github.com/dau-in?tab=repositories"><img src="https://raw.githubusercontent.com/dau-in/dau-in/cards/wakatime_card.png" width="576"/></a></td></tr>
+<tr><td align="center"><a href="https://github.com/dau-in?tab=repositories"><picture><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/dau-in/dau-in/cards/last_commit_card_light.png"><img src="https://raw.githubusercontent.com/dau-in/dau-in/cards/last_commit_card.png" width="576"/></picture></a></td></tr>
+<tr><td align="center"><a href="https://github.com/dau-in?tab=repositories"><picture><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/dau-in/dau-in/cards/wakatime_card_light.png"><img src="https://raw.githubusercontent.com/dau-in/dau-in/cards/wakatime_card.png" width="576"/></picture></a></td></tr>
 </table>
 
 <!-- Every image on this page is wrapped in an <a>, including the two photos
@@ -149,18 +149,18 @@
      downscale. 275 is the widest they can be without this table growing
      past the others. -->
 <table align="center">
-<tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><img src="assets/passport_card.png" width="576"/></a></td></tr>
+<tr><td colspan="2" align="center"><a href="https://passportdex.com/dauin"><picture><source media="(prefers-color-scheme: light)" srcset="assets/passport_card_light.png"><img src="assets/passport_card.png" width="576"/></picture></a></td></tr>
 <tr>
-<td width="301" align="center"><a href="https://steamcommunity.com/id/dauin"><img src="https://raw.githubusercontent.com/dau-in/dau-in/cards/steam_card.png" width="275"/></a></td>
-<td width="302" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><img src="https://raw.githubusercontent.com/dau-in/dau-in/cards/spotify_card.png" width="275"/></a></td>
+<td width="301" align="center"><a href="https://steamcommunity.com/id/dauin"><picture><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/dau-in/dau-in/cards/steam_card_light.png"><img src="https://raw.githubusercontent.com/dau-in/dau-in/cards/steam_card.png" width="275"/></picture></a></td>
+<td width="302" align="center"><a href="https://open.spotify.com/user/31aluwrafhtrzpee4pqzyodbvusm"><picture><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/dau-in/dau-in/cards/spotify_card_light.png"><img src="https://raw.githubusercontent.com/dau-in/dau-in/cards/spotify_card.png" width="275"/></picture></a></td>
 </tr>
-<tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><img src="https://lanyard.cnrad.dev/api/780932598922084384?theme=dark&bg=000000&borderRadius=18px&animated=true&idleMessage=bored%2C+for+now&showDisplayName=true" width="576" alt="discord"/></a></td></tr>
+<tr><td colspan="2" align="center"><a href="https://discord.com/users/780932598922084384"><picture><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/dau-in/dau-in/cards/discord_card_light.png"><img src="https://raw.githubusercontent.com/dau-in/dau-in/cards/discord_card.png" width="576" alt="discord"/></picture></a></td></tr>
 </table>
 
-<!-- steam_card.png, spotify_card.png, and wakatime_card.png are rebuilt
-     every 30 min and on every push by .github/workflows/update-widgets.yml
-     (scripts/build_steam_card.py, build_spotify_card.py, build_wakatime_card.py)
-     -- never hand-edited. -->
+<!-- steam, spotify, last-commit, wakatime and discord cards (each with a
+     _light twin) are rebuilt every 30 min and on every push by
+     .github/workflows/update-widgets.yml (scripts/build_*_card.py) -- never
+     hand-edited. The passport pair is rebuilt by hand. -->
 
 <hr>
 
