@@ -135,7 +135,17 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           commit=$(git commit-tree "$tree" -m "cards: refreshed $(date -u +%FT%TZ)")
-          git push --force origin "$commit:refs/heads/cards"
+
+          # A few tries, same reasoning as scripts/http_retry.py: GitHub has
+          # rejected this push with a bare "Internal Server Error" more than
+          # once, after every card had built fine, and the next run went
+          # through untouched. A force push of the same commit is safe to
+          # repeat.
+          for attempt in 1 2 3; do
+            git push --force origin "$commit:refs/heads/cards" && exit 0
+            [ "$attempt" -lt 3 ] && sleep $((attempt * 5))
+          done
+          exit 1
 
       # Every build step above is continue-on-error, so one dead API (a
       # revoked Steam key, an expired Spotify refresh token, a rotated
