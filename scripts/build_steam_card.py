@@ -19,7 +19,6 @@ import base64
 import json
 import os
 import shutil
-import subprocess
 import sys
 import urllib.parse
 from pathlib import Path
@@ -29,6 +28,9 @@ from pathlib import Path
 # script's own directory on sys.path, and these are always run as
 # `python scripts/build_x.py`.
 from http_retry import urlopen_retry
+# The shared look (ambient background, path labels, transparent render) --
+# see card_skin.py.
+import card_skin
 
 HERE = Path(__file__).parent
 STEAM_API_KEY = os.environ['STEAM_API_KEY']
@@ -102,7 +104,7 @@ STEAM_LOGO = '''<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-
 </svg>'''
 
 CSS = '''
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
 /* Type here runs a size up from what a 340px card would normally take.
  * The README shows this card at 275px against the 414 it is drawn at, so
  * everything on it lands at about two thirds of its nominal size -- 13px
@@ -111,8 +113,8 @@ CSS = '''
  * the same 604px the rest of the page uses. So the type grew instead.
  * The bullet that separated status from game count is gone with the rest of
  * the dot separators; the gap in .meta-row does that job now. */
-body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
-.card { width:340px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 22px; }
+body { margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
+.card { width:340px; border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 22px; }
 .row { display:flex; align-items:center; gap:13px; }
 .avatar { width:68px; height:68px; border-radius:50%; flex-shrink:0; }
 .name { font-weight:700; font-size:24px; color:#fff; line-height:1.15; display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
@@ -121,12 +123,12 @@ body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Int
 .games { font-size:15px; color:#a7a0a7; }
 .status { font-size:15px; color:#e5e5e5; }
 .status-dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px; vertical-align:middle; }
-.divider { height:1px; background:rgba(255,255,255,0.08); margin:18px 0; }
+.divider { height:1px; margin:18px 0; }
 .hero { display:flex; align-items:baseline; gap:9px; }
 .hero-num { font-size:42px; font-weight:800; color:#fff; line-height:1; }
 .hero-unit { font-size:20px; color:#a7a0a7; }
 .hero-label { font-size:14px; color:#a7a0a7; margin-top:2px; }
-.stat-label { font-size:12.5px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:9px; }
+.stat-label { margin-bottom:9px; }
 .stat-row { display:flex; align-items:center; gap:11px; }
 .stat-row + .stat-row { margin-top:12px; }
 .stat-img { width:50px; height:50px; border-radius:6px; flex-shrink:0; }
@@ -143,7 +145,7 @@ def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
         icon_tag = f'<img class="stat-img" src="data:image/jpeg;base64,{most_icon_b64}"/>' if most_icon_b64 else '<div class="stat-img"></div>'
         most_block = f'''
 <div class="divider"></div>
-<div class="stat-label">most played</div>
+<div class="stat-label">{card_skin.label('steam', 'most-played')}</div>
 <div class="stat-row">
 {icon_tag}
 <div class="stat-name">{data['most_played_name']}</div>
@@ -160,7 +162,7 @@ def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
 </div>''')
         recent_block = f'''
 <div class="divider"></div>
-<div class="stat-label">recently played</div>
+<div class="stat-label">{card_skin.label('steam', 'recent')}</div>
 ''' + '\n'.join(rows)
 
     hero_block = ''
@@ -172,8 +174,8 @@ def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
 <div class="hero-label">played in the last 2 weeks</div>
 </div>'''
 
-    return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body>
-<div class="card">
+    return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}{card_skin.CSS}</style></head><body>
+<div class="card">{card_skin.ambient(card_skin.data_url(avatar_b64))}
 <div class="row">
 <img class="avatar" src="data:image/png;base64,{avatar_b64}"/>
 <div>
@@ -191,7 +193,7 @@ def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
      card (which naturally has more content blocks: 7 vs steam's 4) so the pair
      reads as roughly the same size side by side. Recalculated by measuring both
      cards' actual rendered heights; may need retuning if content wraps longer. -->
-<div style="height:70px;"></div>
+<div style="height:66px;"></div>
 <div class="brand">{STEAM_LOGO}steamcommunity.com/id/dauin</div>
 </div>
 </body></html>'''
@@ -211,23 +213,7 @@ def find_chrome():
 
 
 def render(html_path, tmp_dir, out_path, chrome):
-    raw = tmp_dir / 'raw.png'
-    subprocess.run([
-        chrome, '--headless', '--disable-gpu', '--no-sandbox',
-        '--force-device-scale-factor=2', '--window-size=460,900',
-        '--virtual-time-budget=4000', f'--screenshot={raw}', f'file:///{html_path.as_posix()}',
-    ], check=True)
-
-    from PIL import Image, ImageChops
-    img = Image.open(raw).convert('RGB')
-    bg = Image.new('RGB', img.size, (0, 0, 0))
-    diff = ImageChops.difference(img, bg)
-    bbox = diff.getbbox()
-    pad = 28
-    l, t, r, b = bbox
-    l, t = max(l - pad, 0), max(t - pad, 0)
-    r, b = min(r + pad, img.width), min(b + pad, img.height)
-    img.crop((l, t, r, b)).save(out_path)
+    card_skin.render(chrome, html_path, out_path, '460,900')
 
 
 def main():

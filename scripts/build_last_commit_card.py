@@ -24,7 +24,6 @@ import base64
 import json
 import os
 import shutil
-import subprocess
 import sys
 import urllib.request
 from datetime import datetime, timezone
@@ -35,6 +34,9 @@ from pathlib import Path
 # script's own directory on sys.path, and these are always run as
 # `python scripts/build_x.py`.
 from http_retry import urlopen_retry
+# The shared look (ambient background, path labels, transparent render) --
+# see card_skin.py.
+import card_skin
 
 HERE = Path(__file__).parent
 USERNAME = 'dau-in'
@@ -114,7 +116,8 @@ def fetch_language_icon_b64(language):
     if not slug:
         return None
     try:
-        return base64.b64encode(urlopen_retry(DEVICON_URL.format(slug=slug), timeout=10)).decode()
+        svg = card_skin.lighten_if_dark(urlopen_retry(DEVICON_URL.format(slug=slug), timeout=10))
+        return base64.b64encode(svg).decode()
     except Exception:
         # a CDN hiccup or a slug devicon has since renamed shouldn't break
         # the whole card -- just fall back to the plain colored dot
@@ -206,11 +209,10 @@ def fetch_data():
 
 
 CSS = '''
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap');
-body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
-.card { width:380px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:22px 24px; position:relative; overflow:hidden; }
-.accent { position:absolute; top:0; left:0; width:100%; height:3px; }
-.stat-label { font-size:11px; color:#666; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
+body { margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
+.card { width:380px; border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:22px 24px; }
+.stat-label { margin-bottom:12px; }
 .repo-row { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
 .repo-group { display:flex; align-items:center; gap:8px; }
 .gh-icon { width:16px; height:16px; flex-shrink:0; fill:#a7a0a7; }
@@ -243,10 +245,9 @@ def build_html(data, avatar_b64):
         lang_marker = f'<img class="lang-icon" src="data:image/svg+xml;base64,{data["language_icon_b64"]}"/>'
     else:
         lang_marker = f'<span class="lang-dot" style="background:{data["language_color"]}; box-shadow:0 0 8px {data["language_color"]}aa;"></span>'
-    return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body>
-<div class="card">
-<div class="accent" style="background:linear-gradient(90deg, {data['language_color']}, transparent);"></div>
-<div class="stat-label">latest commit</div>
+    return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}{card_skin.CSS}</style></head><body>
+<div class="card">{card_skin.ambient(card_skin.data_url(avatar_b64))}
+<div class="stat-label">{card_skin.label('github', 'latest-commit')}</div>
 <div class="repo-row">
 <div class="repo-group">{GITHUB_MARK}<span class="repo">{data['repo_name']}</span></div>
 <div class="lang-group">{lang_marker}{lang_block}</div>
@@ -276,23 +277,7 @@ def find_chrome():
 
 
 def render(html_path, tmp_dir, out_path, chrome):
-    raw = tmp_dir / 'raw.png'
-    subprocess.run([
-        chrome, '--headless', '--disable-gpu', '--no-sandbox',
-        '--force-device-scale-factor=2', '--window-size=460,400',
-        '--virtual-time-budget=4000', f'--screenshot={raw}', f'file:///{html_path.as_posix()}',
-    ], check=True)
-
-    from PIL import Image, ImageChops
-    img = Image.open(raw).convert('RGB')
-    bg = Image.new('RGB', img.size, (0, 0, 0))
-    diff = ImageChops.difference(img, bg)
-    bbox = diff.getbbox()
-    pad = 28
-    l, t, r, b = bbox
-    l, t = max(l - pad, 0), max(t - pad, 0)
-    r, b = min(r + pad, img.width), min(b + pad, img.height)
-    img.crop((l, t, r, b)).save(out_path)
+    card_skin.render(chrome, html_path, out_path, '460,400')
 
 
 def main():

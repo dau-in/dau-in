@@ -24,7 +24,6 @@ import io
 import json
 import os
 import shutil
-import subprocess
 import sys
 import tempfile
 import urllib.request
@@ -35,14 +34,18 @@ from pathlib import Path
 # script's own directory on sys.path, and these are always run as
 # `python scripts/build_x.py`.
 from http_retry import urlopen_retry
+# The shared look (ambient background, path labels, transparent render) --
+# see card_skin.py.
+import card_skin
 
 HERE = Path(__file__).parent
 OUT_PATH = HERE.parent / 'assets' / 'passport_card.png'
 
 # --- transcribed from passportdex.com/dauin -------------------------------
 PROFILE = {
+    # No @handle next to the name: the passportdex.com/dauin link at the foot
+    # of the card already says it.
     'name': '\U0001D4D3`',
-    'handle': '@dauin',
     'quote': '"Every letter deserves to be delivered."',
     'now_watching': {
         'title': 'Violet Evergarden',
@@ -110,22 +113,20 @@ def art_box(raw, width, height, circle=False):
 
 
 CSS = '''
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@700&family=Fraunces:ital@1&display=swap');
-body { background:#000; margin:0; padding:20px; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
-.card { width:420px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 22px; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital@1&display=swap');
+body { margin:0; padding:20px; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
+.card { width:420px; border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 22px; }
 .row { display:flex; align-items:center; gap:14px; }
 .avatar { width:64px; height:64px; border-radius:50%; flex-shrink:0; }
-.name-line { display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; }
 .name { font-weight:700; font-size:22px; color:#fff; line-height:1.1; }
-.handle { font-size:13px; color:#a7a0a7; }
 .quote { margin-top:13px; font-family:'Fraunces', Georgia, serif; font-style:italic; font-size:15px; color:#e5e5e5; }
-.divider { height:1px; background:rgba(255,255,255,0.08); margin:15px 0; }
-.stat-label { font-size:10px; color:#6f6a6f; text-transform:uppercase; letter-spacing:0.07em; margin-bottom:9px; font-weight:600; }
+.divider { height:1px; margin:15px 0; }
+.stat-label { margin-bottom:9px; }
 .stat-row { display:flex; align-items:center; gap:12px; }
 .stat-img { width:50px; height:75px; border-radius:6px; flex-shrink:0; }
 .stat-name { font-size:14px; color:#e5e5e5; font-weight:600; }
 .stat-sub { font-family:'Fraunces', Georgia, serif; font-style:italic; font-size:12.5px; color:#a7a0a7; margin-top:2px; }
-.counts { display:flex; margin-top:16px; border-top:1px solid rgba(255,255,255,0.08); padding-top:14px; }
+.counts { display:flex; margin-top:16px; border-top:1px solid rgba(255,255,255,0.1); padding-top:14px; }
 .count { flex:1; }
 .count-num { font-family:"JetBrains Mono",monospace; font-weight:700; font-size:17px; color:#e5e5e5; line-height:1.1; }
 .count-label { font-size:10px; color:#6f6a6f; text-transform:uppercase; letter-spacing:0.07em; margin-top:3px; }
@@ -140,24 +141,21 @@ def build_html(images):
         f'<div class="count-label">{label}</div></div>'
         for n, label in PROFILE['counts']
     )
-    return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body>
-<div class="card">
+    return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}{card_skin.CSS}</style></head><body>
+<div class="card">{card_skin.ambient(card_skin.data_url(images['avatar']))}
 <div class="row">
 <img class="avatar" src="data:image/png;base64,{images['avatar']}"/>
-<div class="name-line">
 <div class="name">{PROFILE['name']}</div>
-<div class="handle">{PROFILE['handle']}</div>
-</div>
 </div>
 <div class="quote">{PROFILE['quote']}</div>
 <div class="divider"></div>
-<div class="stat-label">now watching</div>
+<div class="stat-label">{card_skin.label('passport', 'now-watching')}</div>
 <div class="stat-row">
 <img class="stat-img" src="data:image/png;base64,{images['watching']}"/>
 <div class="stat-name">{PROFILE['now_watching']['title']}</div>
 </div>
 <div class="divider"></div>
-<div class="stat-label">top pick</div>
+<div class="stat-label">{card_skin.label('passport', 'top-pick')}</div>
 <div class="stat-row">
 <img class="stat-img" src="data:image/png;base64,{images['top_pick']}"/>
 <div>
@@ -187,22 +185,7 @@ def find_chrome():
 
 
 def render(html_path, tmp_dir, out_path, chrome):
-    raw = tmp_dir / 'raw.png'
-    subprocess.run([
-        chrome, '--headless', '--disable-gpu', '--no-sandbox',
-        '--force-device-scale-factor=2', '--window-size=520,760',
-        '--virtual-time-budget=4000', f'--screenshot={raw}', f'file:///{html_path.as_posix()}',
-    ], check=True)
-
-    from PIL import Image, ImageChops
-    img = Image.open(raw).convert('RGB')
-    bg = Image.new('RGB', img.size, (0, 0, 0))
-    bbox = ImageChops.difference(img, bg).getbbox()
-    pad = 28
-    l, t, r, b = bbox
-    l, t = max(l - pad, 0), max(t - pad, 0)
-    r, b = min(r + pad, img.width), min(b + pad, img.height)
-    img.crop((l, t, r, b)).save(out_path)
+    card_skin.render(chrome, html_path, out_path, '520,760')
 
 
 def main():

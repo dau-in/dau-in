@@ -12,7 +12,6 @@ import base64
 import json
 import os
 import shutil
-import subprocess
 import sys
 import urllib.request
 from datetime import datetime, timezone
@@ -23,6 +22,9 @@ from pathlib import Path
 # script's own directory on sys.path, and these are always run as
 # `python scripts/build_x.py`.
 from http_retry import urlopen_retry
+# The shared look (ambient background, path labels, transparent render) --
+# see card_skin.py.
+import card_skin
 
 
 def time_ago(iso_ts):
@@ -114,21 +116,19 @@ SPOTIFY_LOGO = '''<svg width="16" height="16" viewBox="0 0 24 24" style="vertica
 </svg>'''
 
 CSS = '''
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
 /* Type here runs a size up, same reason as the steam card: the README shows
  * this at 275px against the 414 it is drawn at, so everything lands at about
  * two thirds of nominal and the small copy was reaching the screen under 9px.
  * Displaying it bigger isn't available -- it's half of a side-by-side pair
  * that has to fit the same 604px as the rest of the page. */
-body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
-.card { width:340px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 22px; }
+body { margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
+.card { width:340px; border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 22px; }
 .row { display:flex; align-items:center; gap:12px; }
 .avatar { width:64px; height:64px; border-radius:50%; object-fit:cover; background:#222; flex-shrink:0; }
 .name { font-weight:700; font-size:22px; color:#fff; line-height:1.15; }
-.divider { height:1px; background:rgba(255,255,255,0.08); margin:16px 0; }
-.stat-label { font-size:12.5px; color:#666; text-transform:uppercase; letter-spacing:0.06em; }
+.divider { height:1px; margin:16px 0; }
 .label-row { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:9px; }
-.range-tag { font-size:11px; color:#5f5a5f; text-transform:uppercase; letter-spacing:0.06em; font-weight:600; }
 .grow { flex:1; min-width:0; }
 .ago { font-size:13px; color:#5f5a5f; white-space:nowrap; }
 .stat-row { display:flex; align-items:center; gap:11px; }
@@ -163,7 +163,7 @@ def build_html(data, avatar_b64, artist_img_b64, track_imgs_b64, last_img_b64):
         sub = f'<div class="stat-sub">{data["genre"]}</div>' if data['genre'] else ''
         artist_block = f'''
 <div class="divider"></div>
-{label_row('top artist', '6 months')}
+{label_row(card_skin.label('spotify', 'top-artist'), '--6mo')}
 <div class="stat-row">
 {icon_tag}
 <div>
@@ -187,7 +187,7 @@ def build_html(data, avatar_b64, artist_img_b64, track_imgs_b64, last_img_b64):
 </div>''')
         tracks_block = f'''
 <div class="divider"></div>
-{label_row('top 5', 'this month')}
+{label_row(card_skin.label('spotify', 'top-tracks'), '--month')}
 ''' + '\n'.join(rows)
 
     last_block = ''
@@ -196,7 +196,7 @@ def build_html(data, avatar_b64, artist_img_b64, track_imgs_b64, last_img_b64):
         ago = f'<div class="ago">{data["last_track_ago"]}</div>' if data.get('last_track_ago') else ''
         last_block = f'''
 <div class="divider"></div>
-{label_row('last played')}
+{label_row(card_skin.label('spotify', 'last'))}
 <div class="stat-row">
 {icon_tag}
 <div class="grow">
@@ -206,8 +206,8 @@ def build_html(data, avatar_b64, artist_img_b64, track_imgs_b64, last_img_b64):
 {ago}
 </div>'''
 
-    return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body>
-<div class="card">
+    return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}{card_skin.CSS}</style></head><body>
+<div class="card">{card_skin.ambient(card_skin.data_url(avatar_b64, 'image/jpeg'))}
 <div class="row">
 <img class="avatar" src="data:image/jpeg;base64,{avatar_b64}"/>
 <div class="name">𝓓`</div>
@@ -234,23 +234,7 @@ def find_chrome():
 
 
 def render(html_path, tmp_dir, out_path, chrome):
-    raw = tmp_dir / 'raw.png'
-    subprocess.run([
-        chrome, '--headless', '--disable-gpu', '--no-sandbox',
-        '--force-device-scale-factor=2', '--window-size=460,950',
-        '--virtual-time-budget=4000', f'--screenshot={raw}', f'file:///{html_path.as_posix()}',
-    ], check=True)
-
-    from PIL import Image, ImageChops
-    img = Image.open(raw).convert('RGB')
-    bg = Image.new('RGB', img.size, (0, 0, 0))
-    diff = ImageChops.difference(img, bg)
-    bbox = diff.getbbox()
-    pad = 28
-    l, t, r, b = bbox
-    l, t = max(l - pad, 0), max(t - pad, 0)
-    r, b = min(r + pad, img.width), min(b + pad, img.height)
-    img.crop((l, t, r, b)).save(out_path)
+    card_skin.render(chrome, html_path, out_path, '460,950')
 
 
 def main():

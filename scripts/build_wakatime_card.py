@@ -45,7 +45,6 @@ import configparser
 import json
 import os
 import shutil
-import subprocess
 import sys
 import urllib.request
 from datetime import datetime, timedelta, timezone
@@ -56,6 +55,9 @@ from pathlib import Path
 # script's own directory on sys.path, and these are always run as
 # `python scripts/build_x.py`.
 from http_retry import urlopen_retry
+# The shared look (ambient background, path labels, transparent render) --
+# see card_skin.py.
+import card_skin
 
 HERE = Path(__file__).parent
 RANGE = 'last_7_days'
@@ -77,12 +79,11 @@ DEVICON_URL = 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{slug}/
 # worse: a flat claim the data never supported. Showing nothing is the
 # honest option until the IDE itself reports.
 
-# A subtle pink+peach duo instead of a single flat tone -- used for the top
-# accent bar, the peak day's bar in the chart, and the stat-label tint,
-# so the whole card's warmth reads as one deliberate combo rather than one
-PINK = '#f472a0'
-PEACH = '#ffab91'
-ACCENT_COLOR = PEACH  # kept for anything still expecting a single accent
+# No accent colour any more. The pink+peach duo that used to tint the top bar,
+# the peak day and the labels went with the ambient skin (card_skin.py): the
+# interface is black/white/grey on every card, and colour only comes from
+# content -- here, the language icons. The peak day and the top language are
+# picked out in white instead.
 
 # devicon has no WakaTime icon -- their real mark is a waveform/heartbeat
 # line, redrawn here as a simple bars glyph rather than attempting an exact
@@ -95,9 +96,8 @@ WAKATIME_MARK = '''<svg class="brand-icon" viewBox="0 0 16 16" fill="none" xmlns
 </svg>'''
 
 # Small inline glyphs for the two lines under the hero number -- a clock for
-# the daily average, a code-bracket for lines shipped. Muted/neutral (not
-# pink/peach) so they read as quiet supporting icons, not competing for
-# attention with the stat-label bullets.
+# the daily average, a code-bracket for lines shipped. Muted grey so they
+# read as quiet supporting icons, not competing with the figures they sit by.
 CLOCK_ICON = '''<svg class="inline-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 <circle cx="8" cy="8" r="6.5" stroke="#8a8a8a" stroke-width="1.3"/>
 <path d="M8 4.5V8l2.5 1.5" stroke="#8a8a8a" stroke-width="1.3" stroke-linecap="round"/>
@@ -105,13 +105,6 @@ CLOCK_ICON = '''<svg class="inline-icon" viewBox="0 0 16 16" fill="none" xmlns="
 CODE_ICON = '''<svg class="inline-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M5.5 3.5 1.5 8l4 4.5M10.5 3.5l4 4.5-4 4.5" stroke="#8a8a8a" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>'''
-
-
-def lighten(hex_color, amount=0.4):
-    hex_color = hex_color.lstrip('#')
-    r, g, b = (int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
-    r, g, b = (round(c + (255 - c) * amount) for c in (r, g, b))
-    return f'#{r:02x}{g:02x}{b:02x}'
 
 
 WEEKDAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -148,7 +141,8 @@ def fetch_language_icon_b64(language):
     if not slug:
         return None
     try:
-        return base64.b64encode(urlopen_retry(DEVICON_URL.format(slug=slug), timeout=10)).decode()
+        svg = card_skin.lighten_if_dark(urlopen_retry(DEVICON_URL.format(slug=slug), timeout=10))
+        return base64.b64encode(svg).decode()
     except Exception:
         return None
 
@@ -305,28 +299,25 @@ def fetch_data():
 
 
 CSS = '''
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap');
-body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
-.card { width:340px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:22px 24px; position:relative; overflow:hidden; }
-.accent { position:absolute; top:0; left:0; width:100%; height:3px; }
-.stat-label { font-size:11px; color:#ffab91cc; text-transform:uppercase; letter-spacing:0.08em; font-weight:700; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
+body { margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
+.card { width:340px; border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:22px 24px; }
 .label-row { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px; }
-.range-tag { font-size:10px; color:#6f6a6f; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; }
 .hero { display:flex; align-items:baseline; gap:9px; }
 .hero-num { font-family:"JetBrains Mono",monospace; font-size:36px; font-weight:700; color:#fff; line-height:1; }
 .hero-sub, .tagline { display:flex; align-items:center; gap:7px; font-size:12.5px; color:#a7a0a7; margin-top:7px; }
 .inline-icon { width:14px; height:14px; flex-shrink:0; opacity:0.8; }
 .mono-num { font-family:"JetBrains Mono",monospace; font-weight:700; color:#d8d8d8; }
 .empty-note { font-size:14px; color:#a7a0a7; margin-top:14px; line-height:1.5; }
-.divider { height:1px; background:rgba(255,255,255,0.08); margin:16px 0; }
+.divider { height:1px; margin:16px 0; }
 .days { display:flex; align-items:flex-end; gap:10px; margin-top:18px; }
 .day { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; }
-.day-bar { width:13px; border-radius:7px; background:rgba(255,255,255,0.10); }
-.day-bar.peak { background:linear-gradient(180deg, #f472a0, #ffab91); box-shadow:0 0 12px #f472a055; }
+.day-bar { width:13px; border-radius:7px; background:rgba(255,255,255,0.14); }
+.day-bar.peak { background:#f2f2f2; box-shadow:0 0 12px rgba(255,255,255,0.25); }
 .day-name { font-family:"JetBrains Mono",monospace; font-size:10px; font-weight:700; color:#5f5a5f; }
-.day.is-peak .day-name { color:#ffab91; }
+.day.is-peak .day-name { color:#f2f2f2; }
 .day-hours { font-family:"JetBrains Mono",monospace; font-size:10px; font-weight:700; color:#5f5a5f; height:13px; }
-.day.is-peak .day-hours { color:#ffab91; }
+.day.is-peak .day-hours { color:#f2f2f2; }
 .bar-row { display:flex; align-items:center; gap:10px; }
 .bar-row + .bar-row { margin-top:12px; }
 .bar-icon, .brand-icon { width:16px; height:16px; flex-shrink:0; }
@@ -345,25 +336,22 @@ body { background:#000; margin:0; padding:20px; overflow:hidden; font-family:Int
 
 def bar_rows(items, name_key='name'):
     rows = []
-    for item in items:
+    for i, item in enumerate(items):
         if item.get('icon_b64'):
             marker = f'<img class="bar-icon" src="data:image/svg+xml;base64,{item["icon_b64"]}"/>'
         else:
             marker = f'<span class="bar-dot" style="background:{item["color"]}; box-shadow:0 0 8px {item["color"]}aa;"></span>'
-        fill_light = lighten(item['color'])
+        fill = '#e8e8e8' if i == 0 else '#7a7a7a'
         rows.append(f'''<div class="bar-row">
 {marker}
 <span class="bar-name">{item[name_key]}</span>
-<span class="bar-track"><span class="bar-fill" style="width:{item['percent']}%; background:linear-gradient(90deg, {item['color']}, {fill_light}); box-shadow:0 0 10px {item['color']}99;"></span></span>
+<span class="bar-track"><span class="bar-fill" style="width:{item['percent']}%; background:{fill};"></span></span>
 <span class="bar-pct">{item['percent']:.0f}%</span>
 </div>''')
     return '\n'.join(rows)
 
 
 NEWLINE = chr(10)
-
-ACCENT_GRADIENT = f'linear-gradient(90deg, {PINK}, {PEACH} 55%, transparent)'
-
 
 EMPTY_NOTE = 'No heartbeats in seven days. Asleep, or just away from it.'
 
@@ -379,12 +367,11 @@ def label_row(text, tag=''):
     return f'<div class="label-row"><span class="stat-label">{text}</span>{tag_html}</div>'
 
 
-def build_html(data):
+def build_html(data, avatar=None):
     if data['is_empty']:
-        return f"""<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body>
-<div class="card">
-<div class="accent" style="background:{ACCENT_GRADIENT}; opacity:0.4;"></div>
-{label_row('coding time', 'last 7 days')}
+        return f"""<!doctype html><html><head><meta charset="utf-8"><style>{CSS}{card_skin.CSS}</style></head><body>
+<div class="card">{card_skin.ambient(avatar)}
+{label_row(card_skin.label('wakatime', 'coding-time'), '--7d')}
 <div class="zzz"><span>Z</span><span>z</span><span>z</span></div>
 <div class="empty-note">{EMPTY_NOTE}</div>
 <div class="divider"></div>
@@ -415,16 +402,15 @@ def build_html(data):
         )
     day_chart = '<div class="days">' + ''.join(bars) + '</div>'
 
-    return f"""<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body>
-<div class="card">
-<div class="accent" style="background:{ACCENT_GRADIENT};"></div>
-{label_row('coding time', 'last 7 days')}
+    return f"""<!doctype html><html><head><meta charset="utf-8"><style>{CSS}{card_skin.CSS}</style></head><body>
+<div class="card">{card_skin.ambient(avatar)}
+{label_row(card_skin.label('wakatime', 'coding-time'), '--7d')}
 <div class="hero"><div class="hero-num">{data['human_readable_total']}</div></div>
 <div class="hero-sub">{CLOCK_ICON}<span><span class="mono-num">{data['daily_average']}</span> avg on active days</span></div>
 {day_chart}
 <div class="tagline">{CODE_ICON}<span><span class="mono-num">{data['lines_shipped']:,}</span> lines shipped this week</span></div>
 <div class="divider"></div>
-{label_row('top languages')}
+{label_row(card_skin.label('wakatime', 'languages'))}
 {bar_rows(data['languages'])}
 <div class="source">{WAKATIME_MARK}wakatime.com</div>
 </div>
@@ -445,23 +431,7 @@ def find_chrome():
 
 
 def render(html_path, tmp_dir, out_path, chrome):
-    raw = tmp_dir / 'raw.png'
-    subprocess.run([
-        chrome, '--headless', '--disable-gpu', '--no-sandbox',
-        '--force-device-scale-factor=2', '--window-size=460,700',
-        '--virtual-time-budget=4000', f'--screenshot={raw}', f'file:///{html_path.as_posix()}',
-    ], check=True)
-
-    from PIL import Image, ImageChops
-    img = Image.open(raw).convert('RGB')
-    bg = Image.new('RGB', img.size, (0, 0, 0))
-    diff = ImageChops.difference(img, bg)
-    bbox = diff.getbbox()
-    pad = 28
-    l, t, r, b = bbox
-    l, t = max(l - pad, 0), max(t - pad, 0)
-    r, b = min(r + pad, img.width), min(b + pad, img.height)
-    img.crop((l, t, r, b)).save(out_path)
+    card_skin.render(chrome, html_path, out_path, '460,700')
 
 
 def main():
@@ -478,7 +448,9 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         html_path = tmp / 'card.html'
-        html_path.write_text(build_html(data), encoding='utf-8')
+        # No avatar of its own on this card, so the ambient background is the
+        # GitHub one -- it's the coding card, same as last-commit.
+        html_path.write_text(build_html(data, card_skin.github_avatar(GH_USERNAME)), encoding='utf-8')
 
         out_path = HERE.parent / 'assets' / 'wakatime_card.png'
         render(html_path, tmp, out_path, find_chrome())
