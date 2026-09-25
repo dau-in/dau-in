@@ -33,9 +33,12 @@ concurrency:
 
 jobs:
   update:
-    runs-on: ubuntu-latest
+    # Pinned rather than ubuntu-latest, which moves to Ubuntu 26 on
+    # 2026-10-19: headless Chrome is the fragile part of this job, and a
+    # runner image swap should be a deliberate change here, not a surprise.
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Seed the generated cards from the cards branch
         # The four rebuilt cards no longer live on main, so a fresh checkout
@@ -52,7 +55,7 @@ jobs:
             git show "FETCH_HEAD:$f" > "assets/$f" 2>/dev/null || rm -f "assets/$f"
           done
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
