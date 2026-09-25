@@ -303,9 +303,7 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
 
-        avatar_path = tmp / 'avatar.png'
-        urllib.request.urlretrieve(data['avatar_url'], avatar_path)
-        avatar_b64 = base64.b64encode(avatar_path.read_bytes()).decode()
+        avatar_b64 = base64.b64encode(urlopen_retry(data['avatar_url'], timeout=30)).decode()
 
         html_path = tmp / 'card.html'
         html_path.write_text(build_html(data, avatar_b64), encoding='utf-8')

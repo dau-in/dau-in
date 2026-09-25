@@ -22,7 +22,6 @@ import shutil
 import subprocess
 import sys
 import urllib.parse
-import urllib.request
 from pathlib import Path
 
 # Shared retry wrapper -- see http_retry.py for what gets another go and
@@ -95,7 +94,7 @@ def fetch_data():
 
 
 def download(url, dest):
-    urllib.request.urlretrieve(url, dest)
+    Path(dest).write_bytes(urlopen_retry(url, timeout=30))
 
 
 STEAM_LOGO = '''<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:-3px;margin-right:5px;" fill="#a7a0a7">

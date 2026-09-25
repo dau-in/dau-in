@@ -106,7 +106,7 @@ def fetch_data():
 
 
 def download(url, dest):
-    urllib.request.urlretrieve(url, dest)
+    Path(dest).write_bytes(urlopen_retry(url, timeout=30))
 
 
 SPOTIFY_LOGO = '''<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:-3px;margin-right:5px;" fill="#1DB954">
