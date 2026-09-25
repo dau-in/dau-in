@@ -11,6 +11,14 @@ assets/steam_card.png
 assets/spotify_card.png
 assets/last_commit_card.png
 assets/wakatime_card.png
+assets/discord_card.png
+# ...and their light-theme twins (card_skin.py renders both). The passport
+# pair is not here: it's built by hand, so both of its files stay on main.
+assets/steam_card_light.png
+assets/spotify_card_light.png
+assets/last_commit_card_light.png
+assets/wakatime_card_light.png
+assets/discord_card_light.png
 
 # The last-commit card's freshness anchor lives on the `cards` branch with
 # the images, so the workflow never has to commit to main.

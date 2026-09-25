@@ -116,13 +116,13 @@ SPOTIFY_LOGO = '''<svg width="16" height="16" viewBox="0 0 24 24" style="vertica
 </svg>'''
 
 CSS = '''
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 /* Type here runs a size up, same reason as the steam card: the README shows
  * this at 275px against the 414 it is drawn at, so everything lands at about
  * two thirds of nominal and the small copy was reaching the screen under 9px.
  * Displaying it bigger isn't available -- it's half of a side-by-side pair
  * that has to fit the same 604px as the rest of the page. */
-body { margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
+body { margin:0; padding:20px; overflow:hidden; font-family:"Space Grotesk",-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
 .card { width:340px; border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 22px; }
 .row { display:flex; align-items:center; gap:12px; }
 .avatar { width:64px; height:64px; border-radius:50%; object-fit:cover; background:#222; flex-shrink:0; }

@@ -113,8 +113,8 @@ def art_box(raw, width, height, circle=False):
 
 
 CSS = '''
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital@1&display=swap');
-body { margin:0; padding:20px; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Fraunces:ital@1&display=swap');
+body { margin:0; padding:20px; font-family:"Space Grotesk",-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
 .card { width:420px; border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 22px; }
 .row { display:flex; align-items:center; gap:14px; }
 .avatar { width:64px; height:64px; border-radius:50%; flex-shrink:0; }
@@ -128,7 +128,7 @@ body { margin:0; padding:20px; font-family:Inter,-apple-system,Segoe UI,Helvetic
 .stat-sub { font-family:'Fraunces', Georgia, serif; font-style:italic; font-size:12.5px; color:#a7a0a7; margin-top:2px; }
 .counts { display:flex; margin-top:16px; border-top:1px solid rgba(255,255,255,0.1); padding-top:14px; }
 .count { flex:1; }
-.count-num { font-family:"JetBrains Mono",monospace; font-weight:700; font-size:17px; color:#e5e5e5; line-height:1.1; }
+.count-num { font-family:"Space Mono",monospace; font-weight:700; font-size:17px; color:#e5e5e5; line-height:1.1; }
 .count-label { font-size:10px; color:#6f6a6f; text-transform:uppercase; letter-spacing:0.07em; margin-top:3px; }
 .brand { display:flex; align-items:center; justify-content:flex-end; gap:7px; font-size:12px; color:#a7a0a7; margin-top:16px; }
 .star { vertical-align:-2px; }

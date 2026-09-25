@@ -111,13 +111,13 @@ def github_api(path):
     return json.loads(urlopen_retry(req))
 
 
-def fetch_language_icon_b64(language):
+def fetch_language_icon(language):
     slug = LANGUAGE_ICON_SLUGS.get(language)
     if not slug:
         return None
     try:
-        svg = card_skin.lighten_if_dark(urlopen_retry(DEVICON_URL.format(slug=slug), timeout=10))
-        return base64.b64encode(svg).decode()
+        svg = urlopen_retry(DEVICON_URL.format(slug=slug), timeout=10)
+        return {'b64': base64.b64encode(svg).decode(), 'dark': card_skin.is_dark_icon(svg)}
     except Exception:
         # a CDN hiccup or a slug devicon has since renamed shouldn't break
         # the whole card -- just fall back to the plain colored dot
@@ -197,7 +197,7 @@ def fetch_data():
         'repo_name': repo_name,
         'language': language,
         'language_color': LANGUAGE_COLORS.get(language, DEFAULT_LANGUAGE_COLOR),
-        'language_icon_b64': fetch_language_icon_b64(language) if language else None,
+        'language_icon': fetch_language_icon(language) if language else None,
         'message': truncate(commit['commit']['message'], MESSAGE_MAX_LEN),
         'sha_short': commit['sha'][:7],
         'additions': stats.get('additions', 0),
@@ -209,22 +209,22 @@ def fetch_data():
 
 
 CSS = '''
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
-body { margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+body { margin:0; padding:20px; overflow:hidden; font-family:"Space Grotesk",-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
 .card { width:380px; border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:22px 24px; }
 .stat-label { margin-bottom:12px; }
 .repo-row { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
 .repo-group { display:flex; align-items:center; gap:8px; }
 .gh-icon { width:16px; height:16px; flex-shrink:0; fill:#a7a0a7; }
-.repo { font-size:16px; color:#fff; font-weight:700; font-family:"JetBrains Mono",monospace; }
+.repo { font-size:16px; color:#fff; font-weight:700; font-family:"Space Mono",monospace; }
 .lang-group { display:flex; align-items:center; gap:6px; margin-left:auto; }
 .lang-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 .lang-icon { width:18px; height:18px; flex-shrink:0; }
-.lang-name { font-size:12px; color:#a7a0a7; font-family:"JetBrains Mono",monospace; }
+.lang-name { font-size:12px; color:#a7a0a7; font-family:"Space Mono",monospace; }
 .msg { font-size:14.5px; color:#e5e5e5; line-height:1.5; margin-bottom:16px; padding-left:14px; border-left:2px solid rgba(255,255,255,0.12); }
 .meta-row { display:flex; align-items:center; gap:10px; }
-.sha-chip { font-family:"JetBrains Mono",monospace; font-size:11px; font-weight:700; color:#e5e5e5; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:999px; padding:3px 10px; }
-.diffstat { font-family:"JetBrains Mono",monospace; font-size:12px; }
+.sha-chip { font-family:"Space Mono",monospace; font-size:11px; font-weight:700; color:#e5e5e5; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:999px; padding:3px 10px; }
+.diffstat { font-family:"Space Mono",monospace; font-size:12px; }
 .add { color:#3fb950; }
 .del { color:#f85149; margin-left:4px; }
 .time { font-size:12px; color:#777; margin-left:auto; }
@@ -241,8 +241,9 @@ def build_html(data, avatar_b64):
     # icon when devicon has one for this language (real personality, its own
     # brand colors baked into the svg) -- plain colored dot otherwise, same
     # as before this existed
-    if data['language_icon_b64']:
-        lang_marker = f'<img class="lang-icon" src="data:image/svg+xml;base64,{data["language_icon_b64"]}"/>'
+    if data['language_icon']:
+        dark = ' dark-icon' if data['language_icon']['dark'] else ''
+        lang_marker = f'<img class="lang-icon{dark}" src="data:image/svg+xml;base64,{data["language_icon"]["b64"]}"/>'
     else:
         lang_marker = f'<span class="lang-dot" style="background:{data["language_color"]}; box-shadow:0 0 8px {data["language_color"]}aa;"></span>'
     return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}{card_skin.CSS}</style></head><body>

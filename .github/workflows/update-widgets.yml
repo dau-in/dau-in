@@ -37,11 +37,23 @@ jobs:
     # 2026-10-19: headless Chrome is the fragile part of this job, and a
     # runner image swap should be a deliberate change here, not a surprise.
     runs-on: ubuntu-24.04
+    env:
+      # Everything that lives on the `cards` branch: each card in both themes
+      # (card_skin.py renders x_card.png and x_card_light.png and the README
+      # picks one per GitHub theme), plus the last-commit card's freshness
+      # anchor. One list for the seed step and the publish step alike.
+      CARD_FILES: >-
+        steam_card.png steam_card_light.png
+        spotify_card.png spotify_card_light.png
+        last_commit_card.png last_commit_card_light.png
+        wakatime_card.png wakatime_card_light.png
+        discord_card.png discord_card_light.png
+        last_commit_meta.json
     steps:
       - uses: actions/checkout@v7
 
       - name: Seed the generated cards from the cards branch
-        # The four rebuilt cards no longer live on main, so a fresh checkout
+        # The rebuilt cards no longer live on main, so a fresh checkout
         # doesn't have them. Restore whatever is currently published before
         # building: any card whose build fails (every build step is
         # continue-on-error) then keeps its last good image instead of
@@ -51,7 +63,7 @@ jobs:
         run: |
           mkdir -p assets
           git fetch -q origin cards || exit 0
-          for f in steam_card.png spotify_card.png last_commit_card.png wakatime_card.png last_commit_meta.json; do
+          for f in $CARD_FILES; do
             git show "FETCH_HEAD:$f" > "assets/$f" 2>/dev/null || rm -f "assets/$f"
           done
 
@@ -99,6 +111,15 @@ jobs:
           CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: python scripts/build_wakatime_card.py
 
+      - name: Build Discord card
+        # Built from the Lanyard API since 2026-09-25, replacing the
+        # lanyard.cnrad.dev widget -- see build_discord_card.py. No secret.
+        id: discord
+        continue-on-error: true
+        env:
+          CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: python scripts/build_discord_card.py
+
       - name: Publish the cards
         if: always()
         # Everything this workflow produces goes to the `cards` branch,
@@ -114,7 +135,7 @@ jobs:
           idx="$RUNNER_TEMP/cards-index"
           rm -f "$idx"
           GIT_INDEX_FILE="$idx" git read-tree --empty
-          for f in steam_card.png spotify_card.png last_commit_card.png wakatime_card.png last_commit_meta.json; do
+          for f in $CARD_FILES; do
             [ -f "assets/$f" ] || continue
             sha=$(git hash-object -w "assets/$f")
             GIT_INDEX_FILE="$idx" git update-index --add --cacheinfo 100644,"$sha","$f"
@@ -164,7 +185,7 @@ jobs:
         if: always()
         run: |
           failed=""
-          for entry in "steam:${{ steps.steam.outcome }}"                        "spotify:${{ steps.spotify.outcome }}"                        "last-commit:${{ steps.last_commit.outcome }}"                        "wakatime:${{ steps.wakatime.outcome }}"; do
+          for entry in "steam:${{ steps.steam.outcome }}"                        "spotify:${{ steps.spotify.outcome }}"                        "last-commit:${{ steps.last_commit.outcome }}"                        "wakatime:${{ steps.wakatime.outcome }}" "discord:${{ steps.discord.outcome }}"; do
             name="${entry%%:*}"
             outcome="${entry##*:}"
             if [ "$outcome" = "failure" ]; then
@@ -176,4 +197,4 @@ jobs:
             echo "Failed card builds:$failed" >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
-          echo "All four cards built." >> "$GITHUB_STEP_SUMMARY"
+          echo "All cards built." >> "$GITHUB_STEP_SUMMARY"

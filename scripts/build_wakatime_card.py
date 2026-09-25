@@ -143,13 +143,13 @@ def wakatime_api(path):
     return json.loads(urlopen_retry(req))
 
 
-def fetch_language_icon_b64(language):
+def fetch_language_icon(language):
     slug = LANGUAGE_ICON_SLUGS.get(LINGUIST_NAME.get(language, language))
     if not slug:
         return None
     try:
-        svg = card_skin.lighten_if_dark(urlopen_retry(DEVICON_URL.format(slug=slug), timeout=10))
-        return base64.b64encode(svg).decode()
+        svg = urlopen_retry(DEVICON_URL.format(slug=slug), timeout=10)
+        return {'b64': base64.b64encode(svg).decode(), 'dark': card_skin.is_dark_icon(svg)}
     except Exception:
         return None
 
@@ -263,7 +263,7 @@ def fetch_data():
             'name': name,
             'percent': seconds / named_total * 100,
             'color': LANGUAGE_COLORS.get(LINGUIST_NAME.get(name, name), DEFAULT_LANGUAGE_COLOR),
-            'icon_b64': fetch_language_icon_b64(name),
+            'icon': fetch_language_icon(name),
         }
         for name, seconds in sorted(lang_seconds.items(), key=lambda kv: -kv[1])[:5]
     ]
@@ -306,24 +306,24 @@ def fetch_data():
 
 
 CSS = '''
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
-body { margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+body { margin:0; padding:20px; overflow:hidden; font-family:"Space Grotesk",-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
 .card { width:340px; border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:22px 24px; }
 .label-row { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px; }
 .hero { display:flex; align-items:baseline; gap:9px; }
-.hero-num { font-family:"JetBrains Mono",monospace; font-size:36px; font-weight:700; color:#fff; line-height:1; }
+.hero-num { font-family:"Space Mono",monospace; font-size:36px; font-weight:700; color:#fff; line-height:1; }
 .hero-sub, .tagline { display:flex; align-items:center; gap:7px; font-size:12.5px; color:#a7a0a7; margin-top:7px; }
 .inline-icon { width:14px; height:14px; flex-shrink:0; opacity:0.8; }
-.mono-num { font-family:"JetBrains Mono",monospace; font-weight:700; color:#d8d8d8; }
+.mono-num { font-family:"Space Mono",monospace; font-weight:700; color:#d8d8d8; }
 .empty-note { font-size:14px; color:#a7a0a7; margin-top:14px; line-height:1.5; }
 .divider { height:1px; margin:16px 0; }
 .days { display:flex; align-items:flex-end; gap:10px; margin-top:18px; }
 .day { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; }
 .day-bar { width:13px; border-radius:7px; background:rgba(255,255,255,0.14); }
 .day-bar.peak { background:#f2f2f2; box-shadow:0 0 12px rgba(255,255,255,0.25); }
-.day-name { font-family:"JetBrains Mono",monospace; font-size:10px; font-weight:700; color:#5f5a5f; }
+.day-name { font-family:"Space Mono",monospace; font-size:10px; font-weight:700; color:#5f5a5f; }
 .day.is-peak .day-name { color:#f2f2f2; }
-.day-hours { font-family:"JetBrains Mono",monospace; font-size:10px; font-weight:700; color:#5f5a5f; height:13px; }
+.day-hours { font-family:"Space Mono",monospace; font-size:10px; font-weight:700; color:#5f5a5f; height:13px; }
 .day.is-peak .day-hours { color:#f2f2f2; }
 .bar-row { display:flex; align-items:center; gap:10px; }
 .bar-row + .bar-row { margin-top:12px; }
@@ -332,9 +332,9 @@ body { margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,
 .bar-name { font-size:14px; color:#e5e5e5; font-weight:600; width:110px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .bar-track { flex:1; height:8px; background:rgba(255,255,255,0.06); border-radius:999px; overflow:hidden; }
 .bar-fill { display:block; height:100%; border-radius:999px; }
-.bar-pct { font-family:"JetBrains Mono",monospace; font-size:12px; font-weight:700; color:#e5e5e5; width:38px; text-align:right; flex-shrink:0; }
+.bar-pct { font-family:"Space Mono",monospace; font-size:12px; font-weight:700; color:#e5e5e5; width:38px; text-align:right; flex-shrink:0; }
 .source { display:flex; align-items:center; justify-content:flex-end; gap:8px; font-size:12.5px; color:#6f6a6f; margin-top:18px; }
-.zzz { font-family:"JetBrains Mono",monospace; font-weight:700; color:#8a8a8a; line-height:1; letter-spacing:0.02em; }
+.zzz { font-family:"Space Mono",monospace; font-weight:700; color:#8a8a8a; line-height:1; letter-spacing:0.02em; }
 .zzz span:nth-child(1) { font-size:44px; }
 .zzz span:nth-child(2) { font-size:32px; opacity:0.75; }
 .zzz span:nth-child(3) { font-size:22px; opacity:0.5; }
@@ -344,8 +344,9 @@ body { margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,
 def bar_rows(items, name_key='name'):
     rows = []
     for i, item in enumerate(items):
-        if item.get('icon_b64'):
-            marker = f'<img class="bar-icon" src="data:image/svg+xml;base64,{item["icon_b64"]}"/>'
+        if item.get('icon'):
+            dark = ' dark-icon' if item['icon']['dark'] else ''
+            marker = f'<img class="bar-icon{dark}" src="data:image/svg+xml;base64,{item["icon"]["b64"]}"/>'
         else:
             marker = f'<span class="bar-dot" style="background:{item["color"]}; box-shadow:0 0 8px {item["color"]}aa;"></span>'
         fill = '#e8e8e8' if i == 0 else '#7a7a7a'
@@ -449,7 +450,7 @@ def main():
         debug_data = dict(data)
     else:
         debug_data = {k: v for k, v in data.items() if k != 'languages'}
-        debug_data['languages'] = [{kk: vv for kk, vv in l.items() if kk != 'icon_b64'} for l in data['languages']]
+        debug_data['languages'] = [{kk: vv for kk, vv in l.items() if kk != 'icon'} for l in data['languages']]
     print(json.dumps(debug_data, indent=2, ensure_ascii=False))  # sanity-check the shape before trusting the render
 
     with tempfile.TemporaryDirectory() as tmp:

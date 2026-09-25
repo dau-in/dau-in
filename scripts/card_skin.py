@@ -10,7 +10,9 @@ top, same sections, same order -- and gets three things on top of it:
     the card reads as yours without adding a colour to the interface. The
     avatars are black-and-white art already, so the result stays monochrome.
   - section labels are small terminal paths (~/steam/recent, --6mo) in
-    JetBrains Mono, a nod to the whoami.cpp box above the cards.
+    Space Mono, a nod to the whoami.cpp box above the cards. Body text is
+    Space Grotesk; both picked 2026-09-25 from a round of font mockups
+    (design-assets/concept-fonts).
   - the interface itself is black/white/grey. Colour only comes from
     content: covers, game art, language icons. That's why wakatime's pink
     accent is gone while the python icon stays yellow and blue.
@@ -20,6 +22,16 @@ The old black margin showed as a dark frame around each card against
 GitHub's own background (and much worse in light mode); now the rounded
 corners sit directly on whatever the page is.
 
+And every card comes out twice: x_card.png and x_card_light.png, for
+GitHub's two themes (the README picks one with <picture>). The light one is
+the same page with the card inverted, and every <img> -- plus the few
+interface bits whose colour means something (status dot, +/- diff counts,
+brand logos) -- inverted again so they keep their exact colours. Plain
+invert() on purpose: the usual invert + hue-rotate(180deg) trick doesn't
+undo cleanly, and the double pass visibly washed out the python icon. The
+ambient layer is deliberately NOT re-inverted: the soft negative of the
+avatar reads as a pale haze on a light card, which is what it should be.
+
 Each builder appends CSS to its own stylesheet (same-specificity rules later
 in the sheet win, so nothing here needs !important), wraps its avatar with
 ambient(), writes labels with label(), and hands rendering to render().
@@ -27,10 +39,11 @@ ambient(), writes labels with label(), and hands rendering to render().
 import base64
 import re
 import subprocess
+from pathlib import Path
 
 from http_retry import urlopen_retry
 
-# Builders' own @import lines must include JetBrains Mono 400/500 for the
+# Builders' own @import lines must include Space Mono 400/700 for the
 # labels -- an @import appended after other rules is ignored by the browser.
 # The card's own background is opaque on purpose: the ambient layers sit
 # above it anyway (negative z-index inside the isolated card), and if the
@@ -43,12 +56,22 @@ body { background:transparent; }
   filter:grayscale(1) blur(40px) brightness(0.36) contrast(1.35); z-index:-2; }
 .veil { position:absolute; inset:0; z-index:-1;
   background:linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.8) 100%); }
-.stat-label { font-family:"JetBrains Mono",monospace; font-size:12.5px; font-weight:400; color:#d6d6d6;
+.stat-label { font-family:"Space Mono",monospace; font-size:12.5px; font-weight:400; color:#d6d6d6;
   text-transform:none; letter-spacing:0; }
 .stat-label .path { color:#8a8a8a; }
-.range-tag { font-family:"JetBrains Mono",monospace; font-size:11.5px; font-weight:500; color:#8a8a8a;
+.range-tag { font-family:"Space Mono",monospace; font-size:11.5px; font-weight:400; color:#8a8a8a;
   text-transform:none; letter-spacing:0; }
 .divider { background:rgba(255,255,255,0.1); }
+.dark-icon { filter:brightness(0) invert(0.83); }
+'''
+
+# Appended only for the light render. `.card img` outranks `.dark-icon`, so a
+# lightened-for-dark-mode icon simply gets its original colours back here --
+# on a light card a black markdown/rust/github icon is what you want.
+LIGHT_CSS = '''
+.card { filter:invert(1); }
+.card img, .card .status-dot, .card .bar-dot, .card .lang-dot,
+.card .add, .card .del, .card .brand svg { filter:invert(1); }
 '''
 
 
@@ -84,8 +107,9 @@ def github_avatar(username):
 # Some devicon "original" icons are black or near-black (markdown, rust,
 # github...) and vanish on a dark card. An icon counts as dark when even its
 # lightest colour is dark -- or when it declares no colour at all, which SVG
-# paints black. Those get a light fill forced over every shape; icons with
-# real colour (python, js...) are left exactly as they are.
+# paints black. Builders give those <img>s the dark-icon class, which paints
+# them light grey on the dark card and leaves them as they are on the light
+# one (see LIGHT_CSS). Icons with real colour (python, js...) never get it.
 _HEX = re.compile(r'(?:fill|stop-color|color)\s*[:=]\s*"?\s*#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b')
 
 
@@ -96,15 +120,12 @@ def _luminance(hex_color):
     return 0.2126 * r + 0.7152 * g + 0.0722 * b
 
 
-def lighten_if_dark(svg_bytes):
+def is_dark_icon(svg_bytes):
     svg = svg_bytes.decode('utf-8', 'replace')
-    colours = _HEX.findall(svg)
-    named_light = re.search(r'fill\s*[:=]\s*"?\s*(white|#fff\b)', svg, re.I)
-    lightest = max((_luminance(c) for c in colours), default=0.0)
-    if named_light or lightest >= 0.25:
-        return svg_bytes
-    patch = '<style>*{fill:#d4d4d4 !important;}</style>'
-    return re.sub(r'(<svg\b[^>]*>)', r'\1' + patch, svg, count=1).encode('utf-8')
+    if re.search(r'fill\s*[:=]\s*"?\s*(white|#fff\b)', svg, re.I):
+        return False
+    lightest = max((_luminance(c) for c in _HEX.findall(svg)), default=0.0)
+    return lightest < 0.25
 
 
 # --- rendering -----------------------------------------------------------------
@@ -112,6 +133,17 @@ PAD = 28  # transparent margin kept around the card; README sizing assumes it
 
 
 def render(chrome, html_path, out_path, window_size):
+    """Render the card for both themes: out_path (dark) and, next to it,
+    <stem>_light.png."""
+    out_path = Path(out_path)
+    _shoot(chrome, html_path, out_path, window_size)
+    html = html_path.read_text(encoding='utf-8')
+    light_path = html_path.with_name(html_path.stem + '_light.html')
+    light_path.write_text(html.replace('</style>', LIGHT_CSS + '</style>', 1), encoding='utf-8')
+    _shoot(chrome, light_path, out_path.with_name(out_path.stem + '_light.png'), window_size)
+
+
+def _shoot(chrome, html_path, out_path, window_size):
     """Screenshot the page on a transparent background and crop to the card
     plus PAD, keeping the alpha channel."""
     raw = html_path.parent / 'raw.png'
