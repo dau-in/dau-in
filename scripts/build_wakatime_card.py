@@ -69,6 +69,13 @@ DEFAULT_LANGUAGE_COLOR = '#8b8b8b'
 LANGUAGE_ICON_SLUGS = json.loads((HERE / 'language_icon_slugs.json').read_text(encoding='utf-8'))
 DEVICON_URL = 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{slug}/{slug}-original.svg'
 
+# WakaTime names a few things differently from GitHub linguist, which both
+# tables above are keyed by. "Git" is its bucket for commit messages and
+# rebase todo files; linguist splits those into Git Commit, Git Config and so
+# on, so a lookup on "Git" found nothing and the row got a plain grey dot.
+# Git Config carries the git icon and git's orange.
+LINGUIST_NAME = {'Git': 'Git Config'}
+
 # EDITOR: no editor/IDE breakdown on this card, deliberately. WakaTime only sees
 # what has its plugin installed, and here that's the Claude Code and
 # Antigravity harnesses -- not VS Code, which is where the actual editing
@@ -137,7 +144,7 @@ def wakatime_api(path):
 
 
 def fetch_language_icon_b64(language):
-    slug = LANGUAGE_ICON_SLUGS.get(language)
+    slug = LANGUAGE_ICON_SLUGS.get(LINGUIST_NAME.get(language, language))
     if not slug:
         return None
     try:
@@ -255,7 +262,7 @@ def fetch_data():
         {
             'name': name,
             'percent': seconds / named_total * 100,
-            'color': LANGUAGE_COLORS.get(name, DEFAULT_LANGUAGE_COLOR),
+            'color': LANGUAGE_COLORS.get(LINGUIST_NAME.get(name, name), DEFAULT_LANGUAGE_COLOR),
             'icon_b64': fetch_language_icon_b64(name),
         }
         for name, seconds in sorted(lang_seconds.items(), key=lambda kv: -kv[1])[:5]
@@ -321,7 +328,7 @@ body { margin:0; padding:20px; overflow:hidden; font-family:Inter,-apple-system,
 .bar-row { display:flex; align-items:center; gap:10px; }
 .bar-row + .bar-row { margin-top:12px; }
 .bar-icon, .brand-icon { width:16px; height:16px; flex-shrink:0; }
-.bar-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.bar-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; margin:0 3.5px; }
 .bar-name { font-size:14px; color:#e5e5e5; font-weight:600; width:110px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .bar-track { flex:1; height:8px; background:rgba(255,255,255,0.06); border-radius:999px; overflow:hidden; }
 .bar-fill { display:block; height:100%; border-radius:999px; }
