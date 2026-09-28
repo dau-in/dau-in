@@ -165,9 +165,10 @@ def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
 <div class="stat-label">{card_skin.label('steam', 'recent')}</div>
 ''' + '\n'.join(rows)
 
-    hero_block = ''
-    if data['hours_2weeks_total']:
-        hero_block = f'''
+    # Always shown, "0.0h" included. It used to vanish on a quiet fortnight,
+    # which took ~80px off this card and left it visibly shorter than the
+    # spotify card it sits level with (2026-09-28).
+    hero_block = f'''
 <div class="divider"></div>
 <div class="hero">
 <div class="hero-num">{data['hours_2weeks_total']}<span class="hero-unit">h</span></div>
