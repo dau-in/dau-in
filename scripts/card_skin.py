@@ -12,7 +12,11 @@ top, same sections, same order -- and gets three things on top of it:
   - section labels are small terminal paths (~/steam/recent, --6mo) in
     Space Mono, a nod to the whoami.cpp box above the cards. Body text is
     Space Grotesk; both picked 2026-09-25 from a round of font mockups
-    (design-assets/concept-fonts).
+    (design-assets/concept-fonts). Every builder's body stack falls back to
+    Noto Sans JP/KR/SC and Noto Color Emoji: the Actions runner has no CJK
+    fonts at all, so a Japanese track title on the spotify card came out as
+    empty boxes (2026-09-28). Google Fonts serves those by unicode-range, so
+    a card with only Latin text downloads none of them.
   - the interface itself is black/white/grey. Colour only comes from
     content: covers, game art, language icons. That's why wakatime's pink
     accent is gone while the python icon stays yellow and blue.

@@ -117,8 +117,8 @@ def fetch_data():
 
 
 CSS = '''
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Fraunces:ital@1&display=swap');
-body { margin:0; padding:20px; overflow:hidden; font-family:"Space Grotesk",-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Color+Emoji&family=Space+Mono:wght@400;700&family=Fraunces:ital@1&display=swap');
+body { margin:0; padding:20px; overflow:hidden; font-family:"Space Grotesk","Noto Sans JP","Noto Sans KR","Noto Sans SC","Noto Color Emoji",-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
 .card { width:420px; border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 22px; }
 .row { display:flex; align-items:center; gap:16px; }
 .av { position:relative; width:72px; height:72px; flex-shrink:0; }

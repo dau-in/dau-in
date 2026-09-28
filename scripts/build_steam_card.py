@@ -104,7 +104,7 @@ STEAM_LOGO = '''<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-
 </svg>'''
 
 CSS = '''
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Color+Emoji&family=Space+Mono:wght@400;700&display=swap');
 /* Type here runs a size up from what a 340px card would normally take.
  * The README shows this card at 275px against the 414 it is drawn at, so
  * everything on it lands at about two thirds of its nominal size -- 13px
@@ -113,7 +113,7 @@ CSS = '''
  * the same 604px the rest of the page uses. So the type grew instead.
  * The bullet that separated status from game count is gone with the rest of
  * the dot separators; the gap in .meta-row does that job now. */
-body { margin:0; padding:20px; overflow:hidden; font-family:"Space Grotesk",-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
+body { margin:0; padding:20px; overflow:hidden; font-family:"Space Grotesk","Noto Sans JP","Noto Sans KR","Noto Sans SC","Noto Color Emoji",-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
 .card { width:340px; border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 22px; }
 .row { display:flex; align-items:center; gap:13px; }
 .avatar { width:68px; height:68px; border-radius:50%; flex-shrink:0; }

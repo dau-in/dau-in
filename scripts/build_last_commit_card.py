@@ -209,8 +209,8 @@ def fetch_data():
 
 
 CSS = '''
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
-body { margin:0; padding:20px; overflow:hidden; font-family:"Space Grotesk",-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Color+Emoji&family=Space+Mono:wght@400;700&display=swap');
+body { margin:0; padding:20px; overflow:hidden; font-family:"Space Grotesk","Noto Sans JP","Noto Sans KR","Noto Sans SC","Noto Color Emoji",-apple-system,Segoe UI,Helvetica,Arial,sans-serif; }
 .card { width:380px; border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:22px 24px; }
 .stat-label { margin-bottom:12px; }
 .repo-row { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
