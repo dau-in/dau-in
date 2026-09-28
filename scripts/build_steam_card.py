@@ -9,17 +9,17 @@ env var / GitHub Actions secret).
 
 STEAM_ID below is just a public numeric SteamID64, not a secret -- safe to hardcode.
 
-TODO (research, not yet done): pull in Darwin's equipped avatar frame (animated,
-if he has one) and a sliver of his profile background for the card art -- neither
-is in GetPlayerSummaries; likely needs IPlayerService/GetProfileItemsEquipped or
-scraping the profile page. Unconfirmed whether the frame's actual asset URL/format
-is easy to composite into our own CSS card. Investigate before promising it.
+The equipped avatar frame and profile backgrounds were looked into on
+2026-09-25: IPlayerService/GetProfileItemsEquipped returns them (no key needed)
+and they composite fine, but they were left off so this card stays consistent
+with the others. Mockups are in design-assets/concept-steam-items/.
 """
 import base64
 import json
 import os
 import shutil
 import sys
+import time
 import urllib.parse
 from pathlib import Path
 
@@ -75,6 +75,7 @@ def fetch_data():
     most_played = max(games, key=lambda g: g.get('playtime_forever', 0)) if games else None
     recent = sorted(games, key=lambda g: g.get('rtime_last_played', 0), reverse=True)[:3] if games else []
     hours_2weeks_total = round(sum(g.get('playtime_2weeks', 0) for g in games) / 60, 1)
+    last_played = max((g.get('rtime_last_played', 0) for g in games), default=0)
 
     status_text, status_color = STATUS_MAP.get(player.get('personastate', 0), STATUS_MAP[0])
 
@@ -86,6 +87,7 @@ def fetch_data():
         'status_text': status_text,
         'status_color': status_color,
         'hours_2weeks_total': hours_2weeks_total,
+        'days_since_played': int((time.time() - last_played) // 86400) if last_played else None,
         'most_played_name': most_played['name'] if most_played else None,
         'most_played_icon_url': icon_url(most_played),
         'recent': [
@@ -165,14 +167,20 @@ def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
 <div class="stat-label">{card_skin.label('steam', 'recent')}</div>
 ''' + '\n'.join(rows)
 
-    # Always shown, "0.0h" included. It used to vanish on a quiet fortnight,
+    # The hero row is always there: it used to vanish on a quiet fortnight,
     # which took ~80px off this card and left it visibly shorter than the
-    # spotify card it sits level with (2026-09-28).
+    # spotify card it sits level with (2026-09-28). With nothing played in
+    # two weeks, "0.0h" says nothing, so the same slot counts the days since
+    # the last session instead -- still a real figure, same shape.
+    if data['hours_2weeks_total'] or data.get('days_since_played') is None:
+        hero_num, hero_unit, hero_label = data['hours_2weeks_total'], 'h', 'played in the last 2 weeks'
+    else:
+        hero_num, hero_unit, hero_label = data['days_since_played'], 'd', 'since the last session'
     hero_block = f'''
 <div class="divider"></div>
 <div class="hero">
-<div class="hero-num">{data['hours_2weeks_total']}<span class="hero-unit">h</span></div>
-<div class="hero-label">played in the last 2 weeks</div>
+<div class="hero-num">{hero_num}<span class="hero-unit">{hero_unit}</span></div>
+<div class="hero-label">{hero_label}</div>
 </div>'''
 
     return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}{card_skin.CSS}</style></head><body>
