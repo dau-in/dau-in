@@ -13,7 +13,10 @@ top, same sections, same order -- and gets three things on top of it:
     Space Mono, a nod to the whoami.cpp box above the cards. Body text is
     Space Grotesk; both picked 2026-09-25 from a round of font mockups
     (design-assets/concept-fonts). Every builder's body stack falls back to
-    Noto Sans JP/KR/SC and Noto Color Emoji: the Actions runner has no CJK
+    Noto Sans Math first -- the name is U+1D4D3 (bold script D), which no
+    text font has, and the runner's own fallback drew it unlike anywhere
+    else; picked 2026-09-28 -- then Noto Sans JP/KR/SC and Noto Color
+    Emoji: the Actions runner has no CJK
     fonts at all, so a Japanese track title on the spotify card came out as
     empty boxes (2026-09-28). Google Fonts serves those by unicode-range, so
     a card with only Latin text downloads none of them.
