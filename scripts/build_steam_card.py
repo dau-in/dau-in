@@ -19,7 +19,6 @@ import json
 import os
 import shutil
 import sys
-import time
 import urllib.parse
 from pathlib import Path
 
@@ -75,7 +74,6 @@ def fetch_data():
     most_played = max(games, key=lambda g: g.get('playtime_forever', 0)) if games else None
     recent = sorted(games, key=lambda g: g.get('rtime_last_played', 0), reverse=True)[:3] if games else []
     hours_2weeks_total = round(sum(g.get('playtime_2weeks', 0) for g in games) / 60, 1)
-    last_played = max((g.get('rtime_last_played', 0) for g in games), default=0)
 
     status_text, status_color = STATUS_MAP.get(player.get('personastate', 0), STATUS_MAP[0])
 
@@ -87,7 +85,6 @@ def fetch_data():
         'status_text': status_text,
         'status_color': status_color,
         'hours_2weeks_total': hours_2weeks_total,
-        'days_since_played': int((time.time() - last_played) // 86400) if last_played else None,
         'most_played_name': most_played['name'] if most_played else None,
         'most_played_icon_url': icon_url(most_played),
         'recent': [
@@ -131,14 +128,24 @@ body { margin:0; padding:20px; overflow:hidden; font-family:"Space Grotesk","Not
 .hero-unit { font-size:20px; color:#a7a0a7; }
 .hero-label { font-size:14px; color:#a7a0a7; margin-top:2px; }
 .stat-label { margin-bottom:9px; }
+/* the quiet-fortnight state, same as the wakatime card's empty state */
+.zzz { font-family:"Space Mono",monospace; font-weight:700; color:#8a8a8a; line-height:1; letter-spacing:0.02em; }
+.zzz span:nth-child(1) { font-size:44px; }
+.zzz span:nth-child(2) { font-size:32px; opacity:0.75; }
+.zzz span:nth-child(3) { font-size:22px; opacity:0.5; }
+.empty-note { font-size:15px; color:#a7a0a7; margin-top:12px; line-height:1.5; }
 .stat-row { display:flex; align-items:center; gap:11px; }
 .stat-row + .stat-row { margin-top:12px; }
 .stat-img { width:50px; height:50px; border-radius:6px; flex-shrink:0; }
-.stat-name { font-size:17px; color:#e5e5e5; font-weight:600; line-height:1.25; }
+.stat-name { font-size:17px; color:#e5e5e5; font-weight:600; line-height:1.25; min-width:0;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }  /* one line, so the card always fits the pair height */
 .stat-sub { font-size:14px; color:#a7a0a7; margin-top:2px; }
 .brand { display:flex; align-items:center; justify-content:flex-end; font-size:13.5px; color:#a7a0a7; margin-top:16px; }
 .brand svg { width:14px; height:14px; }
 '''
+
+
+IDLE_NOTE = 'No games in two weeks. Busy, or just away from the controller.'
 
 
 def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
@@ -169,22 +176,25 @@ def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
 
     # The hero row is always there: it used to vanish on a quiet fortnight,
     # which took ~80px off this card and left it visibly shorter than the
-    # spotify card it sits level with (2026-09-28). With nothing played in
-    # two weeks, "0.0h" says nothing, so the same slot counts the days since
-    # the last session instead -- still a real figure, same shape.
-    if data['hours_2weeks_total'] or data.get('days_since_played') is None:
-        hero_num, hero_unit, hero_label = data['hours_2weeks_total'], 'h', 'played in the last 2 weeks'
-    else:
-        hero_num, hero_unit, hero_label = data['days_since_played'], 'd', 'since the last session'
-    hero_block = f'''
+    # spotify card it sits level with (2026-09-28). A quiet fortnight gets the
+    # same empty state the wakatime card uses -- the "Zzz" and a line -- so the
+    # two cards say "nothing going on" the same way. The card's height is
+    # fixed either way (card_skin's .pair), so neither state moves the pair.
+    if data['hours_2weeks_total']:
+        hero_block = f'''
 <div class="divider"></div>
 <div class="hero">
-<div class="hero-num">{hero_num}<span class="hero-unit">{hero_unit}</span></div>
-<div class="hero-label">{hero_label}</div>
+<div class="hero-num">{data['hours_2weeks_total']}<span class="hero-unit">h</span></div>
+<div class="hero-label">played in the last 2 weeks</div>
 </div>'''
+    else:
+        hero_block = f'''
+<div class="divider"></div>
+<div class="zzz"><span>Z</span><span>z</span><span>z</span></div>
+<div class="empty-note">{IDLE_NOTE}</div>'''
 
     return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}{card_skin.CSS}</style></head><body>
-<div class="card">{card_skin.ambient(card_skin.data_url(avatar_b64))}
+<div class="card pair">{card_skin.ambient(card_skin.data_url(avatar_b64))}
 <div class="row">
 <img class="avatar" src="data:image/png;base64,{avatar_b64}"/>
 <div>
@@ -198,11 +208,6 @@ def build_html(data, avatar_b64, most_icon_b64, recent_icons_b64):
 {hero_block}
 {most_block}
 {recent_block}
-<!-- fixed spacer, not fake content -- closes the height gap against the spotify
-     card (which naturally has more content blocks: 7 vs steam's 4) so the pair
-     reads as roughly the same size side by side. Recalculated by measuring both
-     cards' actual rendered heights; may need retuning if content wraps longer. -->
-<div style="height:67px;"></div>
 <div class="brand">{STEAM_LOGO}steamcommunity.com/id/dauin</div>
 </div>
 </body></html>'''

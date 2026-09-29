@@ -47,6 +47,12 @@ from pathlib import Path
 
 from http_retry import urlopen_retry
 
+# Content height (CSS px) of the steam/spotify pair cards: the spotify
+# card's natural height, which the steam card is made to fit (single-line
+# game names). Content-box on purpose -- border-box would also eat into
+# the 340px width. Both cards add 20px padding and a 1px border per side.
+PAIR_HEIGHT = 601
+
 # Builders' own @import lines must include Space Mono 400/700 for the
 # labels -- an @import appended after other rules is ignored by the browser.
 # The card's own background is opaque on purpose: the ambient layers sit
@@ -66,6 +72,12 @@ body { background:transparent; }
 .range-tag { font-family:"Space Mono",monospace; font-size:11.5px; font-weight:400; color:#8a8a8a;
   text-transform:none; letter-spacing:0; }
 .divider { background:rgba(255,255,255,0.1); }
+/* steam and spotify sit side by side in the README and have to end level
+ * whatever they hold, so both are one fixed height with the brand line
+ * pinned to the bottom. This replaced a hand-tuned spacer on the steam card
+ * that had to be re-measured every time a font, a label or a state changed. */
+.card.pair { height:''' + str(PAIR_HEIGHT) + '''px; }
+.card.pair .brand { position:absolute; left:22px; right:22px; bottom:20px; margin:0; }
 .dark-icon { filter:brightness(0) invert(0.83); }
 '''
 

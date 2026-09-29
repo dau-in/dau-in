@@ -212,7 +212,7 @@ def build_html(data, avatar_b64, artist_img_b64, track_imgs_b64, last_img_b64):
 </div>'''
 
     return f'''<!doctype html><html><head><meta charset="utf-8"><style>{CSS}{card_skin.CSS}</style></head><body>
-<div class="card">{card_skin.ambient(card_skin.data_url(avatar_b64, 'image/jpeg'))}
+<div class="card pair">{card_skin.ambient(card_skin.data_url(avatar_b64, 'image/jpeg'))}
 <div class="row">
 <img class="avatar" src="data:image/jpeg;base64,{avatar_b64}"/>
 <div class="name">𝓓`</div>
