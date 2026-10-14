@@ -19,6 +19,12 @@ IDE extension -- already keeps it, so local runs of this script don't need
 their own separate copy of the same key). Never commit the key itself
 either way, same as every other card here.
 
+WakaTime makes API keys write-only (plugins sending heartbeats) on
+2026-11-01; reading /summaries then needs an OAuth token, sent as Bearer.
+WAKATIME_TOKEN takes precedence when set -- a personal token from
+wakatime.com/oauth with the read_summaries scope, no OAuth app needed. The
+API key path stays only as the fallback until that date.
+
 No "top projects" section -- repo names are already shown (with cover art)
 in the projects table right above this card in the README, and again via
 GitHub's own pinned repos. Repeating them here was pure redundancy, not a
@@ -118,6 +124,8 @@ WEEKDAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturd
 
 
 def load_api_key():
+    if os.environ.get('WAKATIME_TOKEN'):
+        return None
     key = os.environ.get('WAKATIME_API_KEY')
     if key:
         return key
@@ -135,10 +143,14 @@ API_KEY = load_api_key()
 
 
 def wakatime_api(path):
-    auth = base64.b64encode(API_KEY.encode()).decode()
+    token = os.environ.get('WAKATIME_TOKEN')
+    if token:
+        auth = f'Bearer {token}'
+    else:
+        auth = f'Basic {base64.b64encode(API_KEY.encode()).decode()}'
     req = urllib.request.Request(
         f'https://wakatime.com/api/v1{path}',
-        headers={'Authorization': f'Basic {auth}'},
+        headers={'Authorization': auth},
     )
     return json.loads(urlopen_retry(req))
 

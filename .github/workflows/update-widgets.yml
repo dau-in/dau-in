@@ -106,6 +106,7 @@ jobs:
         id: wakatime
         continue-on-error: true
         env:
+          WAKATIME_TOKEN: ${{ secrets.WAKATIME_TOKEN }}
           WAKATIME_API_KEY: ${{ secrets.WAKATIME_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
