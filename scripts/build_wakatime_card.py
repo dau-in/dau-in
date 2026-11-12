@@ -234,34 +234,6 @@ def format_duration(total_seconds):
     return f'{total_seconds} secs'
 
 
-def print_breakdown(summaries):
-    # Temporary diagnostic: the full split the card itself never shows --
-    # languages with "Other" kept, editors and categories -- per day and for
-    # the whole window. No project names: Actions logs are public.
-    def add(totals, items):
-        for item in items or []:
-            totals[item['name']] = totals.get(item['name'], 0) + item['total_seconds']
-
-    def fmt(totals):
-        grand = sum(totals.values()) or 1
-        return ', '.join(f'{name} {seconds / 3600:.1f}h ({seconds / grand * 100:.0f}%)'
-                         for name, seconds in sorted(totals.items(), key=lambda kv: -kv[1]))
-
-    window = {'languages': {}, 'editors': {}, 'categories': {}}
-    print('--- breakdown (diagnostic) ---')
-    for day in summaries:
-        print(f"{day['range']['date']} total {day['grand_total']['total_seconds'] / 3600:.1f}h")
-        for field in window:
-            day_totals = {}
-            add(day_totals, day.get(field))
-            add(window[field], day.get(field))
-            print(f'  {field}: {fmt(day_totals)}')
-    print('window:')
-    for field, totals in window.items():
-        print(f'  {field}: {fmt(totals)}')
-    print('--- end breakdown ---')
-
-
 def fetch_data():
     # /stats/last_7_days is cached server-side and didn't recompute after
     # raising the account's keystroke timeout -- caught it showing a 7-day
@@ -278,7 +250,6 @@ def fetch_data():
     # real additions vs. ~700 reported here, 18x off). fetch_lines_shipped()
     # replaces it with GitHub's own verifiable diff stats instead.
     summaries = wakatime_api(f'/users/current/summaries?range={RANGE}')['data']
-    print_breakdown(summaries)
 
     total_seconds = sum(day['grand_total']['total_seconds'] for day in summaries)
     if total_seconds == 0:
