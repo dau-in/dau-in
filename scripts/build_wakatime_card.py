@@ -259,6 +259,35 @@ def print_breakdown(summaries):
     print('window:')
     for field, totals in window.items():
         print(f'  {field}: {fmt(totals)}')
+
+    # Where the time actually lands, file by file, bucketed by kind of path.
+    # /summaries only lists entities when filtered to one project, so this
+    # asks once per project and prints nothing but the bucket totals.
+    import re
+    from urllib.parse import quote
+    buckets = [
+        ('claude-memory', re.compile(r'(?i)[/\\]\.claude[/\\]projects[/\\][^/\\]+[/\\]memory[/\\]')),
+        ('claude-other', re.compile(r'(?i)[/\\]\.claude[/\\]')),
+        ('claude-temp', re.compile(r'(?i)[/\\]AppData[/\\]Local[/\\]Temp[/\\]claude[/\\]')),
+        ('other-temp', re.compile(r'(?i)[/\\]AppData[/\\]Local[/\\]Temp[/\\]')),
+        ('app-entity', re.compile(r'^(Claude|OpenCode) ')),
+    ]
+    projects = {}
+    for day in summaries:
+        add(projects, day.get('projects'))
+    by_bucket = {}
+    for project in projects:
+        data = wakatime_api(f'/users/current/summaries?range={RANGE}&project={quote(project)}')['data']
+        for day in data:
+            for entity in day.get('entities') or []:
+                name = entity['name']
+                bucket = next((label for label, rx in buckets if rx.search(name)), 'project-file')
+                ext = os.path.splitext(name)[1].lower() if bucket != 'app-entity' else ''
+                key = f'{bucket} {ext or "-"}'
+                by_bucket[key] = by_bucket.get(key, 0) + entity['total_seconds']
+    print(f'entities across {len(projects)} projects:')
+    for key, seconds in sorted(by_bucket.items(), key=lambda kv: -kv[1])[:25]:
+        print(f'  {key}: {seconds / 3600:.2f}h')
     print('--- end breakdown ---')
 
 
