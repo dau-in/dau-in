@@ -109,6 +109,9 @@ jobs:
           WAKATIME_TOKEN: ${{ secrets.WAKATIME_TOKEN }}
           WAKATIME_API_KEY: ${{ secrets.WAKATIME_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional, read-only personal token that can see private repos, so
+          # "lines shipped" counts them too -- see fetch_lines_shipped.
+          GH_LINES_TOKEN: ${{ secrets.GH_LINES_TOKEN }}
           CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: python scripts/build_wakatime_card.py
 

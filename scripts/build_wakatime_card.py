@@ -53,6 +53,7 @@ import os
 import re
 import shutil
 import sys
+import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -168,9 +169,9 @@ def fetch_language_icon(language):
         return None
 
 
-def github_api(path):
+def github_api(path, token=None):
     headers = {'User-Agent': GH_USERNAME, 'Accept': 'application/vnd.github+json'}
-    token = os.environ.get('GITHUB_TOKEN')
+    token = token or os.environ.get('GITHUB_TOKEN')
     if token:
         headers['Authorization'] = f'Bearer {token}'
     req = urllib.request.Request(f'https://api.github.com{path}', headers=headers)
@@ -178,6 +179,53 @@ def github_api(path):
 
 
 def fetch_lines_shipped(days=7):
+    # GH_LINES_TOKEN is a personal token of the profile's owner (read-only:
+    # repository contents and metadata) that can see private repos too, which
+    # Actions' own GITHUB_TOKEN never can. With it, the count covers every
+    # repo the owner pushed to, public or private; without it, it falls back
+    # to the public-pushes count below. Only the total is ever shown -- no
+    # repo names, nothing from inside the private repos.
+    token = os.environ.get('GH_LINES_TOKEN')
+    if token:
+        return fetch_lines_committed(token, days)
+    return fetch_lines_pushed_public(days)
+
+
+def fetch_lines_committed(token, days=7):
+    # Commits the owner authored in the window, on each repo's default
+    # branch, summed from each commit's own stats. Repos come sorted by last
+    # push, so the walk stops at the first one untouched in the window.
+    # Merge commits are skipped: their diff is the branch being merged,
+    # already counted through the branch's own commits.
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    since_iso = since.strftime('%Y-%m-%dT%H:%M:%SZ')
+    total_additions = 0
+    repos = github_api('/user/repos?affiliation=owner&sort=pushed&per_page=100', token)
+    for repo in repos:
+        pushed_at = datetime.strptime(repo['pushed_at'], '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+        if pushed_at < since:
+            break
+        for page in range(1, 11):
+            try:
+                commits = github_api(
+                    f"/repos/{repo['full_name']}/commits?author={GH_USERNAME}&since={since_iso}&per_page=100&page={page}",
+                    token,
+                )
+            except urllib.error.HTTPError as err:
+                if err.code == 409:  # a repo created but never pushed to: no commits to count
+                    break
+                raise
+            for commit in commits:
+                if len(commit.get('parents') or []) > 1:
+                    continue
+                detail = github_api(f"/repos/{repo['full_name']}/commits/{commit['sha']}", token)
+                total_additions += (detail.get('stats') or {}).get('additions', 0)
+            if len(commits) < 100:
+                break
+    return total_additions
+
+
+def fetch_lines_pushed_public(days=7):
     # WakaTime's own ai_additions used to back this -- dropped after
     # checking it against real commits (see the note in fetch_data). This
     # sums real per-push diffs from GitHub's compare API instead: verifiable
