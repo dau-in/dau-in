@@ -234,36 +234,6 @@ def format_duration(total_seconds):
     return f'{total_seconds} secs'
 
 
-def print_projects(summaries):
-    # Temporary diagnostic: hours and languages per project, each project
-    # named only by a hash of its name -- Actions logs are public.
-    import hashlib, re
-    from urllib.parse import quote
-    memory = re.compile(r'(?i)[/\\]\.claude[/\\]|[/\\]AppData[/\\]Local[/\\]Temp[/\\]claude[/\\]')
-    projects = {}
-    for day in summaries:
-        for p in day.get('projects') or []:
-            projects[p['name']] = projects.get(p['name'], 0) + p['total_seconds']
-    print('--- projects (diagnostic) ---')
-    for name, seconds in sorted(projects.items(), key=lambda kv: -kv[1]):
-        tag = hashlib.sha256(name.encode()).hexdigest()[:8]
-        data = wakatime_api(f'/users/current/summaries?range={RANGE}&project={quote(name)}')['data']
-        langs, mem = {}, {}
-        for day in data:
-            for l in day.get('languages') or []:
-                langs[l['name']] = langs.get(l['name'], 0) + l['total_seconds']
-            for e in day.get('entities') or []:
-                if memory.search(e['name']):
-                    ext = os.path.splitext(e['name'])[1] or '-'
-                    mem[ext] = mem.get(ext, 0) + e['total_seconds']
-        per_day = ' '.join(f"{d['range']['date'][5:]}={d['grand_total']['total_seconds'] / 3600:.1f}" for d in data)
-        print(f'{tag} {seconds / 3600:.1f}h | days {per_day}')
-        print('   languages: ' + ', '.join(f'{k} {v / 3600:.1f}h' for k, v in sorted(langs.items(), key=lambda kv: -kv[1])[:8]))
-        if mem:
-            print('   claude-internal files: ' + ', '.join(f'{k} {v / 3600:.1f}h' for k, v in sorted(mem.items(), key=lambda kv: -kv[1])))
-    print('--- end projects ---')
-
-
 def fetch_data():
     # /stats/last_7_days is cached server-side and didn't recompute after
     # raising the account's keystroke timeout -- caught it showing a 7-day
@@ -280,7 +250,6 @@ def fetch_data():
     # real additions vs. ~700 reported here, 18x off). fetch_lines_shipped()
     # replaces it with GitHub's own verifiable diff stats instead.
     summaries = wakatime_api(f'/users/current/summaries?range={RANGE}')['data']
-    print_projects(summaries)
 
     total_seconds = sum(day['grand_total']['total_seconds'] for day in summaries)
     if total_seconds == 0:
