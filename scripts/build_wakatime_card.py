@@ -50,11 +50,13 @@ import base64
 import configparser
 import json
 import os
+import re
 import shutil
 import sys
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from urllib.parse import quote
 
 # Shared retry wrapper -- see http_retry.py for what gets another go and
 # what is taken at its word. Imported by name because Python puts a
@@ -234,6 +236,51 @@ def format_duration(total_seconds):
     return f'{total_seconds} secs'
 
 
+# Files the agents keep for themselves rather than for the project: Claude's
+# memory notes and settings under any .claude/ folder, and its scratchpads in
+# %TEMP%\claude\. WakaTime hands every prompt, read and shell command to the
+# nearest file edited in the same project, and these get rewritten all
+# through a session -- so in the week this was found, 15.6 of 21 hours of
+# "Markdown" were memory notes (11.6 h of x11-mouse alone, really .mjs/.json/
+# .html work), plus 2.8 h of "JSON" from one .claude/ settings file.
+# ~/.wakatime.cfg now has exclude_ai for the same paths, so new heartbeats
+# never point at them; this subtracts what was already recorded, until it
+# ages out of the window.
+CLAUDE_INTERNAL = re.compile(r'(?i)[/\\]\.claude[/\\]|[/\\]AppData[/\\]Local[/\\]Temp[/\\]claude[/\\]')
+
+# Entities in /summaries carry no language, so the bucket to subtract from
+# comes from the extension. Anything not listed is simply left alone.
+EXTENSION_LANGUAGE = {
+    '.md': 'Markdown', '.markdown': 'Markdown', '.json': 'JSON', '.html': 'HTML', '.htm': 'HTML',
+    '.py': 'Python', '.js': 'JavaScript', '.mjs': 'JavaScript', '.cjs': 'JavaScript',
+    '.ts': 'TypeScript', '.tsx': 'TypeScript', '.css': 'CSS', '.txt': 'Text', '.ps1': 'PowerShell',
+    '.toml': 'TOML', '.yml': 'YAML', '.yaml': 'YAML', '.sh': 'Bash',
+}
+
+
+def claude_internal_seconds(summaries):
+    # /summaries only lists entities (files) when filtered to one project,
+    # hence one request per project that had any time in the window. A
+    # failed request just leaves that project uncorrected rather than
+    # failing the card.
+    projects = {p['name'] for day in summaries for p in day.get('projects') or [] if p['total_seconds'] > 0}
+    by_language = {}
+    for project in sorted(projects):
+        try:
+            days = wakatime_api(f'/users/current/summaries?range={RANGE}&project={quote(project)}')['data']
+        except Exception as e:
+            print(f'skipping the Claude-internal correction for one project: {e}', file=sys.stderr)
+            continue
+        for day in days:
+            for entity in day.get('entities') or []:
+                if not CLAUDE_INTERNAL.search(entity['name']):
+                    continue
+                language = EXTENSION_LANGUAGE.get(os.path.splitext(entity['name'])[1].lower())
+                if language:
+                    by_language[language] = by_language.get(language, 0) + entity['total_seconds']
+    return by_language
+
+
 def fetch_data():
     # /stats/last_7_days is cached server-side and didn't recompute after
     # raising the account's keystroke timeout -- caught it showing a 7-day
@@ -269,6 +316,10 @@ def fetch_data():
             if lang['name'] == 'Other':
                 continue
             lang_seconds[lang['name']] = lang_seconds.get(lang['name'], 0) + lang['total_seconds']
+    for name, seconds in claude_internal_seconds(summaries).items():
+        if name in lang_seconds:
+            lang_seconds[name] = max(lang_seconds[name] - seconds, 0)
+    lang_seconds = {name: seconds for name, seconds in lang_seconds.items() if seconds >= 60}
     named_total = sum(lang_seconds.values()) or 1
     languages = [
         {
